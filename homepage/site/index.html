@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="ko" data-lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>마음온 MindOn — 마음이 쉬어가는 절 · a quiet temple online</title>
+<meta name="description" content="로그인 없이 무료로 들어와 3D 산사 경내를 걷고, 염불과 자연의 소리를 듣고, 합장·108배·연못 명상을 하는 온라인 명상 절. A quiet temple online: walk the grounds, listen, bow, and catch your breath — free, no sign-up.">
+<link rel="canonical" href="https://mindontemple.com/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#121419">
+<link rel="icon" href="assets/mindon-icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="마음온 MindOn">
+<meta property="og:url" content="https://mindontemple.com/">
+<meta property="og:title" content="마음온 MindOn — 마음이 쉬어가는 절">
+<meta property="og:description" content="로그인 없이 들어와 경내를 걷고, 듣고, 절하고, 숨을 고르다 가는 온라인 명상 절. A quiet temple online.">
+<meta property="og:image" content="https://mindontemple.com/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="마음온 MindOn — a quiet temple online">
+<meta name="twitter:description" content="Walk in for a while. Listen, bow, and catch your breath. Free, no sign-up.">
+<meta name="twitter:image" content="https://mindontemple.com/assets/img/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"마음온 MindOn","alternateName":"MindOn","url":"https://mindontemple.com/","description":"A quiet temple online — 마음이 쉬어가는 절","publisher":{"@type":"Organization","name":"에이톤 A-Tone","email":"atone@kakao.com"}}
+</script>
+<style>
+:root{
+  --ink-solid:#121419; --ink:rgba(17,19,25,.74); --ink-soft:rgba(17,19,25,.5);
+  --paper:#f1eadc; --paper-dim:rgba(241,234,220,.68); --line:rgba(241,234,220,.16);
+  --gold:#d7b25b; --lantern:#f2c46d;
+  --ease-calm:cubic-bezier(.4,0,.2,1);
+  --r-md:12px; --r-lg:20px;
+  --serif:"Gowun Batang",serif; --sans:"Gowun Dodum",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--ink-solid);color:var(--paper);font:16px/1.7 var(--sans);overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+html[data-lang="ko"] .en-only, html[data-lang="en"] .ko-only{display:none!important}
+.wrap{width:min(1080px,100% - 32px);margin-inline:auto}
+.en{font-size:12px;letter-spacing:.08em;color:var(--paper-dim)}
+
+/* 머리 */
+header{position:fixed;inset:0 0 auto;z-index:10;transition:background .6s var(--ease-calm)}
+header.solid{background:var(--ink);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{width:32px;height:32px}
+.brand b{font:700 19px/1 var(--serif)}
+.brand small{font-size:12px;color:var(--paper-dim);letter-spacing:.04em}
+.bar .sp{flex:1}
+.chip,.btn{white-space:nowrap}
+@media (max-width:480px){.brand small{display:none}.bar{gap:8px}.chip{padding:7px 10px;font-size:12px;min-height:34px}}
+.langs{display:flex;gap:4px}
+.chip{font:13px/1 var(--sans);color:var(--paper);background:transparent;border:1px solid var(--line);border-radius:999px;padding:8px 12px;cursor:pointer;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--paper);color:var(--ink-solid);border-color:var(--paper)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;border-radius:999px;font:700 17px/1.2 var(--sans);padding:16px 30px;min-height:52px;transition:transform .6s var(--ease-calm),box-shadow .6s var(--ease-calm)}
+.btn-gold{background:var(--gold);color:var(--ink-solid)}
+.btn-gold:hover,.btn-gold:focus-visible{transform:translateY(-1px);box-shadow:0 0 0 6px rgba(215,178,91,.18)}
+.btn-line{border:1px solid rgba(241,234,220,.4);color:var(--paper);background:var(--ink-soft)}
+.btn-line:hover,.btn-line:focus-visible{border-color:var(--paper)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* 첫 화면 */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;text-align:center;padding:96px 16px 64px;isolation:isolate}
+.hero .bg{position:absolute;inset:0;z-index:-2;background:url(assets/img/hero.webp) center 40%/cover no-repeat}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(18,20,25,.55) 0%,rgba(18,20,25,.6) 60%,rgba(246,233,200,.0) 100%)}
+.hero .mark{width:112px;height:112px;margin:0 auto 20px;opacity:0;animation:ignite 1.6s .2s var(--ease-calm) forwards}
+@keyframes ignite{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.hero h1{font:700 clamp(48px,11vw,84px)/1.05 var(--serif);margin:0;letter-spacing:.02em}
+.hero .sub{font:400 clamp(19px,4.4vw,24px)/1.4 var(--serif);color:var(--gold);margin:14px 0 4px}
+.hero .sub-en{font-size:14px;letter-spacing:.14em;color:var(--paper-dim);margin:0}
+.hero .lead{text-wrap:balance;max-width:30em;margin:28px auto 32px;font-size:17px;color:var(--paper)}
+@media (max-width:560px){br.wide{display:none}}
+.hero .meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px;font-size:13px;color:var(--paper-dim)}
+.hero .meta span{border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--ink-soft)}
+.live{margin-top:20px;font-size:14px;color:var(--paper-dim);min-height:1.7em;display:flex;align-items:center;justify-content:center;gap:8px}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--lantern);box-shadow:0 0 10px var(--lantern);animation:breath 4s ease-in-out infinite}
+@keyframes breath{50%{opacity:.35}}
+
+/* 공통 섹션 */
+section{padding:clamp(72px,12vw,128px) 0}
+.plaque{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;margin-bottom:18px}
+.plaque span{font:700 13px/1 var(--sans);letter-spacing:.1em;color:var(--gold)}
+h2{font:700 clamp(28px,6vw,40px)/1.3 var(--serif);margin:0 0 6px}
+h2 + .en{display:block;margin-bottom:24px}
+.prose{max-width:34em;font-size:17px;color:var(--paper)}
+.prose p{margin:0 0 1em}
+.dim{color:var(--paper-dim)}
+
+/* 한지 바탕 (보드의 따뜻한 낮 — 디자인 시스템 day 테마) */
+.day{--paper:#121419;--paper-dim:rgba(17,19,25,.62);--line:rgba(17,19,25,.14);--gold:#8a6d1f;--ink:#faf6ee;--ink-soft:rgba(250,246,238,.8);
+  background:linear-gradient(180deg,#f6e9c8 0%,#f1eadc 520px,#f1eadc 100%);color:var(--paper)}
+.day .card{box-shadow:0 1px 0 rgba(17,19,25,.04),0 8px 24px -16px rgba(90,63,40,.35)}
+.day .path li{background:#faf6ee}
+.day .path li::before{color:#faf6ee}
+.day .steps li{background:#faf6ee}
+.day .shot{border-color:transparent;box-shadow:0 10px 30px -18px rgba(90,63,40,.5)}
+.day .shot figcaption{background:rgba(18,20,25,.66);color:#f1eadc;border-color:rgba(241,234,220,.16)}
+.day .badge{background:#f1eadc}
+.day .s-spring{background:linear-gradient(160deg,rgba(232,155,176,.28),#faf6ee 75%)}
+.day .s-summer{background:linear-gradient(160deg,rgba(90,130,71,.24),#faf6ee 75%)}
+.day .s-autumn{background:linear-gradient(160deg,rgba(200,90,58,.24),#faf6ee 75%)}
+.day .s-winter{background:linear-gradient(160deg,rgba(143,168,164,.3),#faf6ee 75%)}
+.day .soon span{background:#faf6ee}
+
+/* 소개 */
+.intro{display:grid;gap:40px;align-items:center}
+@media (min-width:860px){.intro{grid-template-columns:1.1fr .9fr}}
+.key{margin:0}
+.key img{width:100%;border-radius:var(--r-lg);box-shadow:0 18px 40px -22px rgba(90,63,40,.6)}
+.key figcaption{margin-top:12px;font-size:14px;color:var(--paper-dim)}
+.key figcaption b{font:700 17px/1 var(--serif);color:var(--paper);margin-right:6px}
+
+/* 걷는 길 */
+.path{list-style:none;padding:0;margin:32px 0 0;display:grid;gap:12px;counter-reset:p}
+@media (min-width:760px){.path{grid-template-columns:repeat(4,1fr)}}
+.path li{position:relative;padding:20px;border:1px solid var(--line);border-radius:var(--r-md);background:rgba(241,234,220,.03)}
+.path li::before{counter-increment:p;content:counter(p);font:700 13px/1 var(--sans);color:var(--ink-solid);background:var(--gold);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px}
+.path b{font:700 20px/1.3 var(--serif);display:block}
+.path .en{display:block;margin:2px 0 8px}
+.path p{margin:0;font-size:15px;color:var(--paper-dim)}
+
+/* 사진 띠 */
+.shot{margin:0;position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line)}
+.shot img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.shot figcaption{position:absolute;left:12px;bottom:12px;background:var(--ink);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px}
+.shots{display:grid;gap:16px;margin-top:40px}
+@media (min-width:760px){.shots{grid-template-columns:1fr 1fr}}
+
+/* 체험 카드 */
+.cards{display:grid;gap:14px;margin-top:36px}
+@media (min-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:980px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{padding:24px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--ink);display:flex;flex-direction:column;gap:6px}
+.card svg{width:28px;height:28px;color:var(--gold);margin-bottom:8px}
+.card h3{font:700 21px/1.35 var(--serif);margin:0}
+.card .en{display:block}
+.card p{margin:6px 0 0;font-size:15px;color:var(--paper-dim)}
+.badge{align-self:flex-start;margin-top:10px;font:700 12px/1 var(--sans);letter-spacing:.04em;border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:var(--paper)}
+
+/* 시간과 계절 */
+.seasons{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:28px}
+@media (min-width:760px){.seasons{grid-template-columns:repeat(4,1fr)}}
+.season{border-radius:var(--r-md);padding:18px;border:1px solid var(--line)}
+.season b{font:700 19px/1.3 var(--serif);display:block}
+.season span{font-size:14px;color:var(--paper-dim)}
+.s-spring{background:linear-gradient(160deg,rgba(240,190,200,.16),transparent 70%)}
+.s-summer{background:linear-gradient(160deg,rgba(120,170,110,.18),transparent 70%)}
+.s-autumn{background:linear-gradient(160deg,rgba(214,120,70,.18),transparent 70%)}
+.s-winter{background:linear-gradient(160deg,rgba(200,215,235,.16),transparent 70%)}
+
+/* 함께 */
+.together{display:grid;gap:40px;align-items:center}
+@media (min-width:860px){.together{grid-template-columns:1fr 1fr}}
+.stat{display:flex;gap:28px;flex-wrap:wrap;margin-top:24px}
+.stat div b{font:700 34px/1 var(--serif);color:var(--gold);display:block}
+.stat div span{font-size:13px;color:var(--paper-dim)}
+
+/* 순서 */
+.steps{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:12px}
+@media (min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps li{padding:22px;border-radius:var(--r-md);border:1px solid var(--line)}
+.steps b{font:700 19px/1.35 var(--serif);display:block;margin-bottom:6px}
+.steps p{margin:0;font-size:15px;color:var(--paper-dim)}
+
+/* 마음 길잡이 */
+.guide{display:grid;gap:40px;align-items:start}
+@media (min-width:900px){.guide{grid-template-columns:1.1fr .9fr}}
+.flow{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:10px;counter-reset:f}
+.flow li{display:grid;grid-template-columns:28px 1fr;column-gap:12px;align-items:baseline}
+.flow li::before{counter-increment:f;content:counter(f);grid-row:span 2;font:700 13px/1 var(--sans);color:#faf6ee;background:var(--gold);width:24px;height:24px;border-radius:50%;display:grid;place-items:center}
+.flow b{font:700 18px/1.4 var(--serif)}
+.flow span{font-size:15px;color:var(--paper-dim)}
+.promise{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:8px;font-size:15px;color:var(--paper-dim)}
+.promise li{padding-left:18px;position:relative}
+.promise li::before{content:"";position:absolute;left:2px;top:.7em;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.promise b{color:var(--paper)}
+.chat{margin:0;padding:20px;border-radius:var(--r-lg);background:#5a3f28 linear-gradient(160deg,rgba(240,160,75,.18),rgba(18,20,25,.35));box-shadow:0 18px 40px -22px rgba(90,63,40,.7);display:flex;flex-direction:column;gap:12px}
+.chat figcaption{font-size:12px;color:rgba(241,234,220,.75);letter-spacing:.04em}
+.msg{max-width:88%;padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.65}
+.msg.me{align-self:flex-end;background:rgba(17,19,25,.74);color:#f1eadc;border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:#fff;color:#121419;border-bottom-left-radius:4px}
+.msg small{display:block;font:700 12px/1 var(--sans);color:#8a6d1f;margin-bottom:8px}
+.suggest{align-self:flex-start;background:#d7b25b;color:#121419;font:700 14px/1 var(--sans);border-radius:999px;padding:10px 16px}
+
+/* 준비 중 */
+.soon{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.soon span{border:1px dashed var(--line);border-radius:999px;padding:9px 16px;font-size:15px}
+.soon small{color:var(--paper-dim);margin-left:6px}
+
+.friends{display:grid;gap:20px;align-items:center;margin:28px 0 8px;padding:20px;border-radius:var(--r-lg);background:var(--ink);border:1px solid var(--line)}
+@media (min-width:860px){.friends{grid-template-columns:1.2fr 1fr;padding:24px}}
+.friends figure{margin:0}
+.friends img{width:100%;border-radius:var(--r-md)}
+.friends h3{font:700 22px/1.35 var(--serif);margin:0 0 8px}
+.friends p{margin:0;font-size:15px;color:var(--paper-dim)}
+
+/* 마지막 권유 */
+.cta{text-align:center}
+.cta img{width:88px;height:88px;margin:0 auto 18px}
+.cta h2{margin-bottom:10px}
+.cta p{color:var(--paper-dim);margin:0 0 28px}
+
+/* 아래 */
+footer{border-top:1px solid var(--line);padding:40px 0 calc(40px + env(safe-area-inset-bottom));font-size:13px;color:var(--paper-dim)}
+footer .care{color:var(--paper);background:rgba(241,234,220,.05);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;margin-bottom:24px;font-size:14px}
+footer .care a{color:var(--gold)}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0}
+footer nav a{text-decoration:none;border-bottom:1px solid var(--line)}
+footer p{margin:4px 0}
+footer .credit{font-size:11px;opacity:.85;margin-top:14px}
+</style>
+</head>
+<body>
+
+<header id="top">
+  <div class="wrap bar">
+    <a class="brand" href="#" aria-label="마음온 MindOn">
+      <img src="assets/mindon-icon.svg" alt="" width="32" height="32">
+      <span><b>마음온</b> <small>MindOn</small></span>
+    </a>
+    <span class="sp"></span>
+    <div class="langs" role="group" aria-label="언어 · Language">
+      <button class="chip" data-set-lang="ko" aria-pressed="true">한국어</button>
+      <button class="chip" data-set-lang="en" aria-pressed="false">English</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 첫 화면 -->
+  <section class="hero" aria-labelledby="h-hero">
+    <div class="bg" role="img" aria-label="마음온 경내 — 꽃과 석등이 늘어선 돌길 끝에 고요당이 보이는 봄 풍경"></div>
+    <div>
+      <img class="mark" src="assets/mindon-mark-paper.svg" alt="마음온 로고 — 붓으로 쓴 전원 기호" width="112" height="112">
+      <h1 id="h-hero">마음온</h1>
+      <p class="sub"><span class="ko-only">마음이 쉬어가는 절</span><span class="en-only">MindOn</span></p>
+      <p class="sub-en"><span class="ko-only">MindOn · a quiet temple online</span><span class="en-only">a quiet temple online</span></p>
+      <p class="lead">
+        <span class="ko-only">인터넷 속에 지어 둔 조용한 절.<br class="wide"> 잠시 들어와 걷고, 듣고, 절하고, 숨을 고르다 가세요.</span>
+        <span class="en-only">A quiet temple built inside the internet.<br class="wide"> Walk in for a while. Listen, bow, and catch your breath.</span>
+      </p>
+      <a class="btn btn-line" href="#about"><span class="ko-only">마음온 둘러보기</span><span class="en-only">Take a look</span><span aria-hidden="true">↓</span></a>
+      <div class="meta">
+        <span class="ko-only">로그인 없음</span><span class="en-only">No sign-up</span>
+        <span class="ko-only">무료</span><span class="en-only">Free</span>
+        <span class="ko-only">폰 · PC</span><span class="en-only">Phone · PC</span>
+        <span class="ko-only">한국어 · English</span><span class="en-only">Korean · English</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="day">
+  <!-- 소개 -->
+  <section id="about">
+    <div class="wrap intro">
+      <div>
+        <div class="plaque"><span>마음온 · MindOn</span></div>
+        <h2 class="ko-only">마음을 켜고,<br>잠시 쉬었다 가는 곳</h2>
+        <h2 class="en-only">Turn your mind on,<br>and rest a while</h2>
+        <div class="prose">
+          <p class="ko-only">마음온은 화면 속에 지은 작은 산사예요. 우리 심덕이가 되어 경내를 천천히 걸어요. 염불과 목탁, 새소리와 물소리를 듣고, 법당에서 합장하고 절하고, 연잎 위에 앉아 숨을 골라요.</p>
+          <p class="ko-only">이름의 ‘온’에는 따뜻함(온기), 켜짐(ON), 마음이 온 자리, 온전함이 함께 들어 있어요. 그래서 로고가 붓으로 쓴 전원 기호예요. 입장할 때 누르는 버튼 이름도 <b>마음 켜기</b>예요.</p>
+          <p class="en-only">MindOn is a small mountain temple built on your screen. You become Simdeok, our little duck, and stroll the grounds. Listen to chanting and the wooden moktak, to birds and running water. Put your palms together in the hall, bow, and sit on a lotus leaf to breathe.</p>
+          <p class="en-only">The “On” is warmth, a switch turning on, and a mind arriving whole. That’s why the logo is a power symbol drawn with a brush, and why the button at the gate reads <b>Turn your mind on</b>.</p>
+        </div>
+      </div>
+      <figure class="key">
+        <img src="assets/img/simdeok-key.webp" alt="햇살 드는 산사 돌길에서 걸망을 메고 합장하는 심덕이" width="956" height="666" loading="lazy">
+        <figcaption><b>심덕이</b> <span class="ko-only">마음이 머무는 곳, 함께 걷는 도반</span><span class="en-only">Simdeok — a companion on the quiet path</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 걷는 길 -->
+  <section id="walk" style="padding-top:0">
+    <div class="wrap">
+      <div class="plaque"><span class="ko-only">경내 · 걷는 길</span><span class="en-only">The grounds</span></div>
+      <h2 class="ko-only">문을 지나 법당까지, 천천히</h2>
+      <h2 class="en-only">From the gate to the hall, slowly</h2>
+      <span class="en ko-only">Walk with the joystick, a tap on the ground, or your keyboard</span>
+      <span class="en en-only">Walk with the joystick, a tap on the ground, or your keyboard</span>
+      <ol class="path">
+        <li><b>불이문</b><span class="en">Gate of Not-Two</span><p class="ko-only">경내로 들어서는 첫 문. 현판 아래를 지나면 소리가 달라져요.</p><p class="en-only">The first gate. Step beneath its plaque and the sounds change.</p></li>
+        <li><b class="ko-only">돌길</b><b class="en-only">Stone path</b><span class="en ko-only">Stone path</span><span class="en en-only">돌길</span><p class="ko-only">석등과 꽃 무더기가 늘어선 길. 안내를 따라 걸어도 돼요.</p><p class="en-only">Stone lanterns and flower beds line the way. Follow the guided walk if you like.</p></li>
+        <li><b class="ko-only">석탑과 연못</b><b class="en-only">Pagoda &amp; pond</b><span class="en ko-only">Pagoda &amp; Lotus Pond</span><span class="en en-only">석탑 · 연못</span><p class="ko-only">삼층 석탑을 지나 디딤돌을 건너면 연잎이 뜬 연못이에요.</p><p class="en-only">Past the three-story pagoda, stepping stones lead to a pond of lotus leaves.</p></li>
+        <li><b>고요당</b><span class="en">Hall of Stillness</span><p class="ko-only">큰 법당. 금빛 부처님과 불화, 110개의 방석, 연등과 촛불이 있어요.</p><p class="en-only">The great hall: a golden Buddha, a painted altar, 110 cushions, lanterns and candles.</p></li>
+      </ol>
+      <div class="shots">
+        <figure class="shot"><img src="assets/img/hall.webp" alt="석등이 늘어선 돌길과 연못, 그 너머 금빛 부처님이 보이는 고요당" width="1200" height="675" loading="lazy"><figcaption><span class="ko-only">고요당 가는 돌길과 연못</span><span class="en-only">The path to the hall, by the pond</span></figcaption></figure>
+        <figure class="shot"><img src="assets/img/night.webp" alt="밤의 불이문, 석등이 켜진 돌길" width="1200" height="675" loading="lazy"><figcaption><span class="ko-only">밤의 불이문</span><span class="en-only">The gate at night</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 체험 -->
+  <section id="do" style="padding-top:0">
+    <div class="wrap">
+      <div class="plaque"><span class="ko-only">경내에서 할 수 있는 것</span><span class="en-only">What you can do</span></div>
+      <h2 class="ko-only">걷고, 듣고, 절하고, 숨 고르기</h2>
+      <h2 class="en-only">Walk, listen, bow, breathe</h2>
+      <div class="cards">
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4a8 8 0 1 0 6.5 3.2"/><path d="M12 4v8l6.5-4.8"/><path d="M12 12l-5 5M12 12l1 6.5M12 12l-6.5-1"/></svg>
+          <h3 class="ko-only">연못 명상</h3><h3 class="en-only">Pond meditation</h3>
+          <span class="en ko-only">Meditation by the pond</span><span class="en en-only">연못 명상</span>
+          <p class="ko-only">연잎 8장과 물가 16자리 가운데 빈 곳에 앉아, 커졌다 작아지는 원을 따라 숨을 쉬어요. 아래 ‘명상’ 버튼으로 시작해요. 마음이 가장 편해지는 자리예요.</p>
+          <p class="en-only">Take a free seat on one of eight lotus leaves or sixteen spots by the water, and breathe with a slowly growing and shrinking circle. Tap “Meditate” to begin. Our favorite spot.</p>
+          <span class="badge">3 · 5 · 10<span class="ko-only">분</span><span class="en-only"> min</span></span>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="15" r="3"/><path d="M8 16c2-5 6-8 11-7.5 1.5.2 2.5 1.5 2.5 3V20"/><path d="M15 9.5c1 2 1.5 4 1.5 6.5"/><path d="M2.5 20h19"/></svg>
+          <h3>108<span class="ko-only">배</span><span class="en-only"> bows</span></h3>
+          <span class="en ko-only">108 bows</span><span class="en en-only">108배</span>
+          <p class="ko-only">고요당의 빈 방석에서 혼자 천천히 큰절을 해요. 실제 목탁 소리에 맞춰 절하고, 시작과 끝에 죽비가 울려요.</p>
+          <p class="en-only">On an empty cushion in the hall, bow slowly at your own pace to a real moktak recording. A bamboo clapper marks the start and end.</p>
+          <span class="badge"><span class="ko-only">약 11분 · 한 번 6초</span><span class="en-only">about 11 min · 6 s per bow</span></span>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5c-2.6 2-4.5 5-4.5 8.5V20h9v-8c0-3.5-1.9-6.5-4.5-8.5z"/><path d="M12 3.5V20"/><path d="M7.5 13c-1.2.3-2.3 1-3 2.2M16.5 13c1.2.3 2.3 1 3 2.2"/></svg>
+          <h3 class="ko-only">합장</h3><h3 class="en-only">Palms together</h3>
+          <span class="en ko-only">Hapjang</span><span class="en en-only">합장</span>
+          <p class="ko-only">어디서든 버튼을 길게 누르면 그 자리에 멈춰 두 손을 모으고 반배를 해요.</p>
+          <p class="en-only">Press and hold anywhere to stop, put your palms together, and give a half bow.</p>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/><path d="M18 7a7 7 0 0 1 0 10"/></svg>
+          <h3 class="ko-only">산사의 소리</h3><h3 class="en-only">Temple sounds</h3>
+          <span class="en ko-only">Chant · bell · nature</span><span class="en en-only">염불 · 종 · 자연</span>
+          <p class="ko-only">시간과 계절에 맞는 새소리·풀벌레·바람 소리, 고요당에 다가갈수록 커지는 영인스님의 「관세음보살정근」, 종과 목탁. 화면을 꺼도 소리를 이어 들을 수 있어요.</p>
+          <p class="en-only">Birds, insects and wind that follow the hour and season, Venerable Youngin’s chanting that swells as you near the hall, the bell and the moktak. Keep listening with the screen off.</p>
+          <span class="badge"><span class="ko-only">실제 녹음</span><span class="en-only">Real recordings</span></span>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5h4M12 3.5V6"/><rect x="7" y="6" width="10" height="11" rx="4"/><path d="M12 17v3.5M10.5 20.5h3"/><path d="M12 9.5v4"/></svg>
+          <h3 class="ko-only">함께 있기</h3><h3 class="en-only">Together, quietly</h3>
+          <span class="en ko-only">Together</span><span class="en en-only">함께 있기</span>
+          <p class="ko-only">같은 시간에 온 사람들이 모두 심덕이로 보여요. 말없이 함께 걷고 함께 절해요.</p>
+          <p class="en-only">People who come at the same time appear as Simdeok too. Walk and bow together, without a word.</p>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9c3-2.5 15-2.5 18 0"/><path d="M5 8.5v11M19 8.5v11"/><path d="M5 13h14"/><path d="M8 19.5v-4M16 19.5v-4"/></svg>
+          <h3 class="ko-only">장면 담기 · 초대</h3><h3 class="en-only">Keep &amp; share</h3>
+          <span class="en ko-only">Snapshot · invite link</span><span class="en en-only">장면 담기 · 초대 링크</span>
+          <p class="ko-only">마음에 드는 장면을 사진으로 담고, 초대 링크를 보내면 친구가 같은 장소, 같은 방으로 들어와요.</p>
+          <p class="en-only">Save a scene you love. Send an invite link and a friend arrives at the same spot, in the same room.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 시간과 계절 -->
+  <section id="time" style="padding-top:0">
+    <div class="wrap">
+      <div class="plaque"><span class="ko-only">시간과 계절</span><span class="en-only">Hours &amp; seasons</span></div>
+      <h2 class="ko-only">갈 때마다 다른 하늘</h2>
+      <h2 class="en-only">A different sky every visit</h2>
+      <p class="prose ko-only">경내의 하늘은 기기의 시각을 따라 새벽·낮·저녁·밤으로 바뀌고, 계절은 지금 달을 따라요. 오른쪽 위 ‘보기’에서 직접 바꿀 수도 있어요.</p>
+      <p class="prose en-only">The sky follows your clock through dawn, day, dusk and night, and the season follows the month. You can change both from “View” at the top right.</p>
+      <div class="seasons">
+        <div class="season s-spring"><b class="ko-only">봄</b><b class="en-only">Spring</b><span class="ko-only">벚꽃과 흩날리는 꽃잎</span><span class="en-only">Cherry blossoms, drifting petals</span></div>
+        <div class="season s-summer"><b class="ko-only">여름</b><b class="en-only">Summer</b><span class="ko-only">짙은 초록과 매미 소리</span><span class="en-only">Deep green, cicadas</span></div>
+        <div class="season s-autumn"><b class="ko-only">가을</b><b class="en-only">Autumn</b><span class="ko-only">단풍과 떨어지는 낙엽</span><span class="en-only">Maples and falling leaves</span></div>
+        <div class="season s-winter"><b class="ko-only">겨울</b><b class="en-only">Winter</b><span class="ko-only">눈꽃과 겨울바람</span><span class="en-only">Snow on branches, winter wind</span></div>
+      </div>
+      <div class="shots">
+        <figure class="shot"><img src="assets/img/spring.webp" alt="봄 낮의 불이문, 벚꽃이 핀 경내" width="1200" height="675" loading="lazy"><figcaption><span class="ko-only">봄 · 낮</span><span class="en-only">Spring · day</span></figcaption></figure>
+        <figure class="shot"><img src="assets/img/autumn.webp" alt="가을 낮의 경내, 단풍 너머 고요당" width="1200" height="675" loading="lazy"><figcaption><span class="ko-only">가을 · 낮</span><span class="en-only">Autumn · day</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 함께 -->
+  <section id="together" style="padding-top:0">
+    <div class="wrap together">
+      <div>
+        <div class="plaque"><span class="ko-only">누구나, 언제든</span><span class="en-only">For anyone, anytime</span></div>
+        <h2 class="ko-only">주소 하나로 바로</h2>
+        <h2 class="en-only">Just open the link</h2>
+        <div class="prose">
+          <p class="ko-only">앱을 설치하거나 가입할 필요가 없어요. 폰이든 컴퓨터든 브라우저에서 주소를 열고 ‘마음 켜기’를 누르면 경내예요. 출근 전 5분, 잠들기 전 10분이면 충분해요.</p>
+          <p class="en-only">No app, no account. Open the link in any browser on your phone or computer, press “Turn your mind on,” and you’re inside. Five minutes before work or ten before bed is plenty.</p>
+        </div>
+        <div class="stat">
+          <div><b class="ko-only">무료</b><b class="en-only">Free</b><span class="ko-only">가입·설치 없이</span><span class="en-only">no account, no app</span></div>
+          <div><b>108</b><span class="ko-only">한 방에 함께 보이는 사람</span><span class="en-only">people shown per room</span></div>
+          <div><b>2</b><span class="ko-only">한국어 · English</span><span class="en-only">languages</span></div>
+        </div>
+      </div>
+      <ol class="steps" style="grid-template-columns:1fr">
+        <li><b class="ko-only">1. 주소 열기</b><b class="en-only">1. Open the link</b><p class="ko-only">mindon.link — 이 페이지 맨 아래 ‘마음온 들어가기’를 눌러도 돼요.</p><p class="en-only">mindon.link — or press “Enter MindOn” at the bottom of this page.</p></li>
+        <li><b class="ko-only">2. 마음 켜기</b><b class="en-only">2. Turn your mind on</b><p class="ko-only">붓으로 쓴 전원 버튼을 누르면 소리가 켜지고 불이문 앞에 서요.</p><p class="en-only">Press the brush-drawn power button. The sound comes on and you stand before the gate.</p></li>
+        <li><b class="ko-only">3. 천천히 걷기</b><b class="en-only">3. Walk slowly</b><p class="ko-only">아래 ‘장소’에서 가고 싶은 곳을 고르거나, 안내를 따라 걸어요.</p><p class="en-only">Pick a place from “Places” below, or follow the guided walk.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 마음 길잡이 (준비 중) -->
+  <section id="guide" style="padding-top:0">
+    <div class="wrap guide">
+      <div>
+        <div class="plaque"><span class="ko-only">찻방 · 준비 중</span><span class="en-only">Tea Room · coming soon</span></div>
+        <h2 class="ko-only">마음 길잡이와 차 한잔</h2>
+        <h2 class="en-only">Tea with a quiet guide</h2>
+        <p class="prose ko-only">마음이 무거운 날, 찻방에 앉아 AI 길잡이에게 이야기를 털어놓을 수 있게 준비하고 있어요. 길잡이는 길게 가르치려 하지 않아요. 먼저 들어 주고, 짧고 차분하게 답해요.</p>
+        <p class="prose en-only">On heavy days you’ll be able to sit in the Tea Room and talk things through with an AI guide. It won’t lecture. It listens first, then answers briefly and calmly.</p>
+        <ol class="flow">
+          <li><b class="ko-only">들어 주기</b><b class="en-only">Listen</b><span class="ko-only">지금 마음이 어떤지 먼저 헤아려요.</span><span class="en-only">It starts by understanding how you feel.</span></li>
+          <li><b class="ko-only">한 줄 가르침</b><b class="en-only">One line of wisdom</b><span class="ko-only">부처님 가르침에서 한 줄을 건네고, 경전을 인용할 땐 출처를 밝혀요.</span><span class="en-only">It offers a single line from Buddhist teaching, naming the source when it quotes a scripture.</span></li>
+          <li><b class="ko-only">지금 할 수 있는 작은 것</b><b class="en-only">One small step</b><span class="ko-only">연못 명상 3분, 108배, 연등처럼 경내에서 바로 해 볼 수 있는 것을 권해요.</span><span class="en-only">A few minutes of pond meditation, the 108 bows, a lantern — something you can do right here.</span></li>
+        </ol>
+        <ul class="promise">
+          <li class="ko-only"><b>AI라고 늘 밝혀요.</b> 스님이나 부처님 흉내를 내지 않고, 가르침을 전하는 안내자로만 말해요.</li>
+          <li class="en-only"><b>Always says it’s AI.</b> It never poses as a monk or the Buddha — only a guide passing on the teaching.</li>
+          <li class="ko-only"><b>힘든 신호가 보이면 대답보다 연결이 먼저예요.</b> 바로 109(자살예방상담)·1577-0199(정신건강위기상담)를 안내해요.</li>
+          <li class="en-only"><b>Help comes before answers.</b> If it senses you may be in crisis, it points you straight to crisis lines.</li>
+          <li class="ko-only"><b>대화는 기본으로 저장하지 않아요.</b></li>
+          <li class="en-only"><b>Conversations aren’t stored by default.</b></li>
+          <li class="ko-only"><b>치료를 대신하지 않아요.</b> 마음을 고르는 친구일 뿐, 의료·심리 상담이 필요할 땐 전문가를 찾아 주세요.</li>
+          <li class="en-only"><b>Not a substitute for care.</b> It’s a companion for settling the mind; please see a professional when you need treatment.</li>
+          <li class="ko-only"><b>회원 기능으로 준비 중이에요.</b> 경내를 걷고 듣고 절하는 체험은 지금처럼 로그인 없이 무료예요.</li>
+          <li class="en-only"><b>Planned as a member feature.</b> Walking, listening and bowing stay free, with no sign-up.</li>
+        </ul>
+      </div>
+      <figure class="chat" aria-label="마음 길잡이 예시 대화">
+        <figcaption><span class="ko-only">예시 대화 · 실제와 다를 수 있어요</span><span class="en-only">Sample conversation · may differ</span></figcaption>
+        <div class="msg me ko-only">요즘 잠이 잘 안 와요. 걱정이 자꾸 떠올라서요.</div>
+        <div class="msg me en-only">I can’t sleep lately. Worries keep coming back.</div>
+        <div class="msg bot ko-only"><small>마음 길잡이 · AI</small>걱정이 밤마다 찾아오면 몸도 마음도 많이 지치지요. 그 마음, 여기 잠시 내려놓아도 괜찮아요.<br><br>옛 가르침은 지나간 일도, 아직 오지 않은 일도 붙잡지 말고 지금 이 숨에 머물라고 말해요.<br><br>잠들기 전에 연못가에서 3분만 함께 숨을 골라 볼까요?</div>
+        <div class="msg bot en-only"><small>Quiet guide · AI</small>When worries visit every night, body and mind both grow tired. You can set that down here for a moment.<br><br>An old teaching says: don’t chase what has passed or what hasn’t come yet — rest in this breath.<br><br>Shall we breathe together by the pond for three minutes before bed?</div>
+        <div class="suggest"><span class="ko-only">연못 명상 3분</span><span class="en-only">Pond meditation · 3 min</span></div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 준비 중 -->
+  <section id="soon" style="padding-top:0">
+    <div class="wrap">
+      <div class="plaque"><span class="ko-only">짓고 있는 곳</span><span class="en-only">Still being built</span></div>
+      <h2 class="ko-only">경내는 조금씩 넓어지고 있어요</h2>
+      <h2 class="en-only">The grounds are slowly growing</h2>
+      <div class="friends">
+        <figure><img src="assets/img/friends.webp" alt="여우 스님, 고양이 도반, 사슴 도반, 거북이 도반, 참새 도반" width="768" height="284" loading="lazy"></figure>
+        <div>
+          <h3 class="ko-only">함께 걸을 도반을 골라요</h3><h3 class="en-only">Pick who you walk as</h3>
+          <p class="ko-only">지금은 모두 심덕이로 경내를 걸어요. 곧 들어갈 때 여우 스님, 고양이·사슴·거북이·참새 도반 가운데 마음에 드는 친구를 골라 함께 걸을 수 있어요.</p>
+          <p class="en-only">For now everyone walks as Simdeok. Soon you’ll be able to choose a companion at the gate: the fox monk, or the cat, deer, turtle and sparrow friends.</p>
+          <span class="badge"><span class="ko-only">준비 중</span><span class="en-only">Coming soon</span></span>
+        </div>
+      </div>
+      <div class="soon">
+        <span class="ko-only">도반 고르기<small>준비 중</small></span><span class="en-only">Choose your companion<small>soon</small></span>
+        <span class="ko-only">연등 마당<small>준비 중</small></span><span class="en-only">Lantern Court<small>soon</small></span>
+        <span class="ko-only">찻방<small>준비 중</small></span><span class="en-only">Tea Room<small>soon</small></span>
+        <span class="ko-only">연등 달기 · 기와쓰기<small>준비 중</small></span><span class="en-only">Hanging a lantern · roof-tile wishes<small>soon</small></span>
+      </div>
+    </div>
+  </section>
+
+  </div>
+
+  <!-- 마지막 권유 -->
+  <section class="cta">
+    <div class="wrap">
+      <img src="assets/mindon-mark-gold.svg" alt="" width="88" height="88">
+      <h2 class="ko-only">지금, 마음을 켜 볼까요</h2>
+      <h2 class="en-only">Ready to turn your mind on?</h2>
+      <p class="ko-only">로그인 없이 · 무료 · 폰과 PC 모두</p>
+      <p class="en-only">No sign-up · Free · Phone &amp; PC</p>
+      <a class="btn btn-gold enter" href="https://mindon.link/"><span class="ko-only">마음온 들어가기</span><span class="en-only">Enter MindOn</span><span aria-hidden="true">→</span></a>
+      <p class="live" id="live" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="care ko-only">마음온은 의료·심리 치료를 대신하지 않습니다. 힘들 땐 혼자 견디지 말고 연락해 주세요 — <a href="tel:109">109</a> 자살예방상담 · <a href="tel:15770199">1577-0199</a> 정신건강위기상담 (24시간)</p>
+    <p class="care en-only">MindOn does not replace medical or psychological care. If you are struggling, please reach out — in Korea call <a href="tel:109">109</a> (suicide prevention) or <a href="tel:15770199">1577-0199</a> (mental health crisis line), 24 hours. Elsewhere, contact your local emergency or crisis service.</p>
+    <nav aria-label="안내 · Links">
+      <a href="https://mindon.link/privacy.html"><span class="ko-only">개인정보처리방침</span><span class="en-only">Privacy</span></a>
+      <a href="https://mindon.link/terms.html"><span class="ko-only">이용약관</span><span class="en-only">Terms</span></a>
+      <a href="https://mindon.link/credits.html"><span class="ko-only">출처</span><span class="en-only">Credits</span></a>
+      <a href="mailto:atone@kakao.com"><span class="ko-only">문의</span><span class="en-only">Contact</span> atone@kakao.com</a>
+    </nav>
+    <p class="ko-only">운영 에이톤 (대표 임지현) · 서비스 주소 <a href="https://mindon.link/">mindon.link</a></p>
+    <p class="en-only">Operated by A-Tone (에이톤), representative 임지현 · Service at <a href="https://mindon.link/">mindon.link</a></p>
+    <p class="credit ko-only">화면 속 부처님(「철제여래좌상」 3D 데이터)과 불화(「아미타극락회도」): 국립중앙박물관 · 공공누리 제1유형. 기본 염불 영인스님 「관세음보살정근」은 허락을 받아 서비스 안에서만 씁니다. 글꼴 Gowun Batang · Gowun Dodum (SIL OFL). 이 페이지는 쿠키나 방문 분석을 쓰지 않습니다.</p>
+    <p class="credit en-only">Buddha (3D data of the “Iron Seated Buddha”) and altar painting (“Amitabha Paradise”) shown in screenshots: National Museum of Korea · KOGL Type 1. The default chant, Venerable Youngin’s “Gwanseeum Bosal Jeonggeun,” is used with permission inside the service only. Fonts: Gowun Batang · Gowun Dodum (SIL OFL). This page uses no cookies or visitor analytics.</p>
+    <p>© 2026 MindOn</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  function setLang(l){
+    root.dataset.lang=l; root.lang=l;
+    document.querySelectorAll('[data-set-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.setLang===l))});
+    // 서비스로 갈 때 언어를 넘김
+    document.querySelectorAll('a.enter').forEach(function(a){a.href='https://mindon.link/?lang='+l});
+    try{localStorage.setItem('mindontemple.lang',l)}catch(e){}
+    showLive();
+  }
+  var saved=null; try{saved=localStorage.getItem('mindontemple.lang')}catch(e){}
+  var q=new URLSearchParams(location.search).get('lang');
+  var first=q||saved||((navigator.language||'ko').toLowerCase().indexOf('ko')===0?'ko':'en');
+  document.querySelectorAll('[data-set-lang]').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.setLang)})});
+
+  // 머리 막대: 첫 화면을 지나면 먹 패널
+  var header=document.getElementById('top');
+  function onScroll(){header.classList.toggle('solid',scrollY>40)}
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  // 지금 경내에 있는 사람 (mindon.link/stats, 15초 캐시)
+  var live=document.getElementById('live'), online=null;
+  function showLive(){
+    if(online===null){live.textContent='';return}
+    var ko=root.dataset.lang==='ko';
+    if(online>0){
+      live.innerHTML='<i aria-hidden="true"></i>'+(ko?'지금 '+online+'명이 경내에 있어요':(online===1?'1 person is on the grounds now':online+' people are on the grounds now'));
+    }else{
+      live.textContent=ko?'지금은 조용한 시간이에요':'A quiet hour on the grounds';
+    }
+  }
+  function poll(){
+    fetch('https://mindon.link/stats',{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(d){
+      if(d&&typeof d.online_now==='number'){online=d.online_now;showLive()}
+    }).catch(function(){});
+  }
+  setLang(first);
+  poll(); setInterval(function(){if(!document.hidden)poll()},30000);
+})();
+</script>
+</body>
+</html>
