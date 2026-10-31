@@ -12,6 +12,7 @@
 | `silsangsa-yeombul-moktak.mp3` | 산_내변산 실상사_염불과 목탁, 새와 매미 (2:13) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372600&menuNo=200020 |
 | `seonunsa-yeombul-spring.mp3` | 산_선운산 선운사_새, 샘물, 염불, 목탁 (3:59) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372493&menuNo=200020 |
 | `seonunsa-evening-bell.mp3` | 산_선운산 선운사_저녁예불, 새소리, 범종, 목어, 운판, 목탁 (1:39) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372495&menuNo=200020 |
+| `baekyangsa-yeombul.mp3` | 자연의소리_내장산백양사염불소리 (5:00 영상) — 소리만 떼어 앞 인트로 음악(6.9초)을 빼고 바람 소리를 250Hz 아래로 깎음, 모노 96kbps, 4:53 (2026-10-31) | 국립공원공단 · 공공데이터포털 | 공공누리 제1유형 (출처표시) | https://www.data.go.kr/data/15076137/fileData.do |
 | `nature-birds.mp3` | 논밭_새_산촌 논다랑이_바람, 무당개구리, 멧비둘기, 물까치 (80초 발췌) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372549&menuNo=200020 |
 | `nature-cicada.mp3` | 산_치악산_영원산성길_오후_공간음_숲의 소요산매미와 계류 (80초 발췌) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372523&menuNo=200020 |
 | `nature-summer-night.mp3` | 산_방곡계곡_여름밤 바람소리, 청개구리, 풀벌레 (80초 발췌) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372543&menuNo=200020 |
