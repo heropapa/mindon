@@ -201,6 +201,11 @@
     transition: opacity 1.2s ease;
   }
   #gate.leaving { opacity: 0; pointer-events: none; }
+  /* 입장 음악 버튼: 브라우저가 소리를 막아 둔 동안은 금빛으로 은은하게 숨 쉼 */
+  .gate-snd { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
+  .gate-snd.hint { color: var(--gold); animation: gateSnd 1.8s ease-in-out infinite; }
+  @keyframes gateSnd { 50% { box-shadow: 0 0 0 7px rgba(215, 178, 91, 0.22); } }
+  @media (prefers-reduced-motion: reduce) { .gate-snd.hint { animation: none; } }
   .gate-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; max-width: 420px; margin: auto; }
   .hyeonpan {
     /* 현판: 검은 판 위 금빛 글씨, 단청 테두리 */
@@ -404,6 +409,7 @@
 
 <!-- 입장 -->
 <div id="gate">
+  <button class="round pnl gate-snd" id="gateSnd" type="button" aria-pressed="false" aria-label="입장 음악 켜고 끄기 · Intro music on/off"></button>
   <div class="gate-inner">
     <h1 class="gate-name">마음온</h1>
     <p class="gate-tag" data-i="tagline"></p>
@@ -962,13 +968,13 @@ const Snd = {
   shots: {},
   loadShots() {
     if (!this.ctx || this.shotsLoading) return; this.shotsLoading = true;
-    [['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b'], ['notify', 'audio/notify-moktak.mp3']].forEach(([k, f]) =>
+    [['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b']].forEach(([k, f]) =>
       fetch(f).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => { this.shots[k] = buf; }).catch(() => {}));
   },
   shot(k, gain) {
     if (!this.ok()) return;
     const buf = this.shots[k];
-    if (!buf) { if (k !== 'notify') this.bell(false); return; } // 아직 못 받았으면 죽비는 종으로 대신, 알림은 조용히
+    if (!buf) { this.bell(false); return; } // 아직 못 받았으면 종으로 대신
     const src = this.ctx.createBufferSource(), g = this.ctx.createGain(); g.gain.value = gain || 0.9;
     src.buffer = buf; src.connect(g); g.connect(this.fx); src.start();
   },
@@ -1115,13 +1121,31 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) BG.hi
    '마음 켜기'를 누르면 4초 동안 줄어들며 경내 소리로 넘어가고, '나가기'로 돌아오면 다시 틂. */
 const Intro = {
   el: null, g: null, stopT: 0,
+  want: (() => { try { return localStorage.getItem('maumon.intro') !== 'off'; } catch (e) { return true; } })(),   // 끄면 기기에 기억
+  playing() { return !!(this.el && !this.el.paused); },
   play() {
-    if (entered) return null;
-    if (!this.el) { this.el = new Audio('audio/intro-loop.mp3'); this.el.loop = true; this.el.volume = 0.8; }
+    if (entered || !this.want) return null;
+    if (!this.el) {
+      this.el = new Audio('audio/intro-loop.mp3'); this.el.loop = true; this.el.volume = 0.8;
+      ['playing', 'pause'].forEach(t => this.el.addEventListener(t, () => this.ui()));
+    }
     clearTimeout(this.stopT);
     if (this.g && Snd.ctx) { const t = Snd.ctx.currentTime; this.g.gain.cancelScheduledValues(t); this.g.gain.setValueAtTime(1, t); }
     else this.el.volume = 0.8;
-    return this.el.play();
+    const p = this.el.play(); this.ui();
+    if (p && p.then) p.then(() => this.ui(), () => this.ui());
+    return p;
+  },
+  toggle() {                                         // 입장 화면 오른쪽 위 소리 버튼
+    if (this.playing()) { this.want = false; this.el.pause(); }
+    else { this.want = true; const p = this.play(); if (p && p.catch) p.catch(() => {}); }
+    try { localStorage.setItem('maumon.intro', this.want ? 'on' : 'off'); } catch (e) { /* 저장 불가 */ }
+    this.ui();
+  },
+  ui() {
+    const b = document.getElementById('gateSnd'); if (!b) return;
+    const on = this.playing(); b.innerHTML = svg(on ? 'spk' : 'spkOff'); b.setAttribute('aria-pressed', String(on));
+    b.classList.toggle('hint', !on && this.want);    // 막혀 있으면 금빛으로 눌러 달라고
   },
   fadeOut() {
     if (!this.el || this.el.paused) return;
@@ -2455,7 +2479,7 @@ const News = {
     }
     const el = $('news'); el.querySelector('.news-ic').innerHTML = svg(first.k === 'bow' ? 'bow' : 'hap');
     el.querySelector('span').textContent = msg; el.classList.add('show'); this.busy = true;
-    if (first.self == null) Snd.shot('notify', 0.8);   // 다른 분 소식엔 짧고 작은 목탁 (본부장 제공 알림 소리)
+    if (first.self == null) Snd.chime();   // 다른 분 소식엔 맑은 풍경 한 번 (합성음 — 2026-10-31 본부장 '목탁은 무겁고 이게 더 은은함')
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => { this.busy = false; this.pump(); }, 700); }, first.k === 'bow' ? 5000 : 3600);
   },
 };
@@ -2731,10 +2755,18 @@ if (WS_PATH) {
 
 // 입장 음악: 바로 틀어 보고(데스크톱은 될 때가 있음), 막히면 입장 화면을 처음 누르거나 키를 칠 때
 (function introKick() {
-  const tryPlay = () => { const p = Intro.play(); if (p && p.catch) p.catch(() => {}); };
-  const first = () => { removeEventListener('pointerdown', first, true); removeEventListener('keydown', first, true); tryPlay(); };
-  addEventListener('pointerdown', first, true); addEventListener('keydown', first, true);   // 막혀 있으면 첫 터치·키에서 (이미 나오고 있으면 그대로)
-  tryPlay();
+  // 브라우저마다 소리를 열어 주는 동작이 달라서(터치는 손 뗄 때·클릭, 마우스는 누를 때) 여러 개를 듣고, 실제로 나오면 그만 들음
+  const EV = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
+  const off = () => EV.forEach(t => removeEventListener(t, kick, true));
+  const kick = e => {
+    if (entered || !Intro.want || Intro.playing()) { off(); return; }
+    if (e && e.target && e.target.closest && e.target.closest('#gateSnd')) return;   // 소리 버튼은 따로 처리
+    const p = Intro.play(); if (p && p.then) p.then(off, () => {});                 // 막히면 다음 동작에서 다시
+  };
+  EV.forEach(t => addEventListener(t, kick, true));
+  kick();
+  Intro.ui();
+  $('gateSnd').addEventListener('click', () => Intro.toggle());
 })();
 applyTod();
 requestAnimationFrame(frame);
