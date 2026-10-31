@@ -10,7 +10,8 @@
 | `characters/` | 심덕이와 도반 친구들 GLB (원본 `maumon-<species>.glb`, 라이트 `-lite.glb`), 렌더, Blender 소스 |
 | `loader/` | `duck-glb.js` (three.js r128 로더·동작 제어), `viewer.html` (확인용 뷰어), `duck.js` (도형 폴백) |
 | `docs/` | 디자인 시스템 브랜드북, 경내 아트 디렉션, **모델링 규격서**, 핸드오프 메모 |
-| `site/` | 캐릭터 시트(index.html)와 규격서(spec.html) 웹페이지 |
+| `index.html` · `characters.html` · `spec.html` | 작업자 안내문 · 캐릭터 시트/뷰어 · 모델링 규격서 (GitHub Pages: https://heropapa.github.io/maumon-assets/) |
+| `site/` | 웹페이지가 쓰는 렌더 이미지 |
 
 ## 모델링 작업자는 먼저
 1. `docs/모델링_규격서.md` 를 읽는다 (노드 이름·피벗·생김새·용량·검수 체크리스트).
