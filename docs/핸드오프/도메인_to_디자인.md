@@ -7,7 +7,7 @@
 | 용도 | 주소 | 비고 |
 |---|---|---|
 | 서비스 (3D 명상 사찰) | **https://mindon.link** | 운영 중. Cloudflare Worker `maumon` |
-| 소개 홈페이지 | **https://mindontemple.com** | 준비 중 (배포 전). 열리기 전에는 링크를 걸지 않거나 "준비 중"으로 표시 |
+| 소개 홈페이지 | **https://mindontemple.com** | **바로 공개** (본부장 지시 2026-10-31) — 소개페이지 세션이 배포 중. 안내문엔 "준비 중" 표시 없이 링크 |
 | 작업자 문서 (안내문·규격서·캐릭터 시트) | **https://heropapa.github.io/mindon/** | **그대로 씀.** `docs.mindon.link` 같은 하위 도메인은 붙이지 않음 (본부장 결정) |
 
 ## 배포 스크립트 경로 확인
