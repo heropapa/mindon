@@ -2064,6 +2064,34 @@ function holdButton(btn, ms, fn) {
 /* ───────────── 연잎 명상 ───────────── */
 const breath = document.getElementById('breath'), orb = document.getElementById('orb');
 const med = { on: false, end: 0, start: 0, mins: 0, lock: null };
+/* 숨 소리 (2026-10-31 본부장 '눈을 감고 할 수 있으니 숨에 맞춰 작은 소리로'): 숨이 바뀔 때마다 아주 작은 방울 소리
+   — 들이쉴 때 맑고 높게, 멈출 때 아주 작게, 내쉴 때 낮고 부드럽게. 소리 장치에 2분 앞까지 미리 예약해서
+   화면이 꺼지거나 그림이 멈춰도 숨과 어긋나지 않음(절하기의 죽비와 같은 방식). 크기는 소리 패널 '종·목탁'을 따름 */
+const BREATH_CUES = [[0, 880, 0.03], [4, 660, 0.014], [8, 523, 0.03]];   // [숨 주기 안 초, 높이 Hz, 크기] — 주기 14초(4·4·6)
+const MedAudio = {
+  nodes: [], next: 0, timer: 0,
+  start() { this.stop(); this.fill(); this.timer = setInterval(() => this.fill(), 20000); },
+  stop() { clearInterval(this.timer); this.timer = 0; this.nodes.forEach(o => { try { o.stop(); } catch (e) { /* 이미 끝남 */ } }); this.nodes = []; this.next = 0; },
+  cue(when, f, a) {
+    const c = Snd.ctx;
+    [[1, a, 2.2], [2.76, a * 0.25, 0.9]].forEach(([r, amp, dcy]) => {
+      const o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.value = f * r;
+      g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(amp, when + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, when + dcy);
+      o.connect(g); g.connect(Snd.fx); o.start(when); o.stop(when + dcy + 0.05); this.nodes.push(o);
+      o.onended = () => { const i = this.nodes.indexOf(o); if (i >= 0) this.nodes.splice(i, 1); };
+    });
+  },
+  fill() {
+    const c = Snd.ctx; if (!med.on || !c || c.state !== 'running' || !Snd.on) return;
+    const nowP = performance.now(), nowA = c.currentTime, horizon = Math.min(med.end - 500, nowP + 120000);
+    for (let i = this.next; ; i++) {                 // i 번째 소리 = 주기 floor(i/3) 의 (i%3) 번째 숨
+      const [off, f, a] = BREATH_CUES[i % 3], at = med.start + (Math.floor(i / 3) * 14 + off) * 1000;
+      if (at > horizon) { this.next = i; break; }
+      if (at >= nowP - 50) this.cue(nowA + Math.max(0, at - nowP) / 1000, f, a);
+    }
+  },
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden && med.on) setTimeout(() => { MedAudio.stop(); const c = Math.floor((performance.now() - med.start) / 1000 / 14); MedAudio.next = c * 3; MedAudio.fill(); MedAudio.timer = setInterval(() => MedAudio.fill(), 20000); }, 300); });
 function startMed(mins) {
   med.on = true; med.mins = mins; med.start = performance.now(); med.end = med.start + mins * 60000;
   clearTimeout(med.timer); med.timer = setTimeout(() => { if (med.on) endMed(true); }, mins * 60000);   // 화면이 꺼져(백그라운드 재생) 그림이 멈춰도 제때 끝냄
@@ -2072,9 +2100,10 @@ function startMed(mins) {
   Snd.bell(false);
   if (Snd.wind && Snd.ctx) Snd.wind.gain.setTargetAtTime(0.025, Snd.ctx.currentTime, 2);
   if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { med.lock = l; }).catch(() => {});
+  MedAudio.start();                                  // 숨에 맞춘 작은 소리
 }
 function endMed(done) {
-  clearTimeout(med.timer);
+  clearTimeout(med.timer); MedAudio.stop();
   if (!med.on) return;
   med.on = false; breath.hidden = true;
   const m = Math.round((performance.now() - med.start) / 60000);
@@ -2860,6 +2889,6 @@ applyTod();
 requestAnimationFrame(frame);
 
 // 테스트·디버그용
-window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleBowRun, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, startBows, stopBows, bowCountNow, BowAudio, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleBowRun, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, startBows, stopBows, bowCountNow, BowAudio, MedAudio, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
 })();
 </script>
