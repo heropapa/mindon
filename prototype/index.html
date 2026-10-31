@@ -969,7 +969,7 @@ const Snd = {
   shots: {},
   loadShots() {
     if (!this.ctx || this.shotsLoading) return; this.shotsLoading = true;
-    [['moktak', 'audio/moktak-strike.mp3'], ['jukbi1', 'audio/jukbi-1.mp3?v=1031'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031']].forEach(([k, f]) =>
+    [['moktak', 'audio/moktak-strike.mp3'], ['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b']].forEach(([k, f]) =>
       fetch(f).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => { this.shots[k] = buf; }).catch(() => {}));
   },
   shot(k, gain) {

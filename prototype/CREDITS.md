@@ -19,7 +19,7 @@
 | `nature-winter-wind.mp3` | 겨울바람2 (80초 발췌) | 김용배 · 한국저작권위원회 | CC BY | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13252806&menuNo=200020 |
 | `nature-stream.mp3` | 산_치악산_영원산성길계곡_오후_시냇물 (80초 발췌) | JICA · (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372446&menuNo=200020 |
 | `moktak-strike.mp3` (절할 때 한 번), `moktak-rhythm.mp3` (소리 듣기 «목탁», 36초 반복) | 전통사물_목탁_ver.2_치다_연속_중간 — 한 번 친 소리와 36초 구간을 잘라냄 | (재)전주정보문화산업진흥원 | 공공누리 제1유형 (출처표시) | https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13287376&menuNo=200020 |
-| `jukbi-1.mp3`, `jukbi-3.mp3` | 죽비 한 번(108배 시작)·세 번(108배 끝) — 녹음 파일을 앞 무음만 다듬고 모노로 (2026-10-31 교체, 예전 합성음 대신) | 마음온 (본부장 제공 녹음) | 마음온 사용 | — |
+| `jukbi-1.mp3`, `jukbi-3.mp3` | 죽비 한 번(108배 시작)·세 번(108배 끝) — 공간감(울림)을 살린 스테레오 녹음 — 앞 무음만 다듬음 (2026-10-31 교체, 예전 합성음 대신) | 마음온 (본부장 제공 녹음) | 마음온 사용 | — |
 
 ## 이미지 (`img/`)
 
