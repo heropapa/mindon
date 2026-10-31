@@ -32,6 +32,7 @@
 | 파일 | 저작물 | 저작자 · 출처 | 이용조건 | 원문 |
 |---|---|---|---|---|
 | `mindon-duck.gltf.json`, `mindon-duck-lite.gltf.json`, `mindon-duck-far.gltf.json` | 도반 오리 (Blender로 모델링, gltfpack으로 압축) | 마음온 | 자체 제작 | — |
+| `../props/mindon-pungyeong.gltf.json` | 불이문 처마 풍경 (청동 종·물고기 바람판, Blender로 모델링) | 마음온 | 자체 제작 | — |
 
 ## 글꼴·코드
 

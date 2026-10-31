@@ -146,6 +146,7 @@
   }
   .act svg { width: 24px; height: 24px; position: relative; }
   .act span { position: relative; text-align: center; }
+  .act span small { display: block; font-size: 10px; font-weight: 400; opacity: 0.75; white-space: nowrap; }   /* 절하기 고르기: 걸리는 시간 */
   .act.main svg, .act.on svg, .act.on span { color: var(--gold); }
   .act .fill { position: absolute; inset: 0; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); opacity: 0.3; }
   .count { align-self: flex-end; width: 168px; display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; }
@@ -396,9 +397,10 @@
 <!-- 하단: 장소 고르기(펼침) · 진행 카운트 · 조이스틱 · 행동 바 -->
 <div class="bottom" id="bottom" hidden>
   <nav class="places-pop pnl" id="placesPop" hidden aria-label="장소"></nav>
-  <section class="count pnl" id="bowCount" hidden aria-label="108배">
-    <div class="n"><span id="bowN">0</span> / 108</div>
+  <section class="count pnl" id="bowCount" hidden aria-label="절하기 · Bows">
+    <div class="n"><span id="bowN">0</span> / <span id="bowG">108</span></div>
     <div class="track"><i id="bowBar"></i></div>
+    <small id="bowLeft"></small>
     <small id="bowTotal"></small>
   </section>
   <div class="joy" id="joy" hidden aria-hidden="true"><i id="joyKnob"></i><button class="joy-grip" id="joyGrip" type="button" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button></div>
@@ -734,17 +736,20 @@ const STR = {
     proto: '프로토타입 · 0단계 그레이박스',
     place: { gate: '불이문', path: '연못길', hall: '고요당', pond: '연못', lantern: '연등 마당', tea: '찻방' },
     soon: '준비 중', guide: '안내 따라 걷기', guideStop: '안내 멈추기',
-    places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '108배', sit: '명상', min: '분',
+    places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '절하기', sit: '명상', min: '분',
     leafMoved: '다른 분과 같은 연잎이라 옆자리로 옮겨 앉았어요', leavesFull: '연잎이 모두 차서 물가에 앉았어요',
     pondLook: '화면을 끌면 둘러보고, 두 손가락으로 가까이·멀리 볼 수 있어요',
     stand: '일어나기', view: '보기', leave: '나가기', menu: '메뉴', quiet: '조용한 시간', recAll: n => `모두 ${n}배`,
     chants: { yeongin: '관음정근' }, chantSrc: '염불: ',
-    bowTitle: '108배', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
-    bowHint: '시작을 누르면 천천히 108번 절합니다. 끝나면 죽비를 세 번 칩니다. 화면을 끌면 둘러볼 수 있어요.',
+    bowTitle: '절하기', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
+    bowHint: '108배·3000배·1만배 중에 고르면 천천히 절합니다. 절마다 죽비가 한 번, 다 마치면 세 번 울려요. 화면을 꺼도 이어집니다.',
+    bowGoal: n => (n >= 10000 ? `${n / 10000}만배` : `${n}배`),
+    bowDur: sec => { const m = Math.round(sec / 60); if (m < 60) return `약 ${Math.max(1, m)}분`; const h = Math.floor(m / 60), r = Math.round((m % 60) / 10) * 10; return r ? `약 ${h}시간 ${r}분` : `약 ${h}시간`; },
+    bowLeft: d => `남은 시간 ${d}`,
     findSeatShort: '빈 방석 가까이 가 보세요',
-    findSeat: '빈 방석 가까이 가면 108배를 할 수 있어요',
+    findSeat: '빈 방석 가까이 가면 절할 수 있어요',
     bowToday: (t, a) => `오늘 ${t}배 · 모두 ${a}배`,
-    bowDone: '108배를 마쳤습니다. 수고하셨습니다.',
+    bowDone: g => `${g}를 마쳤습니다. 수고하셨습니다.`,
     medStop: '그만하기', medTitle: '연잎 명상', medDesc: '들숨 4초, 멈춤 4초, 날숨 6초. 시간을 고르면 시작합니다.',
     inhale: '들이쉬고', holdB: '멈추고', exhale: '내쉬고',
     medLeft: s => `남은 시간 ${s}`, medDone: m => `${m}분 동안 숨을 골랐습니다.`,
@@ -772,17 +777,20 @@ const STR = {
     proto: 'Prototype · stage 0 graybox',
     place: { gate: 'Gate of Not-Two', path: 'Pond Path', hall: 'Hall of Stillness', pond: 'Lotus Pond', lantern: 'Lantern Court', tea: 'Tea Room' },
     soon: 'soon', guide: 'Guided walk', guideStop: 'Stop guide',
-    places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: '108 bows', sit: 'Meditate', min: 'min',
+    places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: 'Bow', sit: 'Meditate', min: 'min',
     leafMoved: 'Someone took this leaf at the same moment — you moved to the next one', leavesFull: 'All lotus leaves are taken — you are sitting by the water',
     pondLook: 'Drag to look around · pinch or scroll to move closer or farther',
     stand: 'Stand up', view: 'View', leave: 'Leave', menu: 'Menu', quiet: 'Quiet time', recAll: n => `${n} bows in all`,
     chants: { yeongin: 'Gwaneum' }, chantSrc: 'Chant: ',
-    bowTitle: '108 bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
-    bowHint: 'Press Begin to make 108 slow bows. Three claps of the jukbi mark the end. Drag to look around.',
+    bowTitle: 'Bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
+    bowHint: 'Pick 108, 3,000 or 10,000 bows. The jukbi claps once for each bow and three times at the end. It keeps going with the screen off.',
+    bowGoal: n => `${n.toLocaleString('en-US')} bows`,
+    bowDur: sec => { const m = Math.round(sec / 60); if (m < 60) return `about ${Math.max(1, m)} min`; const h = Math.floor(m / 60), r = Math.round((m % 60) / 10) * 10; return r ? `about ${h} h ${r} min` : `about ${h} h`; },
+    bowLeft: d => `${d} left`,
     findSeatShort: 'Walk up to an empty cushion',
-    findSeat: 'Walk up to an empty cushion to begin 108 bows',
+    findSeat: 'Walk up to an empty cushion to bow',
     bowToday: (t, a) => `${t} today · ${a} in all`,
-    bowDone: 'You finished 108 bows. Rest a moment.',
+    bowDone: g => `You finished ${g}. Rest a moment.`,
     medStop: 'End', medTitle: 'Lotus leaf breathing', medDesc: 'In for 4, hold for 4, out for 6. Pick a length to begin.',
     inhale: 'Breathe in', holdB: 'Hold', exhale: 'Breathe out',
     medLeft: s => `${s} left`, medDone: m => `You breathed quietly for ${m} min.`,
@@ -1334,6 +1342,16 @@ const eaveLamp = (x, y, z, parent) => {
 };
 [-0.8, -0.4, 0.4, 0.8].forEach(k => eaveLamp(k * H.half, FL + H.height + 0.1, H.front + 2.2, hall));
 [-3, 3].forEach(x => eaveLamp(x, 3.9, 0.9, gate)); // 불이문 처마 등불
+// 불이문 처마 풍경 (2026-10-31 디자인 세션 props/mindon-pungyeong.glb — 본부장 '풍경 소리가 나니 움직이는 풍경이 있어야')
+// 처마 네 귀 밑에 걸고(맨 위 고리가 피벗) 바람에 은은히 흔들림 — 종은 느리게 조금, 물고기 바람판은 빠르게 더 크게. 소리는 gate-chime.mp3
+const PUNG = [];
+if (THREE.GLTFLoader) maumGLTF.newLoader().load('props/mindon-pungyeong.gltf.json', g => {
+  g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; if (o.material && o.material.metalness > 0.5) o.material.metalness = 0.45; } }); // 환경 반사가 없어 금속이 검게 보이지 않게
+  [[-3.7, 1.15], [3.7, 1.15], [-3.7, -1.15], [3.7, -1.15]].forEach(([x, z], i) => {
+    const r = i === 0 ? g.scene : g.scene.clone(true); r.position.set(x, 4.9, z); gate.add(r);
+    PUNG.push({ bell: r.getObjectByName('pung_bell'), fish: r.getObjectByName('pung_fish'), ph: i * 1.7 });
+  });
+}, undefined, () => {});
 const hp = plaque('고요당', 'HALL OF STILLNESS', 7.2, 2.4); hp.position.set(0, FL + H.height - 1.3, H.front + 0.2); hall.add(hp); plaques.push(hp);
 // 좌복: 11줄 × 10열 (2026-10-30 더 많이)
 const CUSH = M(0x6b7a94), CUSH_EDGE = M(0x515d74); // 아트 디렉션 cushion
@@ -1623,7 +1641,7 @@ function applyTod() {
 const S = {
   pos: new THREE.Vector3(0, 0, 40), yaw: 0, pitch: 0.02, eye: 1.6, zoom: 1,
   target: null, queue: [], speed: 2.4, mode: 'walk', guided: false, pause: 0,
-  bow: 0, bowT: -1, done108: 0, zone: 'gate', userLook: 0, autoBow: false, bowWait: 0, nearCushion: -1, seat: -1,
+  bow: 0, bowT: -1, done108: 0, zone: 'gate', userLook: 0, bowGoal: 0, bowRun: null, nearCushion: -1, seat: -1,
 };
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 // 3인칭: 나 = 도반 오리. face 는 오리가 바라보는 방향(카메라 yaw 와 같은 규칙: 앞 = (-sin, -cos))
@@ -1721,7 +1739,7 @@ function standUp() {
   if (S.mode === 'walk') return;
   endMed(false); Snd.stop();
   const from = S.mode;
-  S.mode = 'walk'; S.pitch = 0.02; S.bowT = -1; S.autoBow = false; D.override = null; S.yaw = D.face; CAM.snap = true;
+  S.mode = 'walk'; S.pitch = 0.02; S.bowT = -1; stopBows(true); D.override = null; S.yaw = D.face; CAM.snap = true;
   if (from === 'pond') {                                   // 앉았던 자리 바로 바깥 물가에 일어섬 (모두 한 점에 모이지 않게)
     const d = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z) || 1, r = Math.max(BANK_R, d + 1.0);
     S.pos.set(POND.x + (S.pos.x - POND.x) / d * r, 0, POND.z + (S.pos.z - POND.z) / d * r); S.pondSeat = null;
@@ -1733,7 +1751,7 @@ function sitHall(panel) {
   stopGuide(); S.queue = []; S.target = null;
   const c = CUSHIONS[S.nearCushion >= 0 ? S.nearCushion : FRONT_SEAT];
   S.mode = 'hall'; S.seat = CUSHIONS.indexOf(c); S.pos.set(c.x, 0, c.z); D.face = 0; S.yaw = 0;
-  seatRing.visible = false; S.autoBow = false; toast(T().bowHint, 4200);
+  seatRing.visible = false; stopBows(true); toast(T().bowHint, 5200);
   Object.assign(BOWCAM, BOWCAM.def); if (c.x > 9) BOWCAM.yaw = -BOWCAM.def.yaw; // 벽 쪽 방석이면 반대편에서
   openPanel(panel);
 }
@@ -1942,37 +1960,78 @@ function zoneOf(p) {
 }
 
 /* ───────────── 108배 ───────────── */
-function paintMala() { // 진행 카운트 "53 / 108" + 금 막대
-  document.getElementById('bowN').textContent = S.bow;
-  document.getElementById('bowBar').style.width = (S.bow / 108 * 100).toFixed(1) + '%';
-  document.getElementById('bowCount').classList.toggle('done', S.bow >= 108);
-  document.getElementById('bowTotal').textContent = T().bowToday(day().bows, rec.total);
+function paintMala() { // 진행 카운트 "53 / 108" + 금 막대 + 남은 시간
+  const t = T(), goal = S.bowGoal || 108;
+  document.getElementById('bowN').textContent = S.bow.toLocaleString('en-US');
+  document.getElementById('bowG').textContent = goal.toLocaleString('en-US');
+  document.getElementById('bowBar').style.width = (S.bow / goal * 100).toFixed(2) + '%';
+  document.getElementById('bowCount').classList.toggle('done', !!S.bowGoal && S.bow >= goal);
+  document.getElementById('bowLeft').textContent = S.bowRun ? t.bowLeft(t.bowDur(Math.max(0, bowEndAt() - performance.now()) / 1000)) : '';
+  document.getElementById('bowTotal').textContent = t.bowToday(day().bows, rec.total);
 }
-const BOWCAM = { yaw: 0.67, el: 0.42, dist: 4.2, def: { yaw: 0.67, el: 0.42, dist: 4.2 } }; // 108배 구도 (오리 옆 뒤) — 끌어서 돌려 볼 수 있음
-const BOW_SEC = 6; // 큰절 한 번 6초 — 천천히 (108배 약 11분)
-function doBow() {
-  if (S.bowT >= 0) return; // 한 번 절하는 동안은 무시
-  S.bowT = 0; D.override = 'bow'; duck.setPose('bow');
-  Snd.shot('jukbi1');                               // 절마다 죽비 한 번, 108번째가 끝나면 세 번 (2026-10-31 본부장)
-  S.bow = Math.min(108, S.bow + 1);
-  day().bows++; rec.total++; saveRec();
-  paintMala(); renderRec();
+const BOWCAM = { yaw: 0.67, el: 0.42, dist: 4.2, def: { yaw: 0.67, el: 0.42, dist: 4.2 } }; // 절하기 구도 (오리 옆 뒤) — 끌어서 돌려 볼 수 있음
+const BOW_SEC = 6;                 // 큰절 한 번 6초 — 천천히
+const BOW_PER = BOW_SEC + 0.6;     // 다음 절까지 0.6초 숨 고르기 → 한 번에 6.6초 (108배 약 12분 · 3000배 약 5시간 30분 · 1만배 약 18시간 20분)
+const BOW_GOALS = [108, 3000, 10000];   // 2026-10-31 본부장 '절하기 → 108배·3000배·1만배'
+/* 절하기 (2026-10-31): 횟수는 시간으로 셈 — 화면이 꺼져 그림이 멈춰도(잠들기 전 틀어 두기) 돌아오면 맞는 횟수.
+   S.bowRun = { t0, base }: t0 에 base+1 번째 절이 시작, 그 뒤 6.6초마다 한 번. 죽비는 소리 장치에 3분 앞까지 미리 예약(BowAudio). */
+const bowCountNow = () => (S.bowRun ? Math.min(S.bowGoal, S.bowRun.base + Math.floor((performance.now() - S.bowRun.t0) / (BOW_PER * 1000)) + 1) : S.bow);
+const bowEndAt = () => (S.bowRun ? S.bowRun.t0 + ((S.bowGoal - S.bowRun.base - 1) * BOW_PER + BOW_SEC) * 1000 : 0);
+const BowAudio = {
+  srcs: [], next: 0, endSet: false, timer: 0,
+  start() { this.stop(); this.fill(); this.timer = setInterval(() => this.fill(), 20000); },
+  stop() { clearInterval(this.timer); this.timer = 0; this.srcs.forEach(x => { try { x.stop(); } catch (e) { /* 이미 끝남 */ } }); this.srcs = []; this.next = 0; this.endSet = false; },
+  at(buf, when, gain) { const c = Snd.ctx, src = c.createBufferSource(), g = c.createGain(); g.gain.value = gain; src.buffer = buf; src.connect(g); g.connect(Snd.fx); src.start(when); this.srcs.push(src); src.onended = () => { const i = this.srcs.indexOf(src); if (i >= 0) this.srcs.splice(i, 1); }; },
+  fill() {
+    const R = S.bowRun, c = Snd.ctx, b1 = Snd.shots.jukbi1, b3 = Snd.shots.jukbi3;
+    if (!R || !c || c.state !== 'running' || !b1) return;
+    const nowP = performance.now(), nowA = c.currentTime, PER = BOW_PER * 1000, horizon = nowP + 180000;
+    let k = Math.max(this.next, Math.ceil((nowP - R.t0 - 30) / PER));   // 이미 지난 절은 건너뜀
+    for (; R.base + k + 1 <= S.bowGoal; k++) { const at = R.t0 + k * PER; if (at > horizon) break; this.at(b1, nowA + Math.max(0, at - nowP) / 1000, 0.9); }
+    this.next = k;
+    const end = bowEndAt();
+    if (!this.endSet && b3 && end <= horizon) { this.at(b3, nowA + Math.max(0, end - nowP) / 1000, 0.9); this.endSet = true; }
+  },
+};
+// 화면이 다시 보이면 예약을 새로 (아이폰은 숨은 동안 소리 장치가 멈춰서 예약이 밀림)
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.bowRun) setTimeout(() => { BowAudio.stop(); BowAudio.fill(); BowAudio.timer = setInterval(() => BowAudio.fill(), 20000); }, 300); });
+function startBows(goal) {                          // 고르면 바로 시작
+  S.bowGoal = goal; S.bow = 0; S.bowRun = { t0: performance.now() + 400, base: 0 };
+  BowAudio.start(); renderBowBtn();
 }
-function bowDone() { // 108번째 절이 끝나면
-  S.autoBow = false; S.bowWait = 0;
-  S.done108++;                                                       // 같은 방 사람들에게 '108배를 마쳤어요' (presence c)
-  if (Room.on && Room.others.size) News.self(Room.others.size, 'bow');
-  Snd.shot('jukbi3'); toast(T().bowDone, 5000);
-  setTimeout(() => { S.bow = 0; paintMala(); renderBowBtn(); }, 5000);
+function stopBows(reset) {                          // 멈춤(reset=false) · 일어나기·나가기(reset=true)
+  if (S.bowRun) S.bow = Math.max(S.bow, bowCountNow());
+  S.bowRun = null; BowAudio.stop();
+  if (reset) { S.bow = 0; S.bowGoal = 0; }
+}
+function toggleBowRun() {                           // 잠시 멈춤 ↔ 이어서
+  if (S.bowRun) { stopBows(false); renderBowBtn(); return; }
+  if (!S.bowGoal || S.bow >= S.bowGoal) return;
+  S.bowRun = { t0: performance.now() + 400, base: S.bow }; BowAudio.start(); renderBowBtn();
+}
+function bowDone() { // 고른 횟수를 다 마치면
+  const goal = S.bowGoal, endSet = BowAudio.endSet;
+  S.bow = goal; S.bowRun = null; BowAudio.stop();
+  if (!endSet) Snd.shot('jukbi3');                 // 미리 예약 못 했으면(소리 장치가 멈춰 있었으면) 지금
+  if (goal === 108 && Room.on && Room.others.size) News.self(Room.others.size, 'bow');
+  toast(T().bowDone(T().bowGoal(goal)), 5000);
+  setTimeout(() => { if (!S.bowRun) { S.bow = 0; S.bowGoal = 0; paintMala(); renderBowBtn(); } }, 5000);
   renderBowBtn();
 }
-function renderBowBtn() { renderActions(); paintMala(); }
-function toggleAutoBow() {
-  if (S.autoBow) { S.autoBow = false; renderBowBtn(); return; }
-  if (S.bow >= 108) S.bow = 0;
-  S.autoBow = true; S.bowWait = 0.4;                // 첫 절부터 죽비가 울림
-  renderBowBtn(); paintMala();
+// 매 화면: 시간으로 센 횟수를 따라잡고(새 절이면 오리가 큰절), 108번마다 '108배를 마쳤어요' 소식(c)
+function bowTick() {
+  if (!S.bowRun || S.mode !== 'hall') return;
+  const n = bowCountNow();
+  if (n > S.bow) {
+    const add = n - S.bow, before = S.bow; S.bow = n;
+    day().bows += add; rec.total += add; saveRec();
+    S.done108 += Math.floor(n / 108) - Math.floor(before / 108);
+    S.bowT = Math.min(BOW_SEC * 0.9, ((performance.now() - S.bowRun.t0) % (BOW_PER * 1000)) / 1000); D.override = 'bow'; duck.setPose('bow');
+    paintMala(); renderRec();
+  }
+  if (S.bow >= S.bowGoal && performance.now() >= bowEndAt()) bowDone();
 }
+function renderBowBtn() { renderActions(); paintMala(); }
 
 /* ───────────── 합장 ───────────── */
 const hands = document.getElementById('hands');
@@ -2078,8 +2137,12 @@ function actionsFor(kind) {
   };
   if (kind === 'med') { add('stop', t.medStop, () => endMed(false)); return; }
   if (view === 'bowPanel') {
-    const going = S.autoBow;
-    add(going ? 'pause' : 'play', going ? t.bowPause : S.bow > 0 && S.bow < 108 ? t.bowResume : t.bowStart, toggleAutoBow, going ? 'on' : 'main').id = 'bowBtn';
+    if (!S.bowGoal) {                                // 몇 배 할지 고르기 (걸리는 시간 함께)
+      BOW_GOALS.forEach((g, i) => { const b = add('bow', t.bowGoal(g), () => startBows(g), i === 0 ? 'main' : ''); b.querySelector('span').append(el('small', null, t.bowDur(g * BOW_PER - 0.6))); });
+      add('stand', t.stand, standUp); return;
+    }
+    const going = !!S.bowRun, done = S.bow >= S.bowGoal;
+    if (!done) add(going ? 'pause' : 'play', going ? t.bowPause : t.bowResume, toggleBowRun, going ? 'on' : 'main').id = 'bowBtn';
     add('stand', t.stand, standUp); return;
   }
   if (view === 'medPanel') { [3, 5, 10].forEach(m => add('timer', `${m}${t.min}`, () => startMed(m))); add('stand', t.stand, standUp); return; }
@@ -2224,7 +2287,7 @@ function leave() {
   Room.stop();                                       // 함께 있기에서도 나감 (다시 들어오면 같은 방으로)
   if (med.on) endMed(false);
   if (S.mode !== 'walk') standUp();
-  S.autoBow = false; S.queue = []; S.target = null; stopGuide(); placesOpen = false; closeDrops();
+  stopBows(true); S.queue = []; S.target = null; stopGuide(); placesOpen = false; closeDrops();
   $('toast').classList.remove('show'); $('signboard').classList.remove('show');
   $('top').hidden = true; $('bottom').hidden = true;
   setSound(false);
@@ -2361,8 +2424,8 @@ function frame(now) {
   }
   const joyShow = entered && S.mode === 'walk' && !med.on;
   if (joyEl.hidden === joyShow) { joyEl.hidden = !joyShow; if (!joyShow) joyEnd({ pointerId: JOY.id }); }
-  if (S.bowT >= 0) { S.bowT += dt; if (S.bowT > BOW_SEC) { S.bowT = -1; D.override = null; if (S.bow >= 108) bowDone(); } }
-  else if (S.autoBow && S.mode === 'hall') { S.bowWait -= dt; if (S.bowWait <= 0) { doBow(); S.bowWait = 0.6; } } // 다음 절까지 잠깐 숨 고르기
+  bowTick();                                         // 절하기: 시간으로 센 횟수 따라잡기
+  if (S.bowT >= 0) { S.bowT += dt; if (S.bowT > BOW_SEC) { S.bowT = -1; D.override = null; } }
   // 법당 안에서 걸을 때: 빈 방석 가까이 가면 108배·듣기 버튼
   const nc = findNearCushion();
   if (nc !== S.nearCushion) { S.nearCushion = nc; if (!med.on) renderActions(); }
@@ -2417,6 +2480,8 @@ function frame(now) {
     if (z === 'hall' && S.mode === 'walk' && S.nearCushion < 0) setTimeout(() => { if (S.zone === 'hall' && S.mode === 'walk' && S.nearCushion < 0) toast(T().findSeatShort, 2600); }, 2400);
   }
 
+  // 불이문 풍경 흔들림 (props/README.md 예시 그대로, 네 개가 서로 다른 박자)
+  PUNG.forEach(q => { const t = tsec + q.ph; if (q.bell) { q.bell.rotation.x = 0.05 * Math.sin(t * 1.1); q.bell.rotation.z = 0.03 * Math.sin(t * 0.8 + 1); } if (q.fish) q.fish.rotation.z = 0.25 * Math.sin(t * 2.3) + 0.08 * Math.sin(t * 5.1); });
   // 갈 곳 표시: 걷는 동안 숨 쉬고, 도착·멈춤·앉기면 0.3초 동안 사라짐
   if (tapMark.visible) {
     const u = tapMark.userData; u.t += dt;
@@ -2794,6 +2859,6 @@ applyTod();
 requestAnimationFrame(frame);
 
 // 테스트·디버그용
-window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleBowRun, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, startBows, stopBows, bowCountNow, BowAudio, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
 })();
 </script>
