@@ -1,0 +1,16 @@
+# 마음온 소개 홈페이지 (mindontemple.com) — 정적 파일만 내는 Worker
+#   bash homepage/deploy.sh   (토큰은 클라우드 환경 변수 CLOUDFLARE_API_TOKEN, 채팅에 붙여 넣지 않음)
+# 메인 서비스 Worker `maumon`(mindon.link, prototype/·server/)과는 따로다. 이 파일로 maumon 을 건드리지 않는다.
+name = "mindontemple-site"
+compatibility_date = "2026-10-01"
+
+# deploy 할 때 Worker 커스텀 도메인으로 붙고 DNS·인증서는 자동 (mindon.link 와 같은 계정의 zone 이어야 함)
+workers_dev = true
+routes = [
+  { pattern = "mindontemple.com", custom_domain = true },
+  { pattern = "www.mindontemple.com", custom_domain = true },
+]
+
+[assets]
+directory = "./site"
+not_found_handling = "404-page"
