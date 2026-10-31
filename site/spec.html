@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>심덕이 모델링 규격서</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+  :root { --bg:#121419; --panel:rgba(17,19,25,.74); --fg:#f1eadc; --fg-dim:rgba(241,234,220,.68); --line:rgba(241,234,220,.16);
+          --gold:#d7b25b; --red:#b8432f; --green:#2f7a68; --ok:#9fbf98; --warn:#f0a04b;
+          --display:"Gowun Batang","Apple SD Gothic Neo",serif; --body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif; color-scheme:dark }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f1eadc; --panel:#faf6ee; --fg:#121419; --fg-dim:rgba(17,19,25,.62); --line:rgba(17,19,25,.16); --gold:#8a6d1f; --ok:#4f6b4a; --warn:#b45309; color-scheme:light } }
+  :root[data-theme="light"] { --bg:#f1eadc; --panel:#faf6ee; --fg:#121419; --fg-dim:rgba(17,19,25,.62); --line:rgba(17,19,25,.16); --gold:#8a6d1f; --ok:#4f6b4a; --warn:#b45309; color-scheme:light }
+  body { background:var(--bg); color:var(--fg); font-family:var(--body); font-size:15px; line-height:1.65; margin:0; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); padding-block:28px 72px }
+  main { max-width:880px; margin:0 auto }
+  h1,h2,h3 { font-family:var(--display); font-weight:700; text-wrap:balance; margin:0 }
+  h1 { font-size:32px; line-height:1.2 } h2 { font-size:22px; margin:40px 0 10px; padding-top:16px; border-top:1px solid var(--line) } h3 { font-size:16px; margin:18px 0 6px }
+  .en { font-size:12px; letter-spacing:.18em; color:var(--fg-dim); text-transform:uppercase }
+  p { margin:8px 0; max-width:70ch } .lead { color:var(--fg-dim); max-width:70ch }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; font-variant-numeric:tabular-nums } .tbl { overflow-x:auto; min-width:0 }
+  th,td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top } th { color:var(--fg-dim); font-weight:400; letter-spacing:.06em; font-size:12px }
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:1px 5px }
+  pre { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; overflow-x:auto; font-size:12.5px; line-height:1.5 } pre code { background:none; border:0; padding:0 }
+  ul,ol { padding-left:20px; margin:6px 0 } li { margin-bottom:5px }
+  .must { color:var(--gold); font-weight:700 } .ban { color:var(--warn); font-weight:700 }
+  .sw { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-1px; margin-right:6px; border:1px solid var(--line) }
+  .check li { list-style:none; position:relative; padding-left:26px } .check li::before { content:"□"; position:absolute; left:0; color:var(--gold) }
+  figure { margin:14px 0 } figcaption { font-size:12.5px; color:var(--fg-dim); margin-top:6px }
+  .diagram { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px; overflow-x:auto }
+  .note { color:var(--fg-dim); font-size:13px }
+  a { color:var(--gold) }
+</style>
+</head>
+<body>
+<main>
+  <div class="en">Maum On · Character Spec</div>
+  <h1>심덕이 모델링 규격서</h1>
+  <p class="lead">심덕이(오리)와 도반 친구들을 다른 작업자가 모델링·개선할 때 지켜야 할 기준. 어디까지 만들어야 하는지, 무엇을 건드리면 안 되는지, 납품 전에 무엇을 확인하는지를 적는다. 모든 생김새의 최종 기준은 <b>컨셉 보드 「심덕」</b>이고, 수치의 기준은 저장소의 <code>characters/character.py</code>와 현재 GLB다.</p>
+
+  <h2>1. 한 줄 요약</h2>
+  <ul>
+    <li><span class="must">보드대로</span> 생긴 2등신 피규어 톤 캐릭터를, <span class="must">정해진 뼈대 노드 이름과 피벗 위치</span>를 그대로 둔 채, <span class="must">GLB 한 파일</span>로 낸다.</li>
+    <li>동작(걷기·가부좌·연잎 숨쉬기·합장·큰절)은 모델이 아니라 로더(<code>duck-glb.js</code>)가 노드를 돌려서 만든다. 그래서 애니메이션을 넣을 필요는 없고, <b>노드 구조를 바꾸면 안 된다.</b></li>
+    <li>납품은 원본 GLB + 라이트 GLB + 렌더 4장 + 소스 파일. 뷰어에서 여섯 동작을 돌려 보고 낸다.</li>
+  </ul>
+
+  <h2>2. 단위·좌표·크기</h2>
+  <div class="tbl"><table>
+    <tr><th>항목</th><th>값</th><th>비고</th></tr>
+    <tr><td>단위</td><td>1 = 씬 유닛 (미터 아님)</td><td>경내 치수의 "1 단위 = 오리 키"는 이 모델 키 기준</td></tr>
+    <tr><td>발바닥</td><td>y = 0 (glTF) / z = 0 (Blender)</td><td>바닥에 정확히 닿게. 허공에 뜨거나 바닥 아래로 내려가지 않게</td></tr>
+    <tr><td>키</td><td>1.53 ~ 1.60 (머리 꼭대기, 깃털 제외)</td><td>시제품 카메라·충돌 크기가 이 값에 맞춰져 있다</td></tr>
+    <tr><td>머리 지름</td><td>0.88 ~ 0.93 (가장 넓은 곳)</td><td>키의 55% 이상. 2등신</td></tr>
+    <tr><td>몸(저고리) 최대 지름</td><td>0.92</td><td>머리보다 약간 좁거나 같게</td></tr>
+    <tr><td>정면</td><td>Blender +Y / glTF −Z</td><td>Blender에서 얼굴을 +Y로 두고 glTF 기본(+Y up) 내보내기. 로더가 180° 돌려 three.js +z를 보게 한다</td></tr>
+    <tr><td>원점</td><td>두 발 사이 바닥 (0,0,0)</td><td>root 노드 위치 0, 회전 0, 스케일 1</td></tr>
+    <tr><td>스케일</td><td>모든 노드 scale 1 (눈 제외)</td><td>눈 노드만 (1, 0.5, 1.25) 허용: 눈 감기에 쓴다</td></tr>
+  </table></div>
+
+  <h2>3. 뼈대: 노드 이름과 피벗 (바꾸면 안 되는 것)</h2>
+  <p>본(armature)은 쓰지 않는다. 빈 오브젝트(Empty) 계층에 메시를 자식으로 매단다. 로더는 <b>이름으로</b> 노드를 찾으므로 이름이 하나라도 다르면 그 부위가 움직이지 않는다. 메시는 반드시 아래 노드 <b>아래에</b> 있어야 한다(평평하게 나열하면 합장만 되고 큰절·가부좌가 안 된다).</p>
+  <figure class="diagram">
+    <svg viewBox="0 0 760 250" width="760" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="노드 계층도">
+      <style>.b{fill:var(--panel);stroke:var(--gold);stroke-width:1.2}.t{font:13px ui-monospace,Menlo,monospace;fill:var(--fg)}.s{font:11px var(--body);fill:var(--fg-dim)}.l{stroke:var(--fg-dim);stroke-width:1.2;fill:none}</style>
+      <rect class="b" x="330" y="12" width="100" height="30" rx="6"/><text class="t" x="380" y="32" text-anchor="middle">root</text>
+      <path class="l" d="M380 42v18"/>
+      <rect class="b" x="330" y="60" width="100" height="30" rx="6"/><text class="t" x="380" y="80" text-anchor="middle">hips</text><text class="s" x="440" y="80">(0, 0, 0) 앉을 때 내려감</text>
+      <path class="l" d="M380 90v18M380 108H160M380 108H600M160 108v18M380 108v18M600 108v18"/>
+      <rect class="b" x="110" y="126" width="100" height="30" rx="6"/><text class="t" x="160" y="146" text-anchor="middle">legL</text><text class="s" x="40" y="176">(−0.13, 0.02, 0.22)</text>
+      <rect class="b" x="330" y="126" width="100" height="30" rx="6"/><text class="t" x="380" y="146" text-anchor="middle">torso</text><text class="s" x="440" y="146">(0, 0, 0.22) 숙일 때 X회전</text>
+      <rect class="b" x="550" y="126" width="100" height="30" rx="6"/><text class="t" x="600" y="146" text-anchor="middle">legR</text><text class="s" x="660" y="146">(+0.13, 0.02, 0.22)</text>
+      <path class="l" d="M380 156v18M380 174H230M380 174H530M230 174v18M380 174v18M530 174v18"/>
+      <rect class="b" x="180" y="192" width="100" height="30" rx="6"/><text class="t" x="230" y="212" text-anchor="middle">wingL</text><text class="s" x="120" y="242">(−0.41, 0.06, 0.60) torso 기준</text>
+      <rect class="b" x="330" y="192" width="100" height="30" rx="6"/><text class="t" x="380" y="212" text-anchor="middle">neck</text><text class="s" x="345" y="242">(0, 0, 0.63) → eyeL · eyeR</text>
+      <rect class="b" x="480" y="192" width="100" height="30" rx="6"/><text class="t" x="530" y="212" text-anchor="middle">wingR</text><text class="s" x="540" y="242">(+0.41, 0.06, 0.60)</text>
+    </svg>
+    <figcaption>좌표는 Blender(Z 위) 기준, 괄호는 부모 기준 위치. glTF로 나가면 (x, z, −y)로 바뀐다.</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>노드</th><th>부모</th><th>위치 (부모 기준, Blender xyz)</th><th>아래에 매다는 메시</th><th>로더가 하는 일</th></tr>
+    <tr><td><code>root</code></td><td>—</td><td>0, 0, 0</td><td>없음</td><td>이동·회전. 소품(좌복·연잎)은 여기</td></tr>
+    <tr><td><code>hips</code></td><td>root</td><td>0, 0, 0</td><td>없음</td><td>앉기·절할 때 y를 −0.14 ~ −0.18 내림</td></tr>
+    <tr><td><code>torso</code></td><td>hips</td><td>0, 0, 0.22</td><td>저고리 몸, 깃·동정, 가방끈, 허리끈, 걸망, 속옷</td><td>절·반배 때 앞으로 숙임(최대 1.25 rad), 숨쉬기 때 y 1~3.5% 신축</td></tr>
+    <tr><td><code>neck</code></td><td>torso</td><td>0, 0, 0.63</td><td>머리, 눈, 볼, 부리/주둥이, 귀, 잔털</td><td>고개 숙임(최대 0.49 rad), 걷기 때 좌우 0.08</td></tr>
+    <tr><td><code>eyeL</code> <code>eyeR</code></td><td>neck</td><td>±0.175, 0.39, 0.25</td><td>눈알(+자식으로 반짝임)</td><td>scale.y를 줄여 눈 감기 (0.12 = 감음)</td></tr>
+    <tr><td><code>wingL</code> <code>wingR</code></td><td>torso</td><td>±0.41, 0.06, 0.60</td><td>소매, 소맷단, 손</td><td>앞으로 1.25 rad·안쪽 1.0 rad 돌려 합장. 걷기 때 흔들림</td></tr>
+    <tr><td><code>legL</code> <code>legR</code></td><td>hips</td><td>±0.13, 0.02, 0.22</td><td>다리, 발(물갈퀴·발굽·발바닥)</td><td>가부좌 때 앞으로 1.55 rad·바깥 0.9 rad 접음</td></tr>
+  </table></div>
+  <p class="note">피벗 위치를 ±0.03 이상 옮기면 합장 때 손이 안 모이거나 가부좌 때 발이 몸을 뚫는다. 옮겨야 한다면 로더의 포즈 수치도 같이 바꿔야 하니 먼저 알려 달라.</p>
+
+  <h2>4. 생김새 기준 (보드와 비교해서 볼 것)</h2>
+  <h3>4.1 머리·얼굴</h3>
+  <ul>
+    <li>완전한 구가 <span class="ban">아니다</span>. 볼이 도톰하고 위가 살짝 좁은 형태(가장 넓은 곳이 중심보다 조금 아래), 앞면은 살짝 납작(앞뒤 0.92). 머리는 몸 위에 겹쳐 앉아 <b>목이 없다</b>.</li>
+    <li>눈: 크고 세로로 긴 타원(가로 0.16, 세로 0.20), 머리 가운데 높이, 좌우 간격 0.35. 반짝임은 큰 점 하나(위 바깥)와 작은 점 하나(아래 안쪽). 검은자에 흰자 없음.</li>
+    <li>볼: 눈 바깥 아래에 분홍 타원(가로 0.17, 세로 0.06). 부리/주둥이: 눈 사이 바로 아래, 작게.</li>
+    <li>심덕이 전용: 머리 위 잔털 3가닥(높이 0.12), 저고리 뒤 밑단 위 꽁지깃 3가닥.</li>
+  </ul>
+  <h3>4.2 옷 (기본 법복)</h3>
+  <ul>
+    <li>회색 승복 한 벌: 종 모양 저고리(위 지름 0.60 → 밑단 0.92), 넓은 한복 소매(아래 지름 0.38)와 흰 소맷단, 끝에 몸색 손.</li>
+    <li>V자 깃 두 장(오른쪽이 위)이 <b>가슴</b>에서 겹치고 각 깃에 흰 동정 띠. 깃의 윗끝은 <span class="must">턱 아래 어깨선(z 0.78)</span>에서 시작한다. 머리 안쪽에서 시작하면 턱에서 옷이 튀어나와 보인다.</li>
+    <li>왼쪽 어깨에서 오른쪽 허리로 내려오는 갈색 가방끈 하나(금 버클). 격자 무늬 가사는 <span class="ban">기본 법복에 없다</span>('가사 법복' 변형에만).</li>
+    <li>갈색 허리끈, 매듭은 오른쪽 옆구리에 <b>납작한</b> 매듭 + 끈 자락 두 가닥. 배 앞에 둥근 덩어리를 두지 않는다.</li>
+    <li>등에 모서리 둥근 갈색 걸망, 어두운 갈색 덮개·멜빵, 금 버클, 분홍 구슬 하나. 거북이는 걸망 대신 등딱지.</li>
+    <li>띠·끈은 전부 몸 표면에 <b>밀착</b>해야 한다. 몸에서 뜨거나 몸을 뚫고 지나가면 안 된다.</li>
+  </ul>
+  <h3>4.3 색 (sRGB hex, 재질 Base Color)</h3>
+  <div class="tbl"><table>
+    <tr><th>부위</th><th>심덕이</th><th>공통(옷)</th></tr>
+    <tr><td>몸·머리·손</td><td><span class="sw" style="background:#f9e9b9"></span>#f9e9b9</td><td rowspan="6">저고리·소매 <span class="sw" style="background:#c2bdb3"></span>#c2bdb3 · 깃 <span class="sw" style="background:#cbc6bc"></span>#cbc6bc · 동정·소맷단 <span class="sw" style="background:#f4f1ea"></span>#f4f1ea<br>가방끈 <span class="sw" style="background:#8a6240"></span>#8a6240 · 허리끈 <span class="sw" style="background:#6b4a30"></span>#6b4a30 · 걸망 <span class="sw" style="background:#8a6240"></span>#8a6240 · 덮개·멜빵 <span class="sw" style="background:#5a3f28"></span>#5a3f28<br>버클 <span class="sw" style="background:#c9a24f"></span>#c9a24f · 구슬 <span class="sw" style="background:#f08aa6"></span>#f08aa6</td></tr>
+    <tr><td>부리 위 / 아래</td><td><span class="sw" style="background:#f0953f"></span>#f0953f / <span class="sw" style="background:#d87a2a"></span>#d87a2a</td></tr>
+    <tr><td>다리·물갈퀴</td><td><span class="sw" style="background:#f0953f"></span>#f0953f</td></tr>
+    <tr><td>볼</td><td><span class="sw" style="background:#f2b1a8"></span>#f2b1a8</td></tr>
+    <tr><td>눈</td><td><span class="sw" style="background:#1a1714"></span>#1a1714, 반짝임 #ffffff</td></tr>
+    <tr><td>다른 동물</td><td>characters/README.md 표 참조</td></tr>
+  </table></div>
+
+  <h2>5. 재질·토폴로지·용량</h2>
+  <div class="tbl"><table>
+    <tr><th>항목</th><th>기준</th><th>이유</th></tr>
+    <tr><td>재질</td><td>glTF PBR(Base Color·Roughness·Metallic)만. 몸 roughness 0.55, 옷 0.9, 가죽 0.55, 눈 0.12, 버클 metallic 0.7</td><td>시제품은 three.js r128이라 sheen·clearcoat·transmission을 못 읽는다</td></tr>
+    <tr><td>텍스처</td><td>없어도 된다. 쓰면 1024px 이하 PNG/JPG, 노멀맵 1장까지</td><td>폰 메모리</td></tr>
+    <tr><td>스무딩</td><td>전부 Shade Smooth, 노멀 내보내기</td><td>각진 면이 보이면 피규어 느낌이 깨진다</td></tr>
+    <tr><td>정점 수 (원본)</td><td>≤ 60,000 정점 / 삼각형 ≤ 150,000</td><td>내 아바타용</td></tr>
+    <tr><td>정점 수 (라이트)</td><td>≤ 22,000 정점</td><td>다른 방문자용, 화면에 24명까지</td></tr>
+    <tr><td>파일 크기</td><td>원본 ≤ 2.5 MB, 라이트 ≤ 1 MB (GLB)</td><td>base64로 페이지에 내장되는 경우가 있다</td></tr>
+    <tr><td>겹침·뚫림</td><td>발이 바닥 아래로, 손이 몸 속으로, 띠가 몸 밖으로 뜨는 곳 없음(여섯 동작 모두에서)</td><td>합장·가부좌 자세에서 특히 확인</td></tr>
+    <tr><td>애니메이션·스킨</td><td>넣지 않는다(있어도 무시됨)</td><td>동작은 로더가 노드 회전으로 만든다</td></tr>
+  </table></div>
+
+  <h2>6. 지원해야 하는 동작 (로더가 돌리는 것)</h2>
+  <div class="tbl"><table>
+    <tr><th>동작</th><th>움직이는 노드</th><th>모델이 보장할 것</th></tr>
+    <tr><td>서 있기</td><td>torso 숨 신축 1.2%, neck 미세</td><td>기본 자세에서 소매가 몸 옆에 자연스럽게 매달림</td></tr>
+    <tr><td>걷기</td><td>legL/R ±0.55, wing 반대 ±0.35, hips 바운스 0.025</td><td>다리가 저고리 밑단 아래로 드나들 때 뚫림 없음</td></tr>
+    <tr><td>좌복 가부좌</td><td>hips −0.14, leg 앞 1.55·바깥 0.9, wing 앞 0.6·안 0.4</td><td>접힌 다리가 저고리 밖으로 삐져나오지 않음(밑단이 좌복 윗면에 닿음)</td></tr>
+    <tr><td>연잎 위 숨쉬기</td><td>가부좌 + 눈 scale.y 0.12 + 숨 3.5%</td><td>눈을 감았을 때 가로선으로 보일 것(눈알이 타원)</td></tr>
+    <tr><td>합장(반배)</td><td>wing 앞 1.25·안 1.0 → torso 0.5·neck 0.49 숙임 → 복귀</td><td>두 손끝이 가슴 앞 중앙에서 닿거나 겹침. 소매 입구 안쪽이 보여도 됨</td></tr>
+    <tr><td>큰절</td><td>hips −0.16, leg 앞 1.45, torso 1.25, neck 0.45, wing 앞 1.7</td><td>이마가 바닥 가까이, 손이 바닥에. 머리가 바닥을 뚫지 않음</td></tr>
+  </table></div>
+
+  <h2>7. 작업 범위: 어디까지 하면 되나</h2>
+  <ul>
+    <li><span class="must">해야 할 것</span>: 모델링(형태·비율·색), 재질 값, 노드 계층과 이름, GLB 내보내기, 라이트 판, 렌더 4장(앞·옆·뒤·합장), 뷰어 확인.</li>
+    <li><span class="must">안 해도 되는 것</span>: 애니메이션, 리깅(본), 표정 모프, 텍스처 페인팅, 소품(좌복·연잎은 경내에 있음), 의상 변형(계절 옷·모자는 다음 단계).</li>
+    <li><span class="ban">하면 안 되는 것</span>: 노드 이름·계층 변경, 피벗 이동, 스케일 적용 안 한 채 내보내기, 卍 등 종단 상징, 한자, 격자 가사(기본 법복), 둥근 배꼽 매듭, 보드에 없는 동물 추가(토끼·곰·판다 등은 사용자 승인 뒤에).</li>
+  </ul>
+
+  <h2>8. 파일 이름과 납품 위치</h2>
+  <pre><code>마음온/brand/avatar/characters/
+  maumon-&lt;species&gt;.glb          원본 (simdeok · deerdeer · fox · cat · turtle · sparrow)
+  maumon-&lt;species&gt;-lite.glb     라이트 (정점 ≤ 22,000)
+  renders/&lt;species&gt;_front.png   앞 · _side.png 옆 · _back.png 뒤 · _hapjang.png 합장  (640×640, 한지색 바탕)
+  src/&lt;species&gt;.blend            소스 (또는 character.py 수정분)
+심덕이는 추가로 avatar/maumon-duck.glb · maumon-duck-lite.glb 에 같은 파일을 복사한다.</code></pre>
+
+  <h2>9. 납품 전 확인 절차</h2>
+  <ol>
+    <li>GLB를 <code>blender/viewer.html</code>과 같은 폴더에 두고 로컬 서버(<code>python -m http.server</code>)로 연다. 파일 이름을 <code>maumon-duck.glb</code>로 바꾸거나 페이지의 경로를 고친다.</li>
+    <li>여섯 동작 버튼을 모두 눌러 본다. 큰절에서 몸이 숙여지지 않으면 메시가 <code>torso</code> 아래에 없는 것이다. 합장에서 손이 안 모이면 <code>wingL/R</code> 피벗이 다른 것이다.</li>
+    <li>앞·옆·뒤 시점에서 뜨거나 뚫린 곳을 찾는다. 특히 깃 윗끝(턱), 띠(몸 표면), 발(바닥).</li>
+    <li>콘솔에 오류가 없어야 한다. 정점 수는 <code>maumon-&lt;species&gt;.glb</code>를 열어 확인하거나 <code>make_lite.py</code> 출력으로 본다.</li>
+    <li>렌더 4장을 보드 옆에 놓고 비교한다. 다르면 보드가 맞다.</li>
+  </ol>
+
+  <h2>10. 검수 체크리스트</h2>
+  <ul class="check">
+    <li>키 1.53~1.60, 발바닥 y=0, 원점이 두 발 사이, root 회전 0·스케일 1</li>
+    <li>노드 10개 이름이 정확히 같고(root·hips·torso·neck·wingL·wingR·legL·legR·eyeL·eyeR), 메시가 해당 노드 아래에 있음</li>
+    <li>피벗 위치가 표의 값에서 ±0.03 이내</li>
+    <li>머리가 완전한 구가 아니고 목이 없으며, 눈·볼·부리 위치가 4.1과 같음</li>
+    <li>깃이 턱 아래 어깨선에서 시작하고 가슴에서 겹침, 동정 띠 있음</li>
+    <li>가방끈 하나·허리끈·납작 매듭·걸망(거북이는 등딱지). 격자 가사 없음</li>
+    <li>띠가 몸에 밀착, 어떤 동작에서도 뚫림·뜸 없음</li>
+    <li>색이 4.3 표와 같음. 재질은 PBR 기본값만</li>
+    <li>정점 원본 ≤ 60,000 / 라이트 ≤ 22,000, 파일 ≤ 2.5 MB / 1 MB</li>
+    <li>뷰어에서 여섯 동작 정상, 콘솔 오류 없음</li>
+    <li>렌더 4장 + 소스 파일 포함, 파일 이름 규칙대로</li>
+  </ul>
+
+  <h2>11. 참고</h2>
+  <ul>
+    <li>캐릭터 시트와 뷰어: <a href="https://claude.ai/artifact/2WbQLUevXo9ua1ucB9tkQN">심덕이와 도반 친구들</a></li>
+    <li>디자인 시스템(색 토큰·경내 아트 디렉션): <a href="https://claude.ai/artifact/BruQXcFyFpAWnVX2iwvPsJ">마음온</a></li>
+    <li>소스: 저장소 <code>마음온/brand/avatar/characters/character.py</code>(Blender 5.2 bpy), 로더 <code>blender/duck-glb.js</code>, 라이트 판 <code>blender/make_lite.py</code></li>
+  </ul>
+</main>
+</body>
+</html>

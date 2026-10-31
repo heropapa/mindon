@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <!-- 마음온(마음ON) 마크: 전원(⏻) 기호를 붓글씨 두 획으로 — 마음을 켠다. 굵기가 변하는 원호 + 위에서 내리긋는 수직 획 -->
+  <defs>
+    <filter id="brush" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="dry" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08 0.9" numOctaves="2" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g fill="#f1eadc" filter="url(#brush)">
+    <!-- 원호: 왼쪽 위에서 붓을 눌러 시작, 아래로 갈수록 두꺼워졌다가 오른쪽 위로 올라가며 가늘어져 갈필로 빠짐 -->
+    <path d="
+      M 86 58
+      C 72 66, 56 80, 46 100
+      C 32 132, 44 174, 78 196
+      C 110 216, 154 210, 180 184
+      C 204 160, 208 122, 190 94
+      C 182 82, 172 72, 160 65
+      C 164 60, 168 55, 172 50
+      C 188 60, 202 78, 210 100
+      C 226 142, 214 190, 176 214
+      C 136 238, 80 232, 50 198
+      C 20 164, 22 112, 54 78
+      C 62 70, 70 63, 80 56
+      Z"/>
+    <!-- 수직 획: 위에서 눌러 시작(둥글고 두껍게), 아래로 가며 가늘어지고 끝이 갈라짐 -->
+    <path d="
+      M 106 24
+      C 110 16, 130 14, 136 24
+      C 138 44, 134 76, 131 104
+      C 129 120, 127 134, 123 144
+      C 119 142, 114 138, 111 134
+      C 112 110, 109 78, 106 48
+      C 105 38, 103 30, 106 24
+      Z"/>
+  </g>
+  <!-- 갈필(마른 붓) 결: 수직 획 끝과 원호 꼬리에서 흩어지는 가는 선 -->
+  <g fill="#f1eadc" filter="url(#dry)" opacity="0.8">
+    <path d="M 119 142 L 121 156 L 118 157 L 116 144 Z"/>
+    <path d="M 125 140 L 129 152 L 126 153 L 123 142 Z"/>
+    <path d="M 114 138 L 113 150 L 111 150 L 111 139 Z"/>
+    <path d="M 166 58 L 176 48 L 178 51 L 169 61 Z"/>
+  </g>
+  <!-- 낙관(落款): 백문 "마음" 인장, 찍힌 자국처럼 마모 -->
+  <g transform="translate(184 190) rotate(-6 17 17) scale(0.36)">
+<defs>
+    <!-- 닳은 모서리·울퉁불퉁한 테두리 -->
+    <filter id="worn" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="3" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- 인주가 덜 묻은 결: 노이즈를 임계값으로 잘라 마스크 -->
+    <mask id="inkmask">
+      <rect width="100" height="100" fill="#fff"/>
+      <g filter="url(#specks)"><rect width="100" height="100" fill="#000"/></g>
+    </mask>
+    <filter id="specks">
+      <feTurbulence type="fractalNoise" baseFrequency="0.35" numOctaves="3" seed="9" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="a"/>
+      <feComponentTransfer in="a"><feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0 0 0 0.5 1 1"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <g mask="url(#inkmask)">
+    <!-- 인면: 붉은 바탕, 안쪽에 얇은 흰 테 -->
+    <g filter="url(#worn)">
+      <rect x="4" y="4" width="92" height="92" rx="5" fill="#b8432f"/>
+      <rect x="10" y="10" width="80" height="80" rx="2" fill="none" stroke="#121419" stroke-width="2.2"/>
+    </g>
+    <!-- 백문(白文) '마음' — 전서 느낌의 각진 획, 흰색으로 파냄 -->
+    <g fill="none" stroke="#121419" stroke-width="6.5" stroke-linecap="square" stroke-linejoin="miter" filter="url(#worn)">
+      <!-- 마: ㅁ + ㅏ -->
+      <rect x="22" y="20" width="24" height="24"/>
+      <path d="M60 15 V49 M60 32 H74"/>
+      <!-- 음: ㅇ / ㅡ / ㅁ -->
+      <circle cx="50" cy="60" r="7"/>
+      <path d="M24 72 H76"/>
+      <rect x="36" y="79" width="28" height="9"/>
+    </g>
+  </g>
+  </g>
+</svg>
