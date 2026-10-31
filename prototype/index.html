@@ -201,12 +201,9 @@
     transition: opacity 1.2s ease;
   }
   #gate.leaving { opacity: 0; pointer-events: none; }
-  /* 입장 음악 버튼: 브라우저가 소리를 막아 둔 동안은 금빛으로 은은하게 숨 쉼 */
+  /* 입장 음악 켜고 끄기 버튼 */
   .gate-snd { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
-  .gate-snd.hint { color: var(--gold); animation: gateSnd 1.8s ease-in-out infinite; width: auto; padding: 0 14px 0 11px; border-radius: 22px; display: flex; align-items: center; gap: 6px; }
-  .gate-snd .gs-tip { font-size: 13px; white-space: nowrap; }
-  @keyframes gateSnd { 50% { box-shadow: 0 0 0 7px rgba(215, 178, 91, 0.22); } }
-  @media (prefers-reduced-motion: reduce) { .gate-snd.hint { animation: none; } }
+
   .gate-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; max-width: 420px; margin: auto; }
   .hyeonpan {
     /* 현판: 검은 판 위 금빛 글씨, 단청 테두리 */
@@ -740,7 +737,6 @@ const STR = {
     places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '108배', sit: '명상', min: '분',
     leafMoved: '다른 분과 같은 연잎이라 옆자리로 옮겨 앉았어요', leavesFull: '연잎이 모두 차서 물가에 앉았어요',
     pondLook: '화면을 끌면 둘러보고, 두 손가락으로 가까이·멀리 볼 수 있어요',
-    introTap: '눌러서 소리 듣기',
     stand: '일어나기', view: '보기', leave: '나가기', menu: '메뉴', quiet: '조용한 시간', recAll: n => `모두 ${n}배`,
     chants: { yeongin: '관음정근' }, chantSrc: '염불: ',
     bowTitle: '108배', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
@@ -779,7 +775,6 @@ const STR = {
     places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: '108 bows', sit: 'Meditate', min: 'min',
     leafMoved: 'Someone took this leaf at the same moment — you moved to the next one', leavesFull: 'All lotus leaves are taken — you are sitting by the water',
     pondLook: 'Drag to look around · pinch or scroll to move closer or farther',
-    introTap: 'Tap for sound',
     stand: 'Stand up', view: 'View', leave: 'Leave', menu: 'Menu', quiet: 'Quiet time', recAll: n => `${n} bows in all`,
     chants: { yeongin: 'Gwaneum' }, chantSrc: 'Chant: ',
     bowTitle: '108 bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
@@ -1140,16 +1135,14 @@ const Intro = {
     return p;
   },
   toggle() {                                         // 입장 화면 오른쪽 위 소리 버튼
-    if (this.playing()) { this.want = false; this.el.pause(); }
+    if (this.want) { this.want = false; if (this.el) this.el.pause(); }
     else { this.want = true; const p = this.play(); if (p && p.catch) p.catch(() => {}); }
     this.ui();
   },
   ui() {
     const b = document.getElementById('gateSnd'); if (!b) return;
-    // 나오는 중 = 켜짐, 끔 = 꺼짐, 브라우저가 막아 기다리는 중 = 켜짐 그림 + '눌러서 소리 듣기'(금빛으로 숨 쉼)
-    const on = this.playing(), waiting = !on && this.want;
-    b.innerHTML = svg(on || waiting ? 'spk' : 'spkOff') + (waiting ? `<span class="gs-tip">${T().introTap}</span>` : '');
-    b.setAttribute('aria-pressed', String(on || waiting)); b.classList.toggle('hint', waiting);
+    // 켜 둠(나오는 중이거나, 브라우저가 막아 첫 터치를 기다리는 중) = 켜짐 그림, 끔 = 꺼짐 그림. 안내 글자는 없음 (본부장 '그런 거 없이도')
+    const on = this.want; b.innerHTML = svg(on ? 'spk' : 'spkOff'); b.setAttribute('aria-pressed', String(on));
   },
   fadeOut() {
     if (!this.el || this.el.paused) return;
@@ -1683,10 +1676,14 @@ function legal(p, from) {
   if (d < POND_R + 0.7) { const k = (POND_R + 0.7) / (d || 1); q.x = POND.x + (q.x - POND.x) * k; q.z = POND.z + (q.z - POND.z) * k; }
   const was = from || q;
   if (inHall(was) || (inHallBox(was) && Math.abs(was.x) < HALL.door)) {
-    // 안에서: 벽 안쪽에 머물고, 앞쪽은 문으로만 나감
-    const out = q.z >= HALL.front - 0.3 && Math.abs(q.x) < HALL.door - 0.4;
-    // 벽에서 2cm 안쪽에 세움: 경계선에 딱 붙이면 inHall(<)이 거짓이 되어 다음부터 '밖에서 벽 뚫기'로 판정돼 꼼짝 못 함
-    if (!out) { const e = 0.02; q.x = Math.max(-(HALL.half - 0.6 - e), Math.min(HALL.half - 0.6 - e, q.x)); q.z = Math.max(HALL.back + 0.6 + e, Math.min(HALL.front - 0.3 - e, q.z)); }
+    // 안에서: 벽 안쪽에 머물고, 앞쪽은 문으로만 나감.
+    // 벽에서 2cm 안쪽에 세움: 경계선에 딱 붙이면 inHall(<)이 거짓이 되어 다음부터 '밖에서 벽 뚫기'로 판정돼 꼼짝 못 함.
+    // 단 문이 열린 곳(가운데 세 칸)은 앞벽 제한을 두지 않음 — 예전엔 거기서도 2cm 안으로 당겨서, 한 화면에 2cm 못 가는
+    // 빠른 PC(144Hz 등)·살살 민 조이스틱은 문 앞에서 영영 못 나갔음 (2026-10-31 본부장 PC '계단 앞에서 안 나가짐')
+    const e = 0.02, inDoor = Math.abs(q.x) < HALL.door - 0.4;
+    q.z = Math.max(HALL.back + 0.6 + e, q.z);
+    if (!inDoor) q.z = Math.min(HALL.front - 0.3 - e, q.z);
+    if (q.z < HALL.front - 0.3) q.x = Math.max(-(HALL.half - 0.6 - e), Math.min(HALL.half - 0.6 - e, q.x));
     if (Math.abs(q.x) < ALTAR_W / 2 + 0.5 && q.z < ALTAR_Z + ALTAR_D / 2 + 0.6) q.z = ALTAR_Z + ALTAR_D / 2 + 0.6; // 불단 앞까지
   } else if (inHallBox(q)) {
     // 밖에서: 문(가운데 세 칸)으로만 들어감
@@ -1706,7 +1703,17 @@ function goTo(list, look) {
   list.forEach(p => { const t = legal(p, inHall(p) ? V(0, -18) : V(0, 0)); route(from, t).forEach(w => q.push({ p: w })); from = t; });
   if (look && q.length) q[q.length - 1].look = look;   // 도착하면 이쪽을 바라봄
   S.queue = q; S.target = null; D.turn = null;
+  if (q.length) showTapMark(q[q.length - 1].p);      // 어디로 가는지 바닥에 금빛 표시
 }
+// 바닥을 눌러 갈 곳 표시 (2026-10-31 본부장 '어디 바닥을 찍었는지 알 수 있게'): 톡 커졌다 줄며 나타나 걷는 동안 숨 쉬고, 도착하거나 멈추면 사라짐
+const tapMark = (() => {
+  const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0xd7b25b, transparent: true, opacity: 0, depthWrite: false });
+  const halo = new THREE.MeshBasicMaterial({ color: 0x121419, transparent: true, opacity: 0, depthWrite: false });   // 밝은 땅에서도 보이게 먹빛 테
+  const parts = [[new THREE.RingGeometry(0.34, 0.6, 48), halo], [new THREE.RingGeometry(0.4, 0.52, 48), mat], [new THREE.CircleGeometry(0.1, 24), mat]];
+  parts.forEach(([geo, m], i) => { const o = new THREE.Mesh(geo, m); o.rotation.x = -Math.PI / 2; o.position.y = i * 0.002; o.renderOrder = 5 + i; g.add(o); });
+  g.visible = false; g.userData = { t: 0, fade: 0, mat, halo }; scene.add(g); return g;
+})();
+function showTapMark(p) { tapMark.position.set(p.x, groundY(p.x, p.z) + 0.035, p.z); tapMark.userData.t = 0; tapMark.userData.fade = 0; tapMark.visible = true; }
 // 도착한 곳에서 바라볼 방향 (연못은 물 쪽)
 const LOOK = { pond: POND };
 const faceTo = (from, at) => Math.atan2(-(at.x - from.x), -(at.z - from.z));
@@ -2410,6 +2417,14 @@ function frame(now) {
     if (z === 'hall' && S.mode === 'walk' && S.nearCushion < 0) setTimeout(() => { if (S.zone === 'hall' && S.mode === 'walk' && S.nearCushion < 0) toast(T().findSeatShort, 2600); }, 2400);
   }
 
+  // 갈 곳 표시: 걷는 동안 숨 쉬고, 도착·멈춤·앉기면 0.3초 동안 사라짐
+  if (tapMark.visible) {
+    const u = tapMark.userData; u.t += dt;
+    if (!(S.mode === 'walk' && (S.target || S.queue.length))) u.fade = Math.min(1, u.fade + dt * 3.5);
+    const k = u.t < 0.25 ? 1.6 - 0.6 * (u.t / 0.25) : 1 + Math.sin(u.t * 4) * 0.06;
+    tapMark.scale.setScalar(k); u.mat.opacity = 0.95 * (1 - u.fade); u.halo.opacity = 0.35 * (1 - u.fade);
+    if (u.fade >= 1) tapMark.visible = false;
+  }
   // 물 위 흔들림 · 향 연기 · 반딧불
   leaves.forEach(m => { m.position.y = (m.userData.action ? 0.07 : 0.07) + Math.sin(tsec * 0.8 + m.userData.phase) * 0.015; });
   if (performance.now() - (S.pondT || 0) > 500) {            // 0.5초마다(실제 시간 — 느린 폰도 같게): 고리를 빈 자리로 · 같은 자리에 겹쳐 앉았는지 확인
@@ -2779,6 +2794,6 @@ applyTod();
 requestAnimationFrame(frame);
 
 // 테스트·디버그용
-window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
 })();
 </script>
