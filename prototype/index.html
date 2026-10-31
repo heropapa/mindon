@@ -1588,7 +1588,7 @@ const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: r
 // 3인칭: 나 = 도반 오리. face 는 오리가 바라보는 방향(카메라 yaw 와 같은 규칙: 앞 = (-sin, -cos))
 // 오리 = Blender GLB(디자인 세션). 받기 전·못 받으면 도형 오리(duck.js)로 대신함. root 는 바깥 묶음이라 돌려도 안쪽 180°가 유지됨
 // 모델을 바꾸면 AV 를 올림 — 파일은 하루 동안 기기에 남아 있어서, 주소가 같으면 다시 온 사람이 예전 오리를 봄
-const AV = '?v=1031', DUCK_GLB = 'avatar/maumon-duck.gltf.json' + AV, DUCK_LITE = 'avatar/maumon-duck-lite.gltf.json' + AV, DUCK_SCALE = 1; // 도형 오리와 같은 키(머리 꼭대기 ≈1.56)
+const AV = '?v=1031', DUCK_GLB = 'avatar/mindon-duck.gltf.json' + AV, DUCK_LITE = 'avatar/mindon-duck-lite.gltf.json' + AV, DUCK_SCALE = 1; // 도형 오리와 같은 키(머리 꼭대기 ≈1.56)
 function makeDuck(url = DUCK_GLB) { // 다른 방문자는 가벼운 판(정점 2만)
   const a = { root: new THREE.Group(), impl: null, get pose() { return this.impl.pose; },
     setPose(n, i, cb) { this.impl.setPose(n, i, cb); },
@@ -2433,7 +2433,7 @@ const News = {
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => { this.busy = false; this.pump(); }, 700); }, first.k === 'bow' ? 5000 : 3600);
   },
 };
-const DUCK_FAR = 'avatar/maumon-duck-far.gltf.json' + AV; // 먼 사람용 (삼각형 4천, gltfpack -si 0.1 -se 0.05 -sa) — 뼈대 이름은 같음
+const DUCK_FAR = 'avatar/mindon-duck-far.gltf.json' + AV; // 먼 사람용 (삼각형 4천, gltfpack -si 0.1 -se 0.05 -sa) — 뼈대 이름은 같음
 const ANIM = ['hips', 'torso', 'neck', 'wingL', 'wingR', 'legL', 'legR', 'eyeL', 'eyeR']; // 움직이는 뼈 (부모가 앞에 오는 순서)
 
 // 오리(쉬는 자세)를 '뼈 × 재질' 덩어리로 굽는다: 각 조각을 자기 뼈 기준 좌표로 옮겨 합침.

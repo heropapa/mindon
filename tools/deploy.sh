@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # 마음온 배포 — 클라우드 세션에서 한 번에 (토큰은 환경 설정에 넣어 둔 것을 읽음, 채팅에 붙여 넣지 않음)
-#   bash 마음온/tools/deploy.sh                 # 정식 주소 https://mindon.link 로 빌드·배포 (커스텀 도메인은 wrangler.toml routes 로 자동 연결)
-#   bash 마음온/tools/deploy.sh <다른 주소>      # 공유 미리보기 주소를 다르게 (예: workers.dev 로만 시험할 때)
+#   bash tools/deploy.sh                 # 정식 주소 https://mindon.link 로 빌드·배포 (커스텀 도메인은 wrangler.toml routes 로 자동 연결)
+#   bash tools/deploy.sh <다른 주소>      # 공유 미리보기 주소를 다르게 (예: workers.dev 로만 시험할 때)
 # 필요: CLOUDFLARE_API_TOKEN ("Edit Cloudflare Workers" 템플릿), CLOUDFLARE_ACCOUNT_ID, Node 20+, Python 3
 set -euo pipefail
-cd "$(dirname "$0")/.."                       # 마음온/
+cd "$(dirname "$0")/.."                       # 저장소 루트
 SITE="${1:-https://mindon.link}"
 
 if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then

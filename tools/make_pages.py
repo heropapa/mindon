@@ -1,6 +1,6 @@
 """마음온 안내 페이지(출처·개인정보처리방침·이용약관)를 prototype/ 에 만든다.
 출처 페이지는 prototype/CREDITS.md 의 표를 그대로 옮긴다. CREDITS.md 를 고치면 다시 실행:
-    python3 마음온/tools/make_pages.py
+    python3 tools/make_pages.py
 운영자 정보는 아래 기본값(2026-10-30 본부장 제공)으로 채워짐 — 바뀌면 기본값을 고치거나 --operator 등으로 덮어씀.
 """
 import argparse, html, re, pathlib
