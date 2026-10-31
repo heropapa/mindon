@@ -1347,9 +1347,10 @@ const eaveLamp = (x, y, z, parent) => {
 const PUNG = [];
 if (THREE.GLTFLoader) maumGLTF.newLoader().load('props/mindon-pungyeong.gltf.json', g => {
   g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; if (o.material && o.material.metalness > 0.5) o.material.metalness = 0.45; } }); // 환경 반사가 없어 금속이 검게 보이지 않게
-  [[-3.7, 1.15], [3.7, 1.15], [-3.7, -1.15], [3.7, -1.15]].forEach(([x, z], i) => {
-    const r = i === 0 ? g.scene : g.scene.clone(true); r.position.set(x, 4.9, z); gate.add(r);
-    PUNG.push({ bell: r.getObjectByName('pung_bell'), fish: r.getObjectByName('pung_fish'), ph: i * 1.7 });
+  // 양쪽 앞 귀에 둘만 (본부장 '양쪽 두 개, 둘이 안 겹치게') — 박자(ph)와 빠르기(sp)를 달리해 같이 흔들리는 일이 없게
+  [[-3.7, 1.15, 0, 1], [3.7, 1.15, 2.9, 1.17]].forEach(([x, z, ph, sp], i) => {
+    const r = i === 0 ? g.scene : g.scene.clone(true); r.position.set(x, 4.9, z); r.scale.setScalar(1.35); gate.add(r);   // 멀리서도 보이게 조금 크게
+    PUNG.push({ bell: r.getObjectByName('pung_bell'), fish: r.getObjectByName('pung_fish'), ph, sp });
   });
 }, undefined, () => {});
 const hp = plaque('고요당', 'HALL OF STILLNESS', 7.2, 2.4); hp.position.set(0, FL + H.height - 1.3, H.front + 0.2); hall.add(hp); plaques.push(hp);
@@ -2480,8 +2481,8 @@ function frame(now) {
     if (z === 'hall' && S.mode === 'walk' && S.nearCushion < 0) setTimeout(() => { if (S.zone === 'hall' && S.mode === 'walk' && S.nearCushion < 0) toast(T().findSeatShort, 2600); }, 2400);
   }
 
-  // 불이문 풍경 흔들림 (props/README.md 예시 그대로, 네 개가 서로 다른 박자)
-  PUNG.forEach(q => { const t = tsec + q.ph; if (q.bell) { q.bell.rotation.x = 0.05 * Math.sin(t * 1.1); q.bell.rotation.z = 0.03 * Math.sin(t * 0.8 + 1); } if (q.fish) q.fish.rotation.z = 0.25 * Math.sin(t * 2.3) + 0.08 * Math.sin(t * 5.1); });
+  // 불이문 풍경 흔들림 (props/README.md 예시, 둘이 서로 다른 박자·빠르기)
+  PUNG.forEach(q => { const t = tsec * q.sp + q.ph; if (q.bell) { q.bell.rotation.x = 0.05 * Math.sin(t * 1.1); q.bell.rotation.z = 0.03 * Math.sin(t * 0.8 + 1); } if (q.fish) q.fish.rotation.z = 0.25 * Math.sin(t * 2.3) + 0.08 * Math.sin(t * 5.1); });
   // 갈 곳 표시: 걷는 동안 숨 쉬고, 도착·멈춤·앉기면 0.3초 동안 사라짐
   if (tapMark.visible) {
     const u = tapMark.userData; u.t += dt;
