@@ -25,3 +25,10 @@
 ## 요청
 - 시제품의 심덕이 GLB를 새 `mindon-simdeok.glb`(+lite)로 교체.
 - 나머지 캐릭터는 사용자분이 원할 때 NPC 또는 아바타 선택지로 투입.
+
+## 풍경 모형 전달 (2026-10-31)
+요청대로 불이문 처마 풍경을 만들었다: `props/mindon-pungyeong.glb` (+ `props/renders/pungyeong_render.png`, 소스 `props/src/build_pungyeong.py`).
+- 노드 `pung_bell`(원점 = 맨 위 고리 피벗) → 자식 `pung_fish`(로컬 y −0.30, 종 아래 고리 피벗). 뼈대 없음.
+- 높이 0.61 m, 종 지름 0.22 m, 삼각형 2,496, 텍스처 없음(재질 색만), Y 위·앞 −Z.
+- 흔들림 예시: bell x = 0.05·sin(1.1t), fish z = 0.25·sin(2.3t) + 0.08·sin(5.1t). 바람 세기는 진폭에 곱하면 된다.
+- 불이문 처마 양 끝 (±3.2, 4.6, 30) 근처에 고리가 처마에 닿게 걸면 된다. PR: design/pungyeong 브랜치.
