@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>염불 음원 후보 · 마음온 사운드</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f6f1e7;--ink:#2b2a28;--ink-soft:#6b665c;--line:#d9d1c2;--gold:#b8923a;--card:#fffdf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Gowun Dodum",system-ui,sans-serif;font-size:15px;line-height:1.55}
+  header{position:sticky;top:0;background:rgba(246,241,231,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;z-index:5}
+  h1{font-family:"Gowun Batang",serif;font-size:20px;margin:0}
+  h1 small{font-size:12px;color:var(--ink-soft);margin-left:8px;font-family:"Gowun Dodum"}
+  .picks{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:14px}
+  .picks b{color:var(--gold)}
+  button{font:inherit;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;cursor:pointer}
+  button:hover{border-color:var(--gold)}
+  main{max-width:1100px;margin:0 auto;padding:18px 20px 80px}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:22px;color:var(--ink-soft)}
+  h2{font-family:"Gowun Batang",serif;font-size:18px;margin:34px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  h2 span{font-size:13px;color:var(--ink-soft);font-weight:400;margin-left:10px;font-family:"Gowun Dodum"}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px}
+  .card.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,146,58,.25)}
+  .top{display:flex;gap:10px;align-items:flex-start}
+  .top label{display:flex;gap:6px;align-items:center;cursor:pointer;font-size:13px;color:var(--ink-soft);white-space:nowrap;margin-left:auto}
+  .top input{width:18px;height:18px;accent-color:var(--gold)}
+  .ttl{font-weight:700;font-size:15px}
+  .ttl .id{display:inline-block;background:var(--ink);color:var(--paper);font-size:11px;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+  .meta{font-size:13px;color:var(--ink-soft)}
+  .lic{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12px;background:#e9e2d2}
+  .lic.cc0{background:#d8e8d2}.lic.by{background:#e6dcc0}.lic.sa{background:#e8d6cc}.lic.kogl{background:#d6e0ea}
+  .play iframe{width:100%;height:102px;border:0;border-radius:8px}
+  audio{width:100%}
+  .link{font-size:13px}
+  .link a{color:var(--ink);text-decoration:underline dotted}
+  .ext{font-size:13px;background:#efe9dc;border-radius:8px;padding:8px 10px}
+  .ext a{font-weight:700;color:var(--ink)}
+  footer{max-width:1100px;margin:0 auto;padding:0 20px 40px;color:var(--ink-soft);font-size:13px}
+  #out{width:100%;min-height:90px;margin-top:8px;font:13px/1.5 ui-monospace,monospace;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card)}
+</style>
+</head>
+<body>
+<header>
+  <h1>염불 음원 후보<small>2026-10-31 · 기존 5곡 제외 · 전부 상업 이용 가능</small></h1>
+  <div class="picks">고른 것 <b id="cnt">0</b>개 <button id="copy">고른 목록 복사</button> <button id="reset">초기화</button></div>
+</header>
+<main>
+<div class="note">
+  카드의 플레이어로 바로 들을 수 있습니다. Freesound는 공식 임베드 플레이어(미리듣기 음질)이고, Wikimedia는 원본 파일을 직접 재생합니다.
+  공유마당·공공데이터포털은 바깥에서 재생이 안 되어 <b>"열어서 듣기"</b> 링크로 넣었습니다(공유마당은 상세 페이지 안에 미리듣기 버튼이 있습니다).
+  마음에 드는 것은 오른쪽 위 체크를 눌러 두고, 맨 위 <b>고른 목록 복사</b>로 붙여 보내 주시면 됩니다. 체크는 이 기기에 저장됩니다.
+</div>
+
+<section id="k"></section>
+<section id="s"></section>
+<section id="t"></section>
+<section id="b"></section>
+
+<h2>고른 목록</h2>
+<textarea id="out" readonly placeholder="체크하면 여기에 모입니다"></textarea>
+</main>
+<footer>
+  라이선스는 조사 시점(2026-10-31)에 개별 페이지에서 확인한 값입니다. CC0은 표기 의무 없음, CC BY·공공누리 1유형은 출처 표기, CC BY-SA는 섞어서 새 음원을 만들면 같은 라이선스로 공개해야 합니다.
+  한국어 독송(천수경·반야심경·정근) 음원은 자유이용으로 공개된 것이 없어 목록에 없습니다.
+</footer>
+
+<script>
+const FS = id => ({ fs: id });
+const WM = file => ({ wm: file });
+const EXT = url => ({ ext: url });
+
+const SECTIONS = [
+ { el:'k', title:'1순위 · 한국 사찰 현장 녹음', sub:'스님 염불 음성 포함', items:[
+  {id:'K1', t:'각원사 법당 안 염불 · Temple chanting interior', where:'천안 각원사 · 3bagbrew', len:'6:42', lic:'CC0', note:'실내 WAV 24bit 스테레오. 길이·음질·라이선스 모두 최상', ...FS(345028), url:'https://freesound.org/people/3bagbrew/sounds/345028/'},
+  {id:'K2', t:'각원사 바깥 염불 + 매미 · Temple exterior', where:'천안 각원사 · 3bagbrew', len:'3:16', lic:'CC0', note:'여름 경내 바깥용', ...FS(345027), url:'https://freesound.org/people/3bagbrew/sounds/345027/'},
+  {id:'K3', t:'조계사 저녁 예불 · JongsouTemple Seoul', where:'서울 조계사 · RTB45', len:'4:27', lic:'CC BY 4.0', note:'현장 녹음 WAV', ...FS(232411), url:'https://freesound.org/people/RTB45/sounds/232411/'},
+  {id:'K4', t:'조계사 대웅전 저녁기도 공간음 (불자 호명)', where:'(재)전주정보문화산업진흥원 · 공유마당', len:'5:00', lic:'공공누리 1유형', note:'스님이 불자 이름을 호명(축원). 도시 소음·걸음 소리 섞임, 96kbps', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13287681&menuNo=200020')},
+  {id:'K5a', t:'불국사 문밖 염불 1 · Monk Chant1', where:'경주 불국사 · bondegi', len:'0:18', lic:'CC BY 4.0', note:'짧은 클립, 96kHz. 루프·효과용', ...FS(30199), url:'https://freesound.org/people/bondegi/sounds/30199/'},
+  {id:'K5b', t:'불국사 문밖 염불 2 · Monk Chant2', where:'경주 불국사 · bondegi', len:'0:16', lic:'CC BY 4.0', note:'같은 세션 두 번째 클립', ...FS(30200), url:'https://freesound.org/people/bondegi/sounds/30200/'},
+  {id:'K6', t:'내장산 백양사 염불소리 (영상)', where:'국립공원공단 · 공공데이터포털', len:'미표기', lic:'공공누리 1유형', note:'MP4 영상에서 음원 추출 필요. 설명문에 "비상업 활용 적합" 권장 문구가 함께 있어 쓰기 전 공단 확인 권장', ...EXT('https://www.data.go.kr/data/15076137/fileData.do')},
+ ]},
+ { el:'s', title:'2순위 · 경전 독송 (일본·중국·베트남)', sub:'한자 독음이라 한국 염불과 비슷하게 들림', items:[
+  {id:'S1', t:'반야심경 일본어 독송 · Heart Sutra', where:'華蔵院 주지 · Wikimedia (kennymiyoshi)', len:'3:45', lic:'CC BY 3.0', note:'스튜디오급. 가장 "독경" 같은 음원', ...WM('Heart_Sutra.oga'), url:'https://commons.wikimedia.org/wiki/File:Heart_Sutra.oga'},
+  {id:'S2', t:'반야심경 중국어 독송 · 般若心经', where:'재가자 · Wikimedia (Nyarlathotep1001)', len:'2:13', lic:'CC0', note:'만다린 독송', ...WM('Bore_Xinjing_般若心经_(Heart_Sutra)_in_Mandarin_recited_by_a_Chinese_Buddhist_layperson.ogg'), url:'https://commons.wikimedia.org/wiki/File:Bore_Xinjing_般若心经_(Heart_Sutra)_in_Mandarin_recited_by_a_Chinese_Buddhist_layperson.ogg'},
+  {id:'S3', t:'도쿄 사찰 남성 2인 독경 + 목탁·종', where:'calebjay', len:'3:26', lic:'CC BY 4.0', note:'96kHz, 자연 리버브, 약간 핸들링 노이즈', ...FS(686628), url:'https://freesound.org/people/calebjay/sounds/686628/'},
+  {id:'S4', t:'도쿄 사찰 남성 1인 독경 + 종 3타', where:'calebjay', len:'1:03', lic:'CC BY 4.0', note:'', ...FS(686627), url:'https://freesound.org/people/calebjay/sounds/686627/'},
+  {id:'S5', t:'교토 지온인 법회 · Chion-in Temple', where:'RTB45', len:'7:23', lic:'CC BY 4.0', note:'정토종 총본산, 긴 현장 녹음', ...FS(329630), url:'https://freesound.org/people/RTB45/sounds/329630/'},
+  {id:'S6', t:'니치렌종 아침 독경 (스튜디오) · nichi ren02', where:'gezortenplotz', len:'1:29', lic:'CC BY 3.0', note:'깨끗하나 종파 색 뚜렷(남묘호렌게쿄)', ...FS(32421), url:'https://freesound.org/people/gezortenplotz/sounds/32421/'},
+  {id:'S7', t:'푸저우 남소림사 아침 염불', where:'mycompasstv', len:'2:53', lic:'CC0', note:'비 오는 날', ...FS(383167), url:'https://freesound.org/people/mycompasstv/sounds/383167/'},
+  {id:'S8', t:'홍콩 志蓮淨苑 염불', where:'Oplurus', len:'1:30', lic:'CC0', note:'', ...FS(458983), url:'https://freesound.org/people/Oplurus/sounds/458983/'},
+  {id:'S9', t:'상하이 沉香阁 비구니 법회 (목어·북·종)', where:'xserra', len:'3:35', lic:'CC BY 4.0', note:'', ...FS(320270), url:'https://freesound.org/people/xserra/sounds/320270/'},
+  {id:'S10', t:'어메이산 밤 염불 + 징', where:'EduFigueres', len:'2:18', lic:'CC BY 4.0', note:'', ...FS(454666), url:'https://freesound.org/people/EduFigueres/sounds/454666/'},
+  {id:'S11', t:'베트남 후에 慈孝寺 비구니 2인 염불', where:'OleTerbijn', len:'16:07', lic:'CC BY 4.0', note:'긴 염불 후보. 96kHz, 원본 531MB', ...FS(428353), url:'https://freesound.org/people/OleTerbijn/sounds/428353/'},
+  {id:'S12', t:'베트남 스님 염불 + 북·징·목탁', where:'kevp888', len:'12:03', lic:'CC BY 4.0', note:'긴 염불 후보', ...FS(578509), url:'https://freesound.org/people/kevp888/sounds/578509/'},
+ ]},
+ { el:'t', title:'3순위 · 티베트·팔리 챈팅', sub:'분위기는 좋지만 한국 절과 결이 다름', items:[
+  {id:'T1', t:'라싸 조캉사원 순례자 독송 + 오체투지', where:'djgriffin', len:'7:00', lic:'CC0', note:'', ...FS(149779), url:'https://freesound.org/people/djgriffin/sounds/149779/'},
+  {id:'T2', t:'간쯔 곰파 스님 아침 기도', where:'djgriffin', len:'5:31', lic:'CC0', note:'실내', ...FS(98845), url:'https://freesound.org/people/djgriffin/sounds/98845/'},
+  {id:'T3', t:'라브랑사 200명 집단 챈팅', where:'Lenguaverde', len:'5:01', lic:'CC0', note:'관광객 음성 일부', ...FS(401910), url:'https://freesound.org/people/Lenguaverde/sounds/401910/'},
+  {id:'T4', t:'윈난 티베트족 가정 챈팅', where:'lepolainyann', len:'1:50', lic:'CC0', note:'96kHz 고음질', ...FS(149093), url:'https://freesound.org/people/lepolainyann/sounds/149093/'},
+  {id:'T5', t:'히말라야 사원 독경 + 북·나팔', where:'kevp888', len:'16:25', lic:'CC BY 4.0', note:'', ...FS(440241), url:'https://freesound.org/people/kevp888/sounds/440241/'},
+  {id:'T6', t:'옥스퍼드 테라와다 사원 집단 챈팅', where:'khunseng', len:'6:44', lic:'CC BY 3.0', note:'깨끗한 실내 음질', ...FS(112141), url:'https://freesound.org/people/khunseng/sounds/112141/'},
+  {id:'T7', t:'태국 소형 사찰 챈팅', where:'kyles', len:'4:02', lic:'CC0', note:'PA 재생 + 라이브 스님', ...FS(177634), url:'https://freesound.org/people/kyles/sounds/177634/'},
+  {id:'T8', t:'팔리어 비구 파티목카 전체', where:'태국 우따라딧 · Wikimedia', len:'34:27', lic:'CC BY 3.0', note:'', ...WM('Bhikkhu_Pāṭimokkha_Pali.ogg'), url:'https://commons.wikimedia.org/wiki/File:Bhikkhu_Pāṭimokkha_Pali.ogg'},
+  {id:'T9', t:'스리랑카 마하 피리트 (팔리 호주경) 전체', where:'Wikimedia (Freemen2342)', len:'7h 39m', lic:'CC BY-SA 4.0', note:'397MB. 섞으면 같은 라이선스 조건', ...WM('Maha_Piritha_(Buddhist_chant).ogg'), url:'https://commons.wikimedia.org/wiki/File:Maha_Piritha_(Buddhist_chant).ogg'},
+  {id:'T10', t:'삼귀의 Buddham Saranam Gacchami (보컬 + 인도 반주)', where:'Hariharan · Wikimedia', len:'6:19', lic:'CC0', note:'스튜디오 음악에 가까움', ...WM('Buddham_Saranam_Gacchami_-_Male_Voice,_with_Female_Chorus.oga'), url:'https://commons.wikimedia.org/wiki/File:Buddham_Saranam_Gacchami_-_Male_Voice,_with_Female_Chorus.oga'},
+ ]},
+ { el:'b', title:'보너스 · 법구 소리', sub:'염불 아님. 범종·풍경 합성음을 실녹음으로 바꿀 재료', items:[
+  {id:'B1', t:'만봉사 범종 소리 (10m 거리 현장)', where:'JICA · 공유마당', len:'2:19', lic:'공공누리 1유형', note:'', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13372528&menuNo=200020')},
+  {id:'B2', t:'절 법종1', where:'김용배 · 공유마당', len:'10:15', lic:'CC BY', note:'', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13254524&menuNo=200020')},
+  {id:'B3', t:'절 법당 종소리', where:'김용배 · 공유마당', len:'19:17', lic:'CC BY', note:'', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13254523&menuNo=200020')},
+  {id:'B4', t:'절 법당 작은종1', where:'김용배 · 공유마당', len:'2:20', lic:'CC BY', note:'작은종2~4는 wrtSn 13254520~13254522', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13254519&menuNo=200020')},
+  {id:'B5', t:'사찰 풍경소리', where:'한국저작권위원회 · 공유마당', len:'0:32', lic:'CC BY', note:'', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13220756&menuNo=200020')},
+  {id:'B6', t:'국악기 요령1 (단타)', where:'한국저작권위원회 · 공유마당', len:'0:02', lic:'CC BY', note:'요령2~5는 wrtSn 13265914~13265917', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13265913&menuNo=200020')},
+  {id:'B7', t:'목탁1', where:'김용배 · 공유마당', len:'11:55', lic:'CC BY', note:'목탁2·3은 wrtSn 13253416·13253417', ...EXT('https://gongu.copyright.or.kr/gongu/wrt/wrt/view.do?wrtSn=13253415&menuNo=200020')},
+ ]},
+];
+
+const licClass = l => l.startsWith('CC0') ? 'cc0' : l.includes('SA') ? 'sa' : l.includes('공공누리') ? 'kogl' : 'by';
+const picks = new Set(JSON.parse(localStorage.getItem('yeombul-picks') || '[]'));
+const ALL = {};
+
+for (const sec of SECTIONS) {
+  const root = document.getElementById(sec.el);
+  root.innerHTML = `<h2>${sec.title}<span>${sec.sub}</span></h2><div class="grid"></div>`;
+  const grid = root.querySelector('.grid');
+  for (const it of sec.items) {
+    ALL[it.id] = it;
+    let player = '';
+    if (it.fs) player = `<div class="play"><iframe loading="lazy" src="https://freesound.org/embed/sound/iframe/${it.fs}/simple/medium/" title="${it.t}"></iframe></div>`;
+    else if (it.wm) player = `<audio controls preload="none" src="https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(it.wm)}"></audio>`;
+    else if (it.ext) player = `<div class="ext">▶ <a href="${it.ext}" target="_blank" rel="noopener">열어서 듣기 (새 창)</a> — 바깥 재생 미지원</div>`;
+    const link = it.url ? `<div class="link"><a href="${it.url}" target="_blank" rel="noopener">원본 페이지 ↗</a></div>` : '';
+    const card = document.createElement('article');
+    card.className = 'card' + (picks.has(it.id) ? ' on' : '');
+    card.innerHTML = `
+      <div class="top"><div class="ttl"><span class="id">${it.id}</span>${it.t}</div>
+        <label><input type="checkbox" ${picks.has(it.id) ? 'checked' : ''} data-id="${it.id}"> 고르기</label></div>
+      <div class="meta">${it.where} · ${it.len} · <span class="lic ${licClass(it.lic)}">${it.lic}</span>${it.note ? ' · ' + it.note : ''}</div>
+      ${player}${link}`;
+    grid.appendChild(card);
+  }
+}
+
+function render() {
+  document.getElementById('cnt').textContent = picks.size;
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('on', picks.has(c.querySelector('input').dataset.id)));
+  document.getElementById('out').value = [...picks].map(id => { const it = ALL[id]; return `${id} · ${it.t} · ${it.len} · ${it.lic} · ${it.url || it.ext}`; }).join('\n');
+  localStorage.setItem('yeombul-picks', JSON.stringify([...picks]));
+}
+document.addEventListener('change', e => { if (e.target.matches('input[data-id]')) { e.target.checked ? picks.add(e.target.dataset.id) : picks.delete(e.target.dataset.id); render(); } });
+document.getElementById('copy').onclick = () => { navigator.clipboard.writeText(document.getElementById('out').value).then(() => { const b = document.getElementById('copy'); b.textContent = '복사됨'; setTimeout(() => b.textContent = '고른 목록 복사', 1200); }); };
+document.getElementById('reset').onclick = () => { picks.clear(); document.querySelectorAll('input[data-id]').forEach(i => i.checked = false); render(); };
+render();
+</script>
+</body>
+</html>
