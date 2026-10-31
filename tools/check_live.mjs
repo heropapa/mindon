@@ -7,7 +7,7 @@ const ok = (good, msg) => { console.log((good ? 'OK  ' : 'FAIL') + '  ' + msg); 
 
 for (const p of ['/', '/privacy.html', '/terms.html', '/credits.html', '/admin', '/stats', '/robots.txt', '/img/og.jpg',
   '/avatar/mindon-duck.gltf.json', '/avatar/mindon-duck-lite.gltf.json', '/avatar/mindon-duck-far.gltf.json',
-  '/buddha/buddha-gilt.gltf.json', '/audio/moktak-strike.mp3']) {
+  '/buddha/buddha-gilt.gltf.json', '/audio/jukbi-1.mp3']) {
   try { const r = await fetch(base + p, { method: p === '/' ? 'GET' : 'HEAD' });
     let extra = '';
     if (p === '/') { const t = await r.text(); extra = t.includes('maumon:ws') && t.includes('og:image') ? ' (head·meta 있음)' : ' (head 확인 필요)'; if (!t.includes('og:image')) bad++; }

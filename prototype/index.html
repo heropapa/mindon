@@ -734,11 +734,10 @@ const STR = {
     leafMoved: '다른 분과 같은 연잎이라 옆자리로 옮겨 앉았어요', leavesFull: '연잎이 모두 차서 물가에 앉았어요',
     pondLook: '화면을 끌면 둘러보고, 두 손가락으로 가까이·멀리 볼 수 있어요',
     stand: '일어나기', view: '보기', leave: '나가기', menu: '메뉴', quiet: '조용한 시간', recAll: n => `모두 ${n}배`,
-    chants: { yeongin: '관음정근', yeombul: '염불', silsang: '실상사', seonun: '선운사', yebul: '저녁예불' }, chantSrc: '염불: ',
+    chants: { yeongin: '관음정근' }, chantSrc: '염불: ',
     bowTitle: '108배', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
     bowHint: '시작을 누르면 천천히 108번 절합니다. 끝나면 죽비를 세 번 칩니다. 화면을 끌면 둘러볼 수 있어요.',
     findSeatShort: '빈 방석 가까이 가 보세요',
-    bowCredit: '목탁 소리: ',
     findSeat: '빈 방석 가까이 가면 108배를 할 수 있어요',
     bowToday: (t, a) => `오늘 ${t}배 · 모두 ${a}배`,
     bowDone: '108배를 마쳤습니다. 수고하셨습니다.',
@@ -773,11 +772,10 @@ const STR = {
     leafMoved: 'Someone took this leaf at the same moment — you moved to the next one', leavesFull: 'All lotus leaves are taken — you are sitting by the water',
     pondLook: 'Drag to look around · pinch or scroll to move closer or farther',
     stand: 'Stand up', view: 'View', leave: 'Leave', menu: 'Menu', quiet: 'Quiet time', recAll: n => `${n} bows in all`,
-    chants: { yeongin: 'Gwaneum', yeombul: 'Chant', silsang: 'Silsangsa', seonun: 'Seonunsa', yebul: 'Evening' }, chantSrc: 'Chant: ',
+    chants: { yeongin: 'Gwaneum' }, chantSrc: 'Chant: ',
     bowTitle: '108 bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
     bowHint: 'Press Begin to make 108 slow bows. Three claps of the jukbi mark the end. Drag to look around.',
     findSeatShort: 'Walk up to an empty cushion',
-    bowCredit: 'Moktak: ',
     findSeat: 'Walk up to an empty cushion to begin 108 bows',
     bowToday: (t, a) => `${t} today · ${a} in all`,
     bowDone: 'You finished 108 bows. Rest a moment.',
@@ -838,14 +836,9 @@ function day() { return rec.days[today()] || (rec.days[today()] = { bows: 0, med
 function saveRec() { try { localStorage.setItem(KEY, JSON.stringify(rec)); } catch (e) { /* 저장 불가 환경 */ } }
 
 /* ───────────── 녹음 음원 (출처 표기 필수 — CREDITS.md) ───────────── */
-const REC = {
-  moktak: { file: 'audio/moktak-rhythm.mp3', credit: '「전통사물_목탁_ver.2_치다_연속_중간」 · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+const REC = {   // 염불은 관음정근 하나만 (2026-10-31 본부장 '관음정근만 냅두고 다 빼자')
   // 기본 염불 — 음반 녹음이라 공유 저작물이 아님: 영인스님 측 허락을 받아 씀 (2026-10-31 본부장 확인)
   yeongin: { file: 'audio/yeongin-gwaneum.mp3', credit: '영인스님 「관세음보살정근」 · 음반 「영인스님 염불 따라하기 3」(2010) · 허락을 받아 사용' },
-  yeombul: { file: 'audio/yeombul-kimyongbae.mp3', credit: '김용배 「염불소리1」 · 한국저작권위원회 공유마당 · CC BY' },
-  silsang: { file: 'audio/silsangsa-yeombul-moktak.mp3', credit: '「산_내변산 실상사_염불과 목탁, 새와 매미」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
-  seonun: { file: 'audio/seonunsa-yeombul-spring.mp3', credit: '「산_선운산 선운사_새, 샘물, 염불, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
-  yebul: { file: 'audio/seonunsa-evening-bell.mp3', credit: '「산_선운산 선운사_저녁예불, 새소리, 범종, 목어, 운판, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
 };
 
 /* ───────────── 소리 크기 (기기에 기억) ───────────── */
@@ -969,13 +962,13 @@ const Snd = {
   shots: {},
   loadShots() {
     if (!this.ctx || this.shotsLoading) return; this.shotsLoading = true;
-    [['moktak', 'audio/moktak-strike.mp3'], ['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b']].forEach(([k, f]) =>
+    [['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b'], ['notify', 'audio/notify-moktak.mp3']].forEach(([k, f]) =>
       fetch(f).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => { this.shots[k] = buf; }).catch(() => {}));
   },
   shot(k, gain) {
     if (!this.ok()) return;
     const buf = this.shots[k];
-    if (!buf) { if (k === 'moktak') this.moktak(true); else this.bell(false); return; } // 아직 못 받았으면 합성음으로
+    if (!buf) { if (k !== 'notify') this.bell(false); return; } // 아직 못 받았으면 죽비는 종으로 대신, 알림은 조용히
     const src = this.ctx.createBufferSource(), g = this.ctx.createGain(); g.gain.value = gain || 0.9;
     src.buffer = buf; src.connect(g); g.connect(this.fx); src.start();
   },
@@ -986,6 +979,7 @@ const Snd = {
 const AMB_FILES = {
   birds: 'audio/nature-birds.mp3', cicada: 'audio/nature-cicada.mp3', sumNight: 'audio/nature-summer-night.mp3',
   autNight: 'audio/nature-autumn-night.mp3', wind: 'audio/nature-winter-wind.mp3', stream: 'audio/nature-stream.mp3',
+  gate: 'audio/gate-chime.mp3',                     // 불이문 풍경 (본부장 제공 녹음, 45초 고리)
   chant: REC[VOL.chantTrack].file,
 };
 // [새, 매미, 여름밤, 가을밤, 겨울바람]
@@ -1057,6 +1051,9 @@ const Amb = {
     const dp = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z);
     // 연못은 고인 물이라 잔잔하게: 물가 가까이(10m 안)에서만 살짝 (2026-10-30 사용자 '물소리가 크지 않아')
     this.set('stream', Math.max(0, Math.min(1, 1 - (dp - POND_R) / 10)) * (season === 'winter' ? 0.08 : 0.22) * indoor);
+    // 불이문 풍경: 문(z 30)에서 30m 안, 가까울수록 크게 (예전 합성 풍경 대신 — 2026-10-31 본부장 녹음)
+    const dg = Math.hypot(S.pos.x, S.pos.z - 30);
+    this.set('gate', Math.pow(Math.max(0, 1 - dg / 30), 1.3) * (inHallBox(S.pos) ? 0 : 1));
     // 염불: 법당 안에선 가득, 밖에선 문에서 멀어질수록 작아짐
     const dh = Math.hypot(S.pos.x, S.pos.z - HALL.front);
     let ch = inHallBox(S.pos) ? 1 : Math.pow(Math.max(0, 1 - dh / 34), 1.6);
@@ -1112,6 +1109,29 @@ const BG = {
   },
 };
 document.addEventListener('visibilitychange', () => { if (document.hidden) BG.hide(); else BG.show(); });
+
+/* ───────────── 입장 화면 음악 (2026-10-31 본부장 제공 '인트로배경음(계속반복)') ─────────────
+   입장 화면에서 반복. 브라우저는 화면을 한 번 누르기 전엔 소리를 막아서, 바로 못 틀면 처음 누를 때 틂(introKick).
+   '마음 켜기'를 누르면 4초 동안 줄어들며 경내 소리로 넘어가고, '나가기'로 돌아오면 다시 틂. */
+const Intro = {
+  el: null, g: null, stopT: 0,
+  play() {
+    if (entered) return null;
+    if (!this.el) { this.el = new Audio('audio/intro-loop.mp3'); this.el.loop = true; this.el.volume = 0.8; }
+    clearTimeout(this.stopT);
+    if (this.g && Snd.ctx) { const t = Snd.ctx.currentTime; this.g.gain.cancelScheduledValues(t); this.g.gain.setValueAtTime(1, t); }
+    else this.el.volume = 0.8;
+    return this.el.play();
+  },
+  fadeOut() {
+    if (!this.el || this.el.paused) return;
+    // 아이폰은 요소 볼륨을 못 바꿔서 Web Audio 로 묶어 줄임 (입장 버튼을 누르는 순간 소리 장치가 생김)
+    if (Snd.ctx && !this.g) { try { const src = Snd.ctx.createMediaElementSource(this.el); this.g = Snd.ctx.createGain(); src.connect(this.g); this.g.connect(Snd.ctx.destination); } catch (e) { /* 이미 묶임 */ } }
+    if (this.g) { const t = Snd.ctx.currentTime; this.g.gain.cancelScheduledValues(t); this.g.gain.setValueAtTime(1, t); this.g.gain.linearRampToValueAtTime(0, t + 4); }
+    else { const el = this.el, v0 = el.volume, t0 = performance.now(); const step = () => { const k = Math.min(1, (performance.now() - t0) / 4000); el.volume = v0 * (1 - k); if (k < 1 && !el.paused) requestAnimationFrame(step); }; step(); }
+    clearTimeout(this.stopT); this.stopT = setTimeout(() => { if (entered && this.el) this.el.pause(); }, 4300);
+  },
+};
 
 /* ───────────── 3D 경내 ───────────── */
 const canvas = document.getElementById('scene');
@@ -1867,9 +1887,15 @@ joyRestore();
 joyEl.addEventListener('pointerdown', e => { e.preventDefault(); JOY.id = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyEl.classList.add('on'); joyMove(e); });
 joyEl.addEventListener('pointermove', e => { if (e.pointerId === JOY.id) joyMove(e); });
 ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => joyEl.addEventListener(ev, joyEnd));
-const keys = {};
-addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+// 키는 글자(e.key)가 아니라 자판 위치(e.code)로 — 한/영이 한글이면 W 가 'ㅈ'으로 들어와 멈추던 문제 (2026-10-31 본부장 PC)
+const keys = {}, KEYMAP = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright' };
+const keyName = e => KEYMAP[e.code] || (e.key || '').toLowerCase();
+addEventListener('keydown', e => { keys[keyName(e)] = true; });
+addEventListener('keyup', e => { keys[keyName(e)] = false; });
+// 키를 누른 채 다른 창·탭으로 가면 손 뗀 것을 못 받아 키가 눌린 채로 남음 → 창을 벗어나면 모두 놓음
+const releaseKeys = () => { for (const k in keys) keys[k] = false; };
+addEventListener('blur', releaseKeys);
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseKeys(); });
 
 function zoneOf(p) {
   if (S.mode === 'hall') return 'hall';
@@ -1892,10 +1918,9 @@ const BOW_SEC = 6; // 큰절 한 번 6초 — 천천히 (108배 약 11분)
 function doBow() {
   if (S.bowT >= 0) return; // 한 번 절하는 동안은 무시
   S.bowT = 0; D.override = 'bow'; duck.setPose('bow');
-  Snd.shot('moktak');
+  Snd.shot('jukbi1');                               // 절마다 죽비 한 번, 108번째가 끝나면 세 번 (2026-10-31 본부장)
   S.bow = Math.min(108, S.bow + 1);
   day().bows++; rec.total++; saveRec();
-  if (S.bow % 27 === 0 && S.bow < 108) Snd.bell(false);
   paintMala(); renderRec();
 }
 function bowDone() { // 108번째 절이 끝나면
@@ -1910,8 +1935,7 @@ function renderBowBtn() { renderActions(); paintMala(); }
 function toggleAutoBow() {
   if (S.autoBow) { S.autoBow = false; renderBowBtn(); return; }
   if (S.bow >= 108) S.bow = 0;
-  S.autoBow = true; S.bowWait = S.bow === 0 ? 1.4 : 0.4;   // 처음엔 죽비 한 번 치고 시작
-  if (S.bow === 0) Snd.shot('jukbi1');
+  S.autoBow = true; S.bowWait = 0.4;                // 첫 절부터 죽비가 울림
   renderBowBtn(); paintMala();
 }
 
@@ -1922,6 +1946,7 @@ function hapjang() {
   if (hapBusy || S.bowT >= 0) return; hapBusy = true;
   S.queue = []; S.target = null; if (S.guided) stopGuide(); // 걷던 중이면 그 자리에 멈춤
   D.override = 'hapjang'; duck.setPose('hapjang', false, () => { if (D.override === 'hapjang') D.override = null; hapBusy = false; }); // 반배 4초
+  clearTimeout(hapjang.t); hapjang.t = setTimeout(() => { if (D.override === 'hapjang') D.override = null; hapBusy = false; }, 4500); // 끝 신호를 놓쳐도 다시 걸을 수 있게
   setTimeout(() => Snd.bell(false), 700);
   const msgs = T().hapMsg; toast(msgs[Math.floor(Math.random() * msgs.length)], 3200);
   if (Room.on && Room.others.size) News.self(Room.others.size);   // 함께 있는 분들에게 전해졌다고 알려 줌
@@ -1980,7 +2005,7 @@ function tickMed(now) {
 /* ───────────── UI ───────────── */
 const $ = id => document.getElementById(id);
 let view = null;                // 앉아서 하는 일: 'bowPanel'(108배) · 'medPanel'(연잎) · null(걷기)
-let entered = false, toastT = 0, signT = 0, placesOpen = false, chimeOn = false;
+let entered = false, toastT = 0, signT = 0, placesOpen = false;
 function toast(msg, ms) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2600); }
 function openPanel(id) {
   view = id; placesOpen = false;
@@ -2084,7 +2109,8 @@ function renderUI() {
   $('bgToggle').setAttribute('aria-checked', String(!!VOL.bg));
   setSlider('volNature', VOL.nature); setSlider('volChant', VOL.chant); setSlider('volBell', VOL.bell);
   chips('chantPick', Object.keys(t.chants).map(k => [k, t.chants[k]]), VOL.chantTrack, k => { Amb.setChant(k); renderUI(); });
-  $('sndSrc').textContent = `${t.sndSrc} · ${t.chantSrc}${REC[VOL.chantTrack].credit} · ${t.bowCredit}${REC.moktak.credit}`;
+  $('chantPick').hidden = Object.keys(t.chants).length < 2;   // 곡이 하나면 고르기 칩은 숨김
+  $('sndSrc').textContent = `${t.sndSrc} · ${t.chantSrc}${REC[VOL.chantTrack].credit}`;
   chips('seasonPick', SEASON_ORDER.map(k => [k, t.season[k]]), season, k => { season = k; applyTod(); });
   chips('todPick', TOD_ORDER.map(k => [k, t.tod[k]]), tod, k => { tod = k; applyTod(); });
   chips('langPick', [['ko', '한국어'], ['en', 'English']], lang, k => { lang = k; renderUI(); });
@@ -2169,6 +2195,7 @@ function leave() {
   S.pos.set(0, 0, 40); S.yaw = 0; D.face = 0; CAM.snap = true;
   const g = $('gate'); g.hidden = false; $('enterSound').classList.remove('on');
   requestAnimationFrame(() => g.classList.remove('leaving'));
+  const ip = Intro.play(); if (ip && ip.catch) ip.catch(() => {});   // 입장 화면으로 돌아오면 입장 음악 다시
 }
 $('sndToggle').addEventListener('click', () => { setSound(!Snd.on); if (Snd.on) Amb.start(); });
 $('bgToggle').addEventListener('click', () => { VOL.bg = !VOL.bg; saveVol(); renderUI(); });
@@ -2194,12 +2221,10 @@ function enter() {
   }
   else goTo([new THREE.Vector3(0, 0, 27)]);
   setTimeout(() => toast(T().tapHint, 3800), 1600);
-  // 길 위 풍경 소리 가끔
-  if (!chimeOn) { chimeOn = true; (function chimeLoop() { if (entered && Snd.on && !document.hidden && Snd.ctx && Snd.ctx.state === 'running' && S.zone !== 'hall') Snd.chime(); setTimeout(chimeLoop, 9000 + Math.random() * 14000); })(); }
 }
 $('enterSound').addEventListener('click', () => {
   const b = $('enterSound'); if (b.classList.contains('on')) return;
-  b.classList.add('on'); setSound(true); Amb.start();
+  b.classList.add('on'); setSound(true); Amb.start(); Intro.fadeOut();   // 입장 음악은 줄어들며 경내 소리로
   setTimeout(() => enter(), reduceMotion ? 0 : 950);
 });
 
@@ -2430,6 +2455,7 @@ const News = {
     }
     const el = $('news'); el.querySelector('.news-ic').innerHTML = svg(first.k === 'bow' ? 'bow' : 'hap');
     el.querySelector('span').textContent = msg; el.classList.add('show'); this.busy = true;
+    if (first.self == null) Snd.shot('notify', 0.8);   // 다른 분 소식엔 짧고 작은 목탁 (본부장 제공 알림 소리)
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => { this.busy = false; this.pump(); }, 700); }, first.k === 'bow' ? 5000 : 3600);
   },
 };
@@ -2703,10 +2729,17 @@ if (WS_PATH) {
   window.claude.use('room').then(room => { if (room) Room.init(room); }).catch(() => {});
 }
 
+// 입장 음악: 바로 틀어 보고(데스크톱은 될 때가 있음), 막히면 입장 화면을 처음 누르거나 키를 칠 때
+(function introKick() {
+  const tryPlay = () => { const p = Intro.play(); if (p && p.catch) p.catch(() => {}); };
+  const first = () => { removeEventListener('pointerdown', first, true); removeEventListener('keydown', first, true); tryPlay(); };
+  addEventListener('pointerdown', first, true); addEventListener('keydown', first, true);   // 막혀 있으면 첫 터치·키에서 (이미 나오고 있으면 그대로)
+  tryPlay();
+})();
 applyTod();
 requestAnimationFrame(frame);
 
 // 테스트·디버그용
-window.__maumon = { renderer, Crowd, Quality, BG, Snd, PONDCAM, TREES, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
 })();
 </script>
