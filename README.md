@@ -1,16 +1,18 @@
-# 마음온 에셋 (Maum On assets)
+# 마음온 · MindOn
 
-마음온(온라인 명상 사찰)의 브랜드·캐릭터 에셋 저장소. 작업자는 이 저장소를 `git pull` 해서 최신 파일을 받고, 자기 작업은 PR로 올린다.
+마음온(MindOn, 온라인 명상 사찰)의 통합 저장소. 기획서·시제품·브랜드·캐릭터·로더·문서가 전부 여기 있다. 작업자는 이 저장소를 `git pull` 해서 최신 파일을 받고, 자기 작업은 PR로 올린다.
 
 | 폴더 | 내용 |
 | --- | --- |
+| `docs/기획서.md` | 서비스 기획서 (구역·체험·단계·열린 질문) |
+| `prototype/` | 3D 시제품 (three.js). `server/` `tools/` `vendor/` 는 시제품 보조 |
 | `brand/logo/` | 붓글씨 전원 마크(먹·한지·금), 낙관 인장, 파비콘 SVG |
 | `brand/tokens.json` | 색·글꼴·간격·모서리·그림자·동작 토큰 |
 | `brand/icons/` | 행동 바·패널용 선 아이콘 14개 + sprite.svg |
-| `characters/` | 심덕이와 도반 친구들 GLB (원본 `maumon-<species>.glb`, 라이트 `-lite.glb`), 렌더, Blender 소스 |
+| `characters/` | 심덕이와 도반 친구들 GLB (원본 `mindon-<species>.glb`, 라이트 `-lite.glb`), 렌더, Blender 소스 |
 | `loader/` | `duck-glb.js` (three.js r128 로더·동작 제어), `viewer.html` (확인용 뷰어), `duck.js` (도형 폴백) |
 | `docs/` | 디자인 시스템 브랜드북, 경내 아트 디렉션, **모델링 규격서**, 핸드오프 메모 |
-| `index.html` · `characters.html` · `spec.html` | 작업자 안내문 · 캐릭터 시트/뷰어 · 모델링 규격서 (GitHub Pages: https://heropapa.github.io/maumon-assets/) |
+| `index.html` · `characters.html` · `spec.html` | 작업자 안내문 · 캐릭터 시트/뷰어 · 모델링 규격서 (GitHub Pages: https://heropapa.github.io/mindon/) |
 | `site/` | 웹페이지가 쓰는 렌더 이미지 |
 
 ## 모델링 작업자는 먼저
@@ -25,7 +27,7 @@
 <script src="loader/duck-glb.js"></script>
 ```
 ```js
-const duck = new MaumDuckGLB('characters/maumon-simdeok.glb', d => scene.add(d.root));
+const duck = new MaumDuckGLB('characters/mindon-simdeok.glb', d => scene.add(d.root));
 duck.setPose('stand' | 'walk' | 'sit' | 'breathe' | 'hapjang' | 'bow', instant?, onDone?);
 duck.update(dt); // 매 프레임, 초 단위
 ```

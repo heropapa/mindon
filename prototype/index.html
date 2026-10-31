@@ -1,0 +1,2712 @@
+<title>마음온 MindOn</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4Ij4KICA8IS0tIO2MjOu5hOy9mMK37JWxIOyVhOydtOy9mOyaqSDri6jsiJztmJU6IOu2k+qysCDsl4bsnbQg6rW16riw66eMIOyCtOumsCDrkZAg7ZqNLiAyNHB47JeQ7ISc64+EIOydve2ejOuLpCAtLT4KICA8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHJ4PSIxMCIgZmlsbD0iIzEyMTQxOSIvPgogIDxwYXRoIGZpbGw9IiNmMWVhZGMiIGQ9Ik0xNyAxMyBDOSAxNywgNiAyNiwgOSAzMyBDMTIgNDEsIDIyIDQ0LCAzMCA0MCBDMzggMzYsIDQxIDI2LCAzNyAxOCBDMzYgMTYsIDM0IDE0LCAzMiAxMyBMMzMgMTAgQzM3IDEzLCA0MCAxNywgNDEgMjIgQzQzIDMxLCAzOCA0MSwgMjkgNDQgQzE5IDQ3LCA4IDQxLCA2IDMxIEM0IDIzLCA4IDE1LCAxNiAxMCBaIi8+CiAgPHBhdGggZmlsbD0iI2YxZWFkYyIgZD0iTTIxIDcgQzIyIDUsIDI3IDUsIDI4IDcgQzI4IDEyLCAyNyAxOCwgMjYgMjMgQzI1LjUgMjUsIDI1IDI2LjUsIDI0IDI4IEMyMyAyNi41LCAyMi41IDI1LCAyMiAyMyBDMjEgMTgsIDIwIDEyLCAyMSA3IFoiLz4KICA8cmVjdCB4PSIzNCIgeT0iMzQiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIHJ4PSIxLjUiIGZpbGw9IiNiODQzMmYiIHRyYW5zZm9ybT0icm90YXRlKC02IDM4IDM4KSIvPgo8L3N2Zz4K">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+  /* 레이아웃: 전체화면 3D 경내 위에 먹빛 반투명 패널이 위(장소·설정)·아래(행동·이동)로 얹힌다.
+     단일 테마(먹·단청) — 3D 장면의 시간대가 바뀌어도 패널은 항상 어두운 먹빛 위 한지색 글씨. */
+  :root {
+    --ink: rgba(17, 19, 25, 0.74);
+    --ink-solid: #121419;
+    --ink-soft: rgba(17, 19, 25, 0.5);
+    --paper: #f1eadc;
+    --paper-dim: rgba(241, 234, 220, 0.68);
+    --line: rgba(241, 234, 220, 0.16);
+    --dan-red: #b8432f;
+    --dan-green: #2f7a68;
+    --gold: #d7b25b;
+    --gold-glow: rgba(215, 178, 91, 0.35);
+    --lantern: #f0a04b;
+    --ignite: 900ms cubic-bezier(.2, 0, 0, 1);
+    --f-display: "Gowun Batang", "Apple SD Gothic Neo", serif;
+    --f-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; overflow: hidden; background: var(--ink-solid); color: var(--paper);
+    font-family: var(--f-body); font-size: 15px; line-height: 1.55;
+    -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none;
+  }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+  button {
+    font: inherit; color: inherit; background: none; border: 0; cursor: pointer;
+    border-radius: 999px; padding: 8px 14px; min-height: 40px;
+  }
+  button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  button:disabled { cursor: default; opacity: 0.42; }
+
+  /* 장면 위 패널 공통 (디자인 시스템 「화면 위 패널」): 먹 반투명 + blur 12, line 1px, radius-md, 한지 글자, 패딩 12/16 */
+  .pnl {
+    background: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .en { font-size: 12px; color: var(--paper-dim); }
+
+  /* 위: 왼쪽 워드마크·장소·함께 있기, 오른쪽 둥근 버튼(보기 · 소리) */
+  .top {
+    position: fixed; left: 0; right: 0; top: 0; z-index: 5; display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 8px; pointer-events: none;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .top > * { pointer-events: auto; }
+  /* 왼쪽 위: 로고만 (누르면 나가기). 다른 사람이 있으면 등불색 숫자 배지 */
+  .logo { position: relative; width: 56px; height: 56px; min-height: 56px; padding: 0; border-radius: 50%; display: grid; place-items: center; }
+  .logo .mark { width: 48px; height: 48px; }
+  .logo .badge {
+    position: absolute; right: -4px; bottom: -4px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+    background: var(--lantern); color: var(--ink-solid); font-size: 12px; font-weight: 700; line-height: 22px; text-align: center;
+    box-shadow: 0 0 10px rgba(240, 160, 75, 0.6); animation: glow 4s ease-in-out infinite;
+  }
+  @keyframes glow { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+  .tools { display: flex; gap: 8px; flex: none; }
+  .round { width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%; display: grid; place-items: center; color: var(--paper); }
+  .round svg { width: 22px; height: 22px; }
+  .round[aria-pressed="false"] { color: var(--paper-dim); }
+  .round[aria-expanded="true"] { border-color: var(--gold); }
+
+  /* 오른쪽 위 펼침 패널 (소리 · 보기) */
+  .drop {
+    position: fixed; z-index: 7; width: min(300px, calc(100% - 32px)); display: flex; flex-direction: column; gap: 14px;
+    top: calc(64px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+    max-height: calc(100vh - 80px - env(safe-area-inset-top, 0px)); max-height: calc(100dvh - 80px - env(safe-area-inset-top, 0px));
+    overflow-y: auto; overscroll-behavior: contain;   /* 가로 화면에서도 아래(백그라운드 재생·출처)까지 */
+  }
+  .drop-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .drop-head b { font-family: var(--f-display); font-size: 16px; }
+  .drop-head b .en { margin-left: 6px; font-family: var(--f-body); font-weight: 400; }
+  .srow { display: grid; grid-template-columns: 24px 1fr; column-gap: 10px; row-gap: 4px; align-items: center; }
+  .srow > svg { grid-column: 1; grid-row: 1; width: 22px; height: 22px; color: var(--paper-dim); }
+  .srow .nm { grid-column: 2; grid-row: 1; font-size: 14px; }
+  .srow .nm .en, .vrow .nm .en { margin-left: 6px; }
+  .srow .sl { grid-column: 2; grid-row: 2; }
+  .srow .chips { grid-column: 2; grid-row: 3; }
+  .bgrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .bgrow .nm { font-size: 14px; } .bgrow .nm > .en { margin-left: 6px; }
+  .bgrow small { display: block; margin-top: 2px; font-size: 11px; line-height: 1.45; color: var(--paper-dim); word-break: keep-all; }
+  .bgrow small .en { font-size: 11px; }
+  .vrow { display: flex; flex-direction: column; gap: 6px; }
+  .vrow .nm { font-size: 14px; }
+  /* 슬라이더: 트랙 line, 채움 gold, 손잡이 paper 16px */
+  input[type=range].sl { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; --v: 50%; }
+  .sl::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--gold) var(--v), var(--line) var(--v)); }
+  .sl::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border: 0; border-radius: 50%; background: var(--paper); }
+  .sl::-moz-range-track { height: 4px; border-radius: 2px; background: var(--line); }
+  .sl::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--gold); }
+  .sl::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: var(--paper); }
+  .switch { width: 46px; height: 26px; min-height: 26px; padding: 0; border-radius: 999px; background: var(--line); position: relative; flex: none; }
+  .switch::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper-dim); transition: transform 300ms, background-color 300ms; }
+  .switch[aria-checked="true"] { background: var(--gold); }
+  .switch[aria-checked="true"]::after { transform: translateX(20px); background: var(--ink-solid); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1px solid var(--line); font-size: 13px; padding: 4px 10px; min-height: 32px; }
+  .chip[aria-pressed="true"] { background: var(--paper); color: var(--ink-solid); border-color: var(--paper); }
+  .drop .src { margin: 0; font-size: 8px; color: var(--paper-dim); line-height: 1.35; opacity: 0.75; } /* 출처: 아주 작게 */
+  /* 로고 메뉴: 왼쪽 위, 로고 바로 아래 */
+  .drop.menu { left: max(16px, env(safe-area-inset-left, 0px)); right: auto; top: calc(76px + env(safe-area-inset-top, 0px)); width: min(280px, calc(100% - 32px)); gap: 12px; }
+  .menu-head { display: flex; align-items: baseline; gap: 8px; }
+  .menu-head b { font-family: var(--f-display); font-size: 18px; }
+  .menu-head .en { letter-spacing: 0.18em; font-size: 10px; }
+  .mrow { display: flex; flex-direction: column; gap: 2px; }
+  .mrow .nm { font-size: 12px; color: var(--paper-dim); }
+  .mrow .nm .en { margin-left: 6px; font-size: 11px; }
+  .mrow .val { font-size: 15px; }
+  .mrow .together { display: flex; align-items: center; gap: 8px; }
+  .mrow .together i { width: 8px; height: 8px; border-radius: 50%; background: var(--lantern); flex: none; animation: glow 4s ease-in-out infinite; }
+  .mrow .hint { font-size: 12px; color: var(--paper-dim); }
+  .mrow .hint:empty { display: none; }
+  .lanterns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lanterns:empty { display: none; }
+  .lanterns i { width: 12px; height: 16px; border-radius: 6px 6px 4px 4px; background: var(--lantern); box-shadow: 0 0 8px rgba(240, 160, 75, 0.6); }
+  .lanterns i.me { background: var(--paper); box-shadow: none; }
+  .leave-btn { border: 1px solid var(--line); border-radius: 999px; min-height: 44px; font-size: 15px; margin-top: 2px; }
+  .leave-btn .en { margin-left: 6px; }
+  .logo[aria-expanded="true"] { border-color: var(--gold); }
+
+  /* 아래: 행동 바(가운데) · 진행 카운트(오른쪽) · 장소 고르기 */
+  .bottom {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    pointer-events: none;
+  }
+  .bottom > * { pointer-events: auto; }
+  .bar { display: flex; padding: 6px; }
+  .bar:empty { display: none; }
+  .act {
+    width: 72px; min-height: 60px; padding: 6px 4px; border-radius: 10px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; line-height: 1.2;
+  }
+  .act svg { width: 24px; height: 24px; position: relative; }
+  .act span { position: relative; text-align: center; }
+  .act.main svg, .act.on svg, .act.on span { color: var(--gold); }
+  .act .fill { position: absolute; inset: 0; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); opacity: 0.3; }
+  .count { align-self: flex-end; width: 168px; display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; }
+  .count .n { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+  .count .track { height: 8px; border-radius: 4px; background: var(--line); position: relative; }
+  .count .track i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 4px; background: var(--gold); transition: width 600ms cubic-bezier(.2, 0, 0, 1); }
+  .count.done .track::after { content: ""; position: absolute; right: -2px; top: -2px; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+  .count small { font-size: 12px; color: var(--paper-dim); }
+  .places-pop { width: min(320px, 100%); display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+  .places-pop button { text-align: left; border-radius: 8px; padding: 8px 12px; min-height: 40px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .places-pop button.here { background: var(--paper); color: var(--ink-solid); }
+  .places-pop button.here .en { color: rgba(18, 20, 25, 0.6); }
+  .places-pop .guide { background: var(--gold); color: var(--ink-solid); font-weight: 700; justify-content: center; border-radius: 999px; margin-bottom: 4px; }
+  .places-pop .soon { font-size: 11px; color: var(--gold); }
+
+  /* 현판 식 제목: 장소에 들어설 때 2초 */
+  #signboard {
+    position: fixed; left: 50%; top: 24%; transform: translate(-50%, -50%); z-index: 6; pointer-events: none;
+    border-radius: 999px; padding: 10px 28px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    opacity: 0; transition: opacity 600ms cubic-bezier(.2, 0, 0, 1);
+  }
+  #signboard.show { opacity: 1; }
+  #signboard b { font-family: var(--f-display); font-size: 32px; line-height: 1.2; color: var(--gold); letter-spacing: 0.08em; white-space: nowrap; }
+  #signboard small { font-size: 11px; letter-spacing: 0.18em; color: var(--paper-dim); white-space: nowrap; }
+
+  /* 조이스틱 (걸을 때만, 왼쪽 아래) */
+  .joy {
+    align-self: flex-start; width: 104px; height: 104px; border-radius: 50%; position: relative; flex: none;
+    background: rgba(18, 20, 26, 0.32); border: 1px solid var(--line); touch-action: none;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .joy[hidden] { display: none; }
+  .joy i {
+    position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
+    background: var(--paper); opacity: 0.85; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); pointer-events: none;
+  }
+  .joy.on i { opacity: 1; }
+  .joy.free { position: fixed; z-index: 6; margin: 0; }
+  .joy-grip {
+    position: absolute; top: -8px; right: -8px; width: 32px; height: 32px; border-radius: 50%; padding: 0; min-height: 0;
+    background: var(--ink); border: 1px solid var(--line); color: var(--paper); display: grid; place-items: center;
+    touch-action: none; cursor: grab;
+  }
+  .joy-grip svg { width: 18px; height: 18px; }
+  .joy.moving { outline: 2px dashed var(--gold); outline-offset: 4px; }
+  /* 입장 화면 */
+  #gate {
+    position: fixed; inset: 0; z-index: 20; display: flex; overflow-y: auto; padding-block: 20px;
+    background: radial-gradient(ellipse at 50% 40%, rgba(18, 20, 26, 0.55), rgba(18, 20, 26, 0.92) 70%);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    transition: opacity 1.2s ease;
+  }
+  #gate.leaving { opacity: 0; pointer-events: none; }
+  .gate-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; max-width: 420px; margin: auto; }
+  .hyeonpan {
+    /* 현판: 검은 판 위 금빛 글씨, 단청 테두리 */
+    background: #1c1a17; border: 2px solid var(--gold);
+    box-shadow: 0 0 0 3px var(--dan-green), 0 0 0 5px var(--dan-red), 0 18px 40px rgba(0, 0, 0, 0.5);
+    padding: 16px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-family: var(--f-display); font-size: 36px; font-weight: 700; color: var(--gold); line-height: 1;
+  }
+  .gate-cap { font-size: 13px; color: var(--paper); letter-spacing: 0.08em; margin: -4px 0 0; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9); }
+  .gate-name { font-family: var(--f-display); font-size: 40px; font-weight: 700; letter-spacing: 0.06em; margin: 8px 0 0; line-height: 1.1; }
+  .gate-tag { font-family: var(--f-display); font-size: 16px; color: var(--gold); margin: -10px 0 0; text-wrap: balance; }
+  .gate-sub { color: var(--paper-dim); font-size: 15px; margin: 0; text-wrap: balance; }
+  /* 전원 버튼: 한지 원판 위 먹 마크. 누르면 원판이 먹으로, 마크가 금으로 바뀌며 불이 켜짐 (마음 ON) */
+  .power {
+    position: relative; width: 176px; height: 176px; padding: 0; border-radius: 50%;
+    background: var(--paper); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    transition: transform var(--ignite), background-color var(--ignite), box-shadow var(--ignite);
+  }
+  .power img { position: absolute; left: 20%; top: 20%; width: 60%; height: 60%; transition: opacity var(--ignite); }
+  .power .m-gold { opacity: 0; }
+  .power::after {
+    content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1.5px solid var(--gold);
+    opacity: 0.5; animation: breathe 4s ease-in-out infinite; pointer-events: none;
+  }
+  .power:hover { transform: scale(1.02); }
+  .power.on { transform: scale(1.04); background: var(--ink-solid); box-shadow: 0 0 48px var(--gold-glow), 0 12px 40px rgba(0, 0, 0, 0.35); }
+  .power.on .m-ink { opacity: 0; }
+  .power.on .m-gold { opacity: 1; }
+  .power.on::after { animation: none; opacity: 0; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.2; } 50% { transform: scale(1.05); opacity: 0.65; } }
+  .power-label { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: -4px 0 0; font-family: var(--f-display); font-size: 18px; font-weight: 700; }
+  /* 준비 중: 부처님·오리·그림을 받는 동안 (들어가는 건 언제든 됨) */
+  .ready { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 160px; margin: -6px 0 0; transition: opacity 600ms; }
+  .ready.done { opacity: 0.55; }
+  .ready-bar { width: 100%; height: 3px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .ready-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 300ms; }
+  .ready small { font-size: 11px; color: var(--paper-dim); letter-spacing: 0.06em; }
+  .power-label small { font-family: var(--f-body); font-size: 11px; font-weight: 400; letter-spacing: 0.18em; color: var(--paper-dim); }
+  .enter.quiet { background: none; color: var(--paper-dim); border: 1px solid var(--line); font-size: 14px; padding: 8px 18px; min-height: 40px; }
+  .gate-lang { display: flex; gap: 6px; }
+  .proto { font-size: 11px; color: var(--paper-dim); letter-spacing: 0.06em; }
+  .gate-note { margin: 0; font-size: 11px; color: var(--paper-dim); text-wrap: balance; }
+  .gate-note a { color: var(--gold); }
+  .legal { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .legal a { font-size: 11px; color: var(--paper-dim); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .drop .legal { justify-content: flex-start; }
+  /* 오른쪽 옆: 보기·소리 아래로 장면 담기 · 공유를 세로로 */
+  .side { position: fixed; z-index: 5; display: flex; flex-direction: column; gap: 8px;
+    top: calc(64px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
+  /* 장면 담기: 찍은 장면을 크게 보여 주고 저장·공유 */
+  .snap { position: fixed; inset: 0; z-index: 30; background: rgba(12, 13, 17, 0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 16px; }
+  .snap img { max-width: 100%; max-height: 70vh; border-radius: 12px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+  .snap-acts { display: flex; gap: 8px; }
+  .snap-save { background: var(--gold); color: var(--ink-solid); font-weight: 700; border-radius: 999px; padding: 6px 18px; text-decoration: none; display: inline-flex; align-items: center; min-height: 32px; }
+  .snap-hint { margin: 0; font-size: 12px; color: var(--paper-dim); }
+
+  /* 합장 */
+  #hands {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 46%; z-index: 4; pointer-events: none;
+    display: flex; justify-content: center; align-items: flex-end; gap: 0;
+  }
+  .palm {
+    width: 74px; height: 190px; background: linear-gradient(180deg, #e9cdb2, #c99e7f);
+    border-radius: 40px 40px 18px 18px; box-shadow: inset -6px 0 12px rgba(0, 0, 0, 0.12);
+    transform-origin: 50% 100%; transition: transform 1.1s cubic-bezier(.3, .7, .2, 1);
+  }
+  .palm.l { transform: translate(-90px, 70px) rotate(-28deg); }
+  .palm.r { transform: translate(90px, 70px) rotate(28deg); }
+  #hands.join .palm.l { transform: translate(2px, 8px) rotate(-3deg); }
+  #hands.join .palm.r { transform: translate(-2px, 8px) rotate(3deg); }
+  .hold { position: relative; overflow: hidden; }
+  .hold .fill { position: absolute; inset: 0; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); opacity: 0.45; }
+  .hold span { position: relative; }
+
+  /* 문구 */
+  #toast {
+    position: fixed; left: 50%; top: 38%; transform: translate(-50%, -50%); z-index: 6;
+    font-family: var(--f-display); font-size: 21px; text-align: center; text-wrap: balance;
+    width: min(360px, calc(100% - 32px)); text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+    opacity: 0; transition: opacity 0.9s ease; pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+  /* 소식: 같은 방 사람이 합장하면 위쪽 가운데에 잠깐 (먹 패널, 금 손 모양) */
+  .news {
+    position: fixed; left: 0; right: 0; margin: 0 auto; width: fit-content; top: calc(74px + env(safe-area-inset-top, 0px)); transform: translateY(-6px); z-index: 6;
+    max-width: calc(100% - 152px); display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+    background: var(--ink); border: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    font-size: 14px; line-height: 1.35; color: var(--paper); pointer-events: none;
+    opacity: 0; transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .news.show { opacity: 1; transform: translateY(0); }
+  .news-ic { display: grid; place-items: center; color: var(--gold); flex: none; }
+  .news-ic svg { width: 18px; height: 18px; }
+  .news span { text-wrap: balance; word-break: keep-all; }  /* 한글 낱말이 '님/이'처럼 갈리지 않게 */
+
+  /* 호흡 */
+  #breath {
+    position: fixed; left: 50%; top: 27%; transform: translate(-50%, -50%); z-index: 4;
+    display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none;
+  }
+  .orb {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 2px solid rgba(241, 234, 220, 0.75);
+    background: radial-gradient(circle, rgba(215, 178, 91, 0.28), rgba(215, 178, 91, 0.04) 70%);
+    transform: scale(0.55);
+  }
+  .breath-word { font-family: var(--f-display); font-size: 22px; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); }
+  .breath-time { font-size: 13px; color: var(--paper-dim); font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #gate, .palm, #toast, .news, .power, .power img { transition: none; }
+    .power::after, .logo .badge, .mrow .together i { animation: none; }
+    #signboard { transition: none; }
+  }
+  @media (max-width: 420px) {
+    .hyeonpan { font-size: 32px; }
+    .gate-name { font-size: 34px; }
+  }
+</style>
+
+<canvas id="scene" aria-label="마음온 경내 3D 장면"></canvas>
+
+<!-- 상단: 왼쪽 워드마크·장소·함께 있기 / 오른쪽 둥근 버튼 -->
+<div class="top" id="top" hidden>
+  <button class="logo pnl" id="logoBtn" type="button" aria-label="마음온 · 나가기">
+    <img class="mark" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjI0MCI+CiAgPCEtLSDrp4jsnYzsmKgo66eI7J2MT04pIOuniO2BrDog7KCE7JuQKOKPuykg6riw7Zi466W8IOu2k+q4gOyUqCDrkZAg7ZqN7Jy866GcIOKAlCDrp4jsnYzsnYQg7Lyg64ukLiDqtbXquLDqsIAg67OA7ZWY64qUIOybkO2YuCArIOychOyXkOyEnCDrgrTrpqzquIvripQg7IiY7KeBIO2ajSAtLT4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9ImJydXNoIiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuMDM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIxMSIgcmVzdWx0PSJuIi8+CiAgICAgIDxmZURpc3BsYWNlbWVudE1hcCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJuIiBzY2FsZT0iNyIgeENoYW5uZWxTZWxlY3Rvcj0iUiIgeUNoYW5uZWxTZWxlY3Rvcj0iRyIvPgogICAgPC9maWx0ZXI+CiAgICA8ZmlsdGVyIGlkPSJkcnkiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC4wOCAwLjkiIG51bU9jdGF2ZXM9IjIiIHNlZWQ9IjUiIHJlc3VsdD0ibiIvPgogICAgICA8ZmVEaXNwbGFjZW1lbnRNYXAgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0ibiIgc2NhbGU9IjYiIHhDaGFubmVsU2VsZWN0b3I9IlIiIHlDaGFubmVsU2VsZWN0b3I9IkciLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWxsPSIjZjFlYWRjIiBmaWx0ZXI9InVybCgjYnJ1c2gpIj4KICAgIDwhLS0g7JuQ7Zi4OiDsmbzsqr0g7JyE7JeQ7IScIOu2k+ydhCDriIzrn6wg7Iuc7J6RLCDslYTrnpjroZwg6rCI7IiY66GdIOuRkOq6vOybjOyhjOuLpOqwgCDsmKTrpbjsqr0g7JyE66GcIOyYrOudvOqwgOupsCDqsIDripjslrTsoLgg6rCI7ZWE66GcIOu5oOynkCAtLT4KICAgIDxwYXRoIGQ9IgogICAgICBNIDg2IDU4CiAgICAgIEMgNzIgNjYsIDU2IDgwLCA0NiAxMDAKICAgICAgQyAzMiAxMzIsIDQ0IDE3NCwgNzggMTk2CiAgICAgIEMgMTEwIDIxNiwgMTU0IDIxMCwgMTgwIDE4NAogICAgICBDIDIwNCAxNjAsIDIwOCAxMjIsIDE5MCA5NAogICAgICBDIDE4MiA4MiwgMTcyIDcyLCAxNjAgNjUKICAgICAgQyAxNjQgNjAsIDE2OCA1NSwgMTcyIDUwCiAgICAgIEMgMTg4IDYwLCAyMDIgNzgsIDIxMCAxMDAKICAgICAgQyAyMjYgMTQyLCAyMTQgMTkwLCAxNzYgMjE0CiAgICAgIEMgMTM2IDIzOCwgODAgMjMyLCA1MCAxOTgKICAgICAgQyAyMCAxNjQsIDIyIDExMiwgNTQgNzgKICAgICAgQyA2MiA3MCwgNzAgNjMsIDgwIDU2CiAgICAgIFoiLz4KICAgIDwhLS0g7IiY7KeBIO2ajTog7JyE7JeQ7IScIOuIjOufrCDsi5zsnpEo65Gl6riA6rOgIOuRkOq7jeqyjCksIOyVhOuemOuhnCDqsIDrqbAg6rCA64qY7Ja07KeA6rOgIOuBneydtCDqsIjrnbzsp5AgLS0+CiAgICA8cGF0aCBkPSIKICAgICAgTSAxMDYgMjQKICAgICAgQyAxMTAgMTYsIDEzMCAxNCwgMTM2IDI0CiAgICAgIEMgMTM4IDQ0LCAxMzQgNzYsIDEzMSAxMDQKICAgICAgQyAxMjkgMTIwLCAxMjcgMTM0LCAxMjMgMTQ0CiAgICAgIEMgMTE5IDE0MiwgMTE0IDEzOCwgMTExIDEzNAogICAgICBDIDExMiAxMTAsIDEwOSA3OCwgMTA2IDQ4CiAgICAgIEMgMTA1IDM4LCAxMDMgMzAsIDEwNiAyNAogICAgICBaIi8+CiAgPC9nPgogIDwhLS0g6rCI7ZWEKOuniOuluCDrtpMpIOqysDog7IiY7KeBIO2ajSDrgZ3qs7wg7JuQ7Zi4IOq8rOumrOyXkOyEnCDtnanslrTsp4DripQg6rCA64qUIOyEoCAtLT4KICA8ZyBmaWxsPSIjZjFlYWRjIiBmaWx0ZXI9InVybCgjZHJ5KSIgb3BhY2l0eT0iMC44Ij4KICAgIDxwYXRoIGQ9Ik0gMTE5IDE0MiBMIDEyMSAxNTYgTCAxMTggMTU3IEwgMTE2IDE0NCBaIi8+CiAgICA8cGF0aCBkPSJNIDEyNSAxNDAgTCAxMjkgMTUyIEwgMTI2IDE1MyBMIDEyMyAxNDIgWiIvPgogICAgPHBhdGggZD0iTSAxMTQgMTM4IEwgMTEzIDE1MCBMIDExMSAxNTAgTCAxMTEgMTM5IFoiLz4KICAgIDxwYXRoIGQ9Ik0gMTY2IDU4IEwgMTc2IDQ4IEwgMTc4IDUxIEwgMTY5IDYxIFoiLz4KICA8L2c+CiAgPCEtLSDrgpnqtIAo6JC95qy+KTog67Cx66y4ICLrp4jsnYwiIOyduOyepSwg7LCN7Z6MIOyekOq1reyymOufvCDrp4jrqqggLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTg0IDE5MCkgcm90YXRlKC02IDE3IDE3KSBzY2FsZSgwLjM2KSI+CjxkZWZzPgogICAgPCEtLSDri7PsnYAg66qo7ISc66aswrfsmrjtiYHrtojtiYHtlZwg7YWM65GQ66asIC0tPgogICAgPGZpbHRlciBpZD0id29ybiIgeD0iLTEwJSIgeT0iLTEwJSIgd2lkdGg9IjEyMCUiIGhlaWdodD0iMTIwJSI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjA5IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIzIiByZXN1bHQ9Im4iLz4KICAgICAgPGZlRGlzcGxhY2VtZW50TWFwIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9Im4iIHNjYWxlPSI0IiB4Q2hhbm5lbFNlbGVjdG9yPSJSIiB5Q2hhbm5lbFNlbGVjdG9yPSJHIi8+CiAgICA8L2ZpbHRlcj4KICAgIDwhLS0g7J247KO86rCAIOuNnCDrrLvsnYAg6rKwOiDrhbjsnbTspojrpbwg7J6E6rOE6rCS7Jy866GcIOyemOudvCDrp4jsiqTtgawgLS0+CiAgICA8bWFzayBpZD0iaW5rbWFzayI+CiAgICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxnIGZpbHRlcj0idXJsKCNzcGVja3MpIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAwMCIvPjwvZz4KICAgIDwvbWFzaz4KICAgIDxmaWx0ZXIgaWQ9InNwZWNrcyI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSI5IiByZXN1bHQ9Im4iLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49Im4iIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgIDAgMCAwIDAgMCAgMCAwIDAgMCAwICAwIDAgMCAxIDAiIHJlc3VsdD0iYSIvPgogICAgICA8ZmVDb21wb25lbnRUcmFuc2ZlciBpbj0iYSI+PGZlRnVuY0EgdHlwZT0idGFibGUiIHRhYmxlVmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC41IDEgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBtYXNrPSJ1cmwoI2lua21hc2spIj4KICAgIDwhLS0g7J2466m0OiDrtonsnYAg67CU7YOVLCDslYjsqr3sl5Ag7JaH7J2AIO2dsCDthYwgLS0+CiAgICA8ZyBmaWx0ZXI9InVybCgjd29ybikiPgogICAgICA8cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSI1IiBmaWxsPSIjYjg0MzJmIi8+CiAgICAgIDxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxNDE5IiBzdHJva2Utd2lkdGg9IjIuMiIvPgogICAgPC9nPgogICAgPCEtLSDrsLHrrLgo55m95paHKSAn66eI7J2MJyDigJQg7KCE7IScIOuKkOuCjOydmCDqsIHsp4Qg7ZqNLCDtnbDsg4nsnLzroZwg7YyM64OEIC0tPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxNDE5IiBzdHJva2Utd2lkdGg9IjYuNSIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgZmlsdGVyPSJ1cmwoI3dvcm4pIj4KICAgICAgPCEtLSDrp4g6IOOFgSArIOOFjyAtLT4KICAgICAgPHJlY3QgeD0iMjIiIHk9IjIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz4KICAgICAgPHBhdGggZD0iTTYwIDE1IFY0OSBNNjAgMzIgSDc0Ii8+CiAgICAgIDwhLS0g7J2MOiDjhYcgLyDjhaEgLyDjhYEgLS0+CiAgICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNjAiIHI9IjciLz4KICAgICAgPHBhdGggZD0iTTI0IDcyIEg3NiIvPgogICAgICA8cmVjdCB4PSIzNiIgeT0iNzkiIHdpZHRoPSIyOCIgaGVpZ2h0PSI5Ii8+CiAgICA8L2c+CiAgPC9nPgogIDwvZz4KPC9zdmc+Cg==">
+    <span class="badge" id="togetherBadge" hidden></span>
+  </button>
+  <div class="tools">
+    <button class="round pnl" id="viewBtn" type="button" aria-expanded="false" aria-controls="viewPanel"></button>
+    <button class="round pnl" id="soundBtn" type="button" aria-expanded="false" aria-controls="soundPanel"></button>
+  </div>
+  <div class="side">
+    <button class="round pnl" id="snapBtn" type="button"></button>
+    <button class="round pnl" id="inviteBtn" type="button"></button>
+  </div>
+</div>
+
+<!-- 소리 패널 (펼침) -->
+<section class="drop pnl" id="soundPanel" hidden aria-label="소리 · Sound">
+  <div class="drop-head"><b>소리<span class="en">Sound</span></b><button class="switch" id="sndToggle" type="button" role="switch"></button></div>
+  <label class="srow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 9.5c3-3 6 3 9 0s6 3 9 0M3 15c3-3 6 3 9 0s6 3 9 0"/></svg><span class="nm">주변 소리<span class="en">Ambience</span></span><input class="sl" type="range" id="volNature" min="0" max="100"></label>
+  <div class="srow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 4v16M8 8v8M16 8v8M4 11v2M20 11v2"/></svg><label class="nm" for="volChant">염불<span class="en">Chant</span></label><input class="sl" type="range" id="volChant" min="0" max="100"><div class="chips" id="chantPick"></div></div>
+  <label class="srow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16v-5a5 5 0 0 1 10 0v5l1.5 2h-13z"/><path d="M10.5 20.5a1.5 1.5 0 0 0 3 0"/></svg><span class="nm">종·목탁<span class="en">Bell</span></span><input class="sl" type="range" id="volBell" min="0" max="100"></label>
+  <div class="bgrow"><span class="nm">백그라운드 재생<span class="en">Background</span><small>다른 탭을 보거나 화면을 꺼도 소리가 이어져요<br><span class="en">Keeps playing in other tabs or with the screen off</span></small></span><button class="switch" id="bgToggle" type="button" role="switch" aria-label="백그라운드 재생 · Background play"></button></div>
+  <p class="src" id="sndSrc"></p>
+</section>
+
+<!-- 보기 패널 (펼침): 계절 · 시간 · 언어 -->
+<section class="drop pnl" id="viewPanel" hidden aria-label="보기 · View">
+  <div class="vrow"><span class="nm">계절<span class="en">Season</span></span><div class="chips" id="seasonPick"></div></div>
+  <div class="vrow"><span class="nm">시간<span class="en">Time</span></span><div class="chips" id="todPick"></div></div>
+  <div class="vrow"><span class="nm">언어<span class="en">Language</span></span><div class="chips" id="langPick"></div></div>
+</section>
+
+<!-- 로고 메뉴 (펼침): 지금 있는 곳 · 함께 있기 · 오늘 기록 · 출처 · 나가기 -->
+<section class="drop menu pnl" id="menuPanel" hidden aria-label="마음온">
+  <div class="menu-head"><b>마음온</b><span class="en">MindOn</span></div>
+  <div class="mrow"><span class="nm">지금 있는 곳<span class="en">You are at</span></span><span class="val" id="menuPlace"></span></div>
+  <div class="mrow"><span class="nm">나의 이름<span class="en">My name</span></span><span class="val" id="menuMyName"></span><span class="hint" id="menuMyNote"></span></div>
+  <div class="mrow"><span class="nm">함께 있기<span class="en">Together</span></span><span class="val together" id="menuTogether"></span><div class="lanterns" id="menuLanterns"></div><span class="hint names" id="menuNames"></span></div>
+  <div class="mrow"><span class="nm">오늘 기록<span class="en">Today</span></span><span class="val" id="rec"></span></div>
+  <p class="src">「철제여래좌상」(3D 데이터)·「아미타극락회도」 국립중앙박물관 · 공공누리 제1유형</p>
+  <nav class="legal"><a href="credits.html" target="_blank" rel="noopener" data-i="credits"></a><a href="privacy.html" target="_blank" rel="noopener" data-i="privacy"></a><a href="terms.html" target="_blank" rel="noopener" data-i="terms"></a></nav>
+  <button class="leave-btn" id="leaveBtn" type="button"></button>
+</section>
+
+<!-- 장면 담기 -->
+<div class="snap" id="snapView" hidden role="dialog" aria-modal="true">
+  <img id="snapImg" alt="">
+  <div class="snap-acts"><a class="snap-save" id="snapSave" download="maumon.jpg" data-i="save"></a><button class="chip" id="snapShare" type="button" data-i="share"></button><button class="chip" id="snapClose" type="button" data-i="close"></button></div>
+  <p class="snap-hint" data-i="snapHint"></p>
+</div>
+
+<!-- 현판 식 제목 -->
+<div id="signboard" class="pnl" aria-hidden="true"><b id="signKo"></b><small id="signEn"></small></div>
+
+<!-- 합장 손 -->
+<div id="hands" hidden><div class="palm l"></div><div class="palm r"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="news" class="news" role="status" aria-live="polite"><i class="news-ic" aria-hidden="true"></i><span></span></div>
+
+<!-- 호흡 가이드 -->
+<div id="breath" hidden>
+  <div class="orb" id="orb"></div>
+  <div class="breath-word" id="breathWord"></div>
+  <div class="breath-time" id="breathTime"></div>
+</div>
+
+<!-- 하단: 장소 고르기(펼침) · 진행 카운트 · 조이스틱 · 행동 바 -->
+<div class="bottom" id="bottom" hidden>
+  <nav class="places-pop pnl" id="placesPop" hidden aria-label="장소"></nav>
+  <section class="count pnl" id="bowCount" hidden aria-label="108배">
+    <div class="n"><span id="bowN">0</span> / 108</div>
+    <div class="track"><i id="bowBar"></i></div>
+    <small id="bowTotal"></small>
+  </section>
+  <div class="joy" id="joy" hidden aria-hidden="true"><i id="joyKnob"></i><button class="joy-grip" id="joyGrip" type="button" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button></div>
+  <div class="bar pnl" id="actions"></div>
+</div>
+
+<!-- 입장 -->
+<div id="gate">
+  <div class="gate-inner">
+    <h1 class="gate-name">마음온</h1>
+    <p class="gate-tag" data-i="tagline"></p>
+    <p class="gate-sub" data-i="gateSub"></p>
+    <button class="power" id="enterSound" type="button" aria-label="마음 켜기 · Turn your mind on">
+      <img class="m-ink" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjI0MCI+CiAgPCEtLSDrp4jsnYzsmKgo66eI7J2MT04pIOuniO2BrDog7KCE7JuQKOKPuykg6riw7Zi466W8IOu2k+q4gOyUqCDrkZAg7ZqN7Jy866GcIOKAlCDrp4jsnYzsnYQg7Lyg64ukLiDqtbXquLDqsIAg67OA7ZWY64qUIOybkO2YuCArIOychOyXkOyEnCDrgrTrpqzquIvripQg7IiY7KeBIO2ajSAtLT4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9ImJydXNoIiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuMDM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIxMSIgcmVzdWx0PSJuIi8+CiAgICAgIDxmZURpc3BsYWNlbWVudE1hcCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJuIiBzY2FsZT0iNyIgeENoYW5uZWxTZWxlY3Rvcj0iUiIgeUNoYW5uZWxTZWxlY3Rvcj0iRyIvPgogICAgPC9maWx0ZXI+CiAgICA8ZmlsdGVyIGlkPSJkcnkiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC4wOCAwLjkiIG51bU9jdGF2ZXM9IjIiIHNlZWQ9IjUiIHJlc3VsdD0ibiIvPgogICAgICA8ZmVEaXNwbGFjZW1lbnRNYXAgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0ibiIgc2NhbGU9IjYiIHhDaGFubmVsU2VsZWN0b3I9IlIiIHlDaGFubmVsU2VsZWN0b3I9IkciLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWxsPSIjMTIxNDE5IiBmaWx0ZXI9InVybCgjYnJ1c2gpIj4KICAgIDwhLS0g7JuQ7Zi4OiDsmbzsqr0g7JyE7JeQ7IScIOu2k+ydhCDriIzrn6wg7Iuc7J6RLCDslYTrnpjroZwg6rCI7IiY66GdIOuRkOq6vOybjOyhjOuLpOqwgCDsmKTrpbjsqr0g7JyE66GcIOyYrOudvOqwgOupsCDqsIDripjslrTsoLgg6rCI7ZWE66GcIOu5oOynkCAtLT4KICAgIDxwYXRoIGQ9IgogICAgICBNIDg2IDU4CiAgICAgIEMgNzIgNjYsIDU2IDgwLCA0NiAxMDAKICAgICAgQyAzMiAxMzIsIDQ0IDE3NCwgNzggMTk2CiAgICAgIEMgMTEwIDIxNiwgMTU0IDIxMCwgMTgwIDE4NAogICAgICBDIDIwNCAxNjAsIDIwOCAxMjIsIDE5MCA5NAogICAgICBDIDE4MiA4MiwgMTcyIDcyLCAxNjAgNjUKICAgICAgQyAxNjQgNjAsIDE2OCA1NSwgMTcyIDUwCiAgICAgIEMgMTg4IDYwLCAyMDIgNzgsIDIxMCAxMDAKICAgICAgQyAyMjYgMTQyLCAyMTQgMTkwLCAxNzYgMjE0CiAgICAgIEMgMTM2IDIzOCwgODAgMjMyLCA1MCAxOTgKICAgICAgQyAyMCAxNjQsIDIyIDExMiwgNTQgNzgKICAgICAgQyA2MiA3MCwgNzAgNjMsIDgwIDU2CiAgICAgIFoiLz4KICAgIDwhLS0g7IiY7KeBIO2ajTog7JyE7JeQ7IScIOuIjOufrCDsi5zsnpEo65Gl6riA6rOgIOuRkOq7jeqyjCksIOyVhOuemOuhnCDqsIDrqbAg6rCA64qY7Ja07KeA6rOgIOuBneydtCDqsIjrnbzsp5AgLS0+CiAgICA8cGF0aCBkPSIKICAgICAgTSAxMDYgMjQKICAgICAgQyAxMTAgMTYsIDEzMCAxNCwgMTM2IDI0CiAgICAgIEMgMTM4IDQ0LCAxMzQgNzYsIDEzMSAxMDQKICAgICAgQyAxMjkgMTIwLCAxMjcgMTM0LCAxMjMgMTQ0CiAgICAgIEMgMTE5IDE0MiwgMTE0IDEzOCwgMTExIDEzNAogICAgICBDIDExMiAxMTAsIDEwOSA3OCwgMTA2IDQ4CiAgICAgIEMgMTA1IDM4LCAxMDMgMzAsIDEwNiAyNAogICAgICBaIi8+CiAgPC9nPgogIDwhLS0g6rCI7ZWEKOuniOuluCDrtpMpIOqysDog7IiY7KeBIO2ajSDrgZ3qs7wg7JuQ7Zi4IOq8rOumrOyXkOyEnCDtnanslrTsp4DripQg6rCA64qUIOyEoCAtLT4KICA8ZyBmaWxsPSIjMTIxNDE5IiBmaWx0ZXI9InVybCgjZHJ5KSIgb3BhY2l0eT0iMC44Ij4KICAgIDxwYXRoIGQ9Ik0gMTE5IDE0MiBMIDEyMSAxNTYgTCAxMTggMTU3IEwgMTE2IDE0NCBaIi8+CiAgICA8cGF0aCBkPSJNIDEyNSAxNDAgTCAxMjkgMTUyIEwgMTI2IDE1MyBMIDEyMyAxNDIgWiIvPgogICAgPHBhdGggZD0iTSAxMTQgMTM4IEwgMTEzIDE1MCBMIDExMSAxNTAgTCAxMTEgMTM5IFoiLz4KICAgIDxwYXRoIGQ9Ik0gMTY2IDU4IEwgMTc2IDQ4IEwgMTc4IDUxIEwgMTY5IDYxIFoiLz4KICA8L2c+CiAgPCEtLSDrgpnqtIAo6JC95qy+KTog67Cx66y4ICLrp4jsnYwiIOyduOyepSwg7LCN7Z6MIOyekOq1reyymOufvCDrp4jrqqggLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTg0IDE5MCkgcm90YXRlKC02IDE3IDE3KSBzY2FsZSgwLjM2KSI+CjxkZWZzPgogICAgPCEtLSDri7PsnYAg66qo7ISc66aswrfsmrjtiYHrtojtiYHtlZwg7YWM65GQ66asIC0tPgogICAgPGZpbHRlciBpZD0id29ybiIgeD0iLTEwJSIgeT0iLTEwJSIgd2lkdGg9IjEyMCUiIGhlaWdodD0iMTIwJSI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjA5IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIzIiByZXN1bHQ9Im4iLz4KICAgICAgPGZlRGlzcGxhY2VtZW50TWFwIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9Im4iIHNjYWxlPSI0IiB4Q2hhbm5lbFNlbGVjdG9yPSJSIiB5Q2hhbm5lbFNlbGVjdG9yPSJHIi8+CiAgICA8L2ZpbHRlcj4KICAgIDwhLS0g7J247KO86rCAIOuNnCDrrLvsnYAg6rKwOiDrhbjsnbTspojrpbwg7J6E6rOE6rCS7Jy866GcIOyemOudvCDrp4jsiqTtgawgLS0+CiAgICA8bWFzayBpZD0iaW5rbWFzayI+CiAgICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxnIGZpbHRlcj0idXJsKCNzcGVja3MpIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAwMCIvPjwvZz4KICAgIDwvbWFzaz4KICAgIDxmaWx0ZXIgaWQ9InNwZWNrcyI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSI5IiByZXN1bHQ9Im4iLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49Im4iIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgIDAgMCAwIDAgMCAgMCAwIDAgMCAwICAwIDAgMCAxIDAiIHJlc3VsdD0iYSIvPgogICAgICA8ZmVDb21wb25lbnRUcmFuc2ZlciBpbj0iYSI+PGZlRnVuY0EgdHlwZT0idGFibGUiIHRhYmxlVmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC41IDEgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBtYXNrPSJ1cmwoI2lua21hc2spIj4KICAgIDwhLS0g7J2466m0OiDrtonsnYAg67CU7YOVLCDslYjsqr3sl5Ag7JaH7J2AIO2dsCDthYwgLS0+CiAgICA8ZyBmaWx0ZXI9InVybCgjd29ybikiPgogICAgICA8cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSI1IiBmaWxsPSIjYjg0MzJmIi8+CiAgICAgIDxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjFlYWRjIiBzdHJva2Utd2lkdGg9IjIuMiIvPgogICAgPC9nPgogICAgPCEtLSDrsLHrrLgo55m95paHKSAn66eI7J2MJyDigJQg7KCE7IScIOuKkOuCjOydmCDqsIHsp4Qg7ZqNLCDtnbDsg4nsnLzroZwg7YyM64OEIC0tPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjFlYWRjIiBzdHJva2Utd2lkdGg9IjYuNSIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgZmlsdGVyPSJ1cmwoI3dvcm4pIj4KICAgICAgPCEtLSDrp4g6IOOFgSArIOOFjyAtLT4KICAgICAgPHJlY3QgeD0iMjIiIHk9IjIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz4KICAgICAgPHBhdGggZD0iTTYwIDE1IFY0OSBNNjAgMzIgSDc0Ii8+CiAgICAgIDwhLS0g7J2MOiDjhYcgLyDjhaEgLyDjhYEgLS0+CiAgICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNjAiIHI9IjciLz4KICAgICAgPHBhdGggZD0iTTI0IDcyIEg3NiIvPgogICAgICA8cmVjdCB4PSIzNiIgeT0iNzkiIHdpZHRoPSIyOCIgaGVpZ2h0PSI5Ii8+CiAgICA8L2c+CiAgPC9nPgogIDwvZz4KPC9zdmc+Cg==">
+      <img class="m-gold" alt="" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjI0MCI+CiAgPCEtLSDrp4jsnYzsmKgo66eI7J2MT04pIOuniO2BrDog7KCE7JuQKOKPuykg6riw7Zi466W8IOu2k+q4gOyUqCDrkZAg7ZqN7Jy866GcIOKAlCDrp4jsnYzsnYQg7Lyg64ukLiDqtbXquLDqsIAg67OA7ZWY64qUIOybkO2YuCArIOychOyXkOyEnCDrgrTrpqzquIvripQg7IiY7KeBIO2ajSAtLT4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9ImJydXNoIiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuMDM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIxMSIgcmVzdWx0PSJuIi8+CiAgICAgIDxmZURpc3BsYWNlbWVudE1hcCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJuIiBzY2FsZT0iNyIgeENoYW5uZWxTZWxlY3Rvcj0iUiIgeUNoYW5uZWxTZWxlY3Rvcj0iRyIvPgogICAgPC9maWx0ZXI+CiAgICA8ZmlsdGVyIGlkPSJkcnkiIHg9Ii0yMCUiIHk9Ii0yMCUiIHdpZHRoPSIxNDAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC4wOCAwLjkiIG51bU9jdGF2ZXM9IjIiIHNlZWQ9IjUiIHJlc3VsdD0ibiIvPgogICAgICA8ZmVEaXNwbGFjZW1lbnRNYXAgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0ibiIgc2NhbGU9IjYiIHhDaGFubmVsU2VsZWN0b3I9IlIiIHlDaGFubmVsU2VsZWN0b3I9IkciLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWxsPSIjZDdiMjViIiBmaWx0ZXI9InVybCgjYnJ1c2gpIj4KICAgIDwhLS0g7JuQ7Zi4OiDsmbzsqr0g7JyE7JeQ7IScIOu2k+ydhCDriIzrn6wg7Iuc7J6RLCDslYTrnpjroZwg6rCI7IiY66GdIOuRkOq6vOybjOyhjOuLpOqwgCDsmKTrpbjsqr0g7JyE66GcIOyYrOudvOqwgOupsCDqsIDripjslrTsoLgg6rCI7ZWE66GcIOu5oOynkCAtLT4KICAgIDxwYXRoIGQ9IgogICAgICBNIDg2IDU4CiAgICAgIEMgNzIgNjYsIDU2IDgwLCA0NiAxMDAKICAgICAgQyAzMiAxMzIsIDQ0IDE3NCwgNzggMTk2CiAgICAgIEMgMTEwIDIxNiwgMTU0IDIxMCwgMTgwIDE4NAogICAgICBDIDIwNCAxNjAsIDIwOCAxMjIsIDE5MCA5NAogICAgICBDIDE4MiA4MiwgMTcyIDcyLCAxNjAgNjUKICAgICAgQyAxNjQgNjAsIDE2OCA1NSwgMTcyIDUwCiAgICAgIEMgMTg4IDYwLCAyMDIgNzgsIDIxMCAxMDAKICAgICAgQyAyMjYgMTQyLCAyMTQgMTkwLCAxNzYgMjE0CiAgICAgIEMgMTM2IDIzOCwgODAgMjMyLCA1MCAxOTgKICAgICAgQyAyMCAxNjQsIDIyIDExMiwgNTQgNzgKICAgICAgQyA2MiA3MCwgNzAgNjMsIDgwIDU2CiAgICAgIFoiLz4KICAgIDwhLS0g7IiY7KeBIO2ajTog7JyE7JeQ7IScIOuIjOufrCDsi5zsnpEo65Gl6riA6rOgIOuRkOq7jeqyjCksIOyVhOuemOuhnCDqsIDrqbAg6rCA64qY7Ja07KeA6rOgIOuBneydtCDqsIjrnbzsp5AgLS0+CiAgICA8cGF0aCBkPSIKICAgICAgTSAxMDYgMjQKICAgICAgQyAxMTAgMTYsIDEzMCAxNCwgMTM2IDI0CiAgICAgIEMgMTM4IDQ0LCAxMzQgNzYsIDEzMSAxMDQKICAgICAgQyAxMjkgMTIwLCAxMjcgMTM0LCAxMjMgMTQ0CiAgICAgIEMgMTE5IDE0MiwgMTE0IDEzOCwgMTExIDEzNAogICAgICBDIDExMiAxMTAsIDEwOSA3OCwgMTA2IDQ4CiAgICAgIEMgMTA1IDM4LCAxMDMgMzAsIDEwNiAyNAogICAgICBaIi8+CiAgPC9nPgogIDwhLS0g6rCI7ZWEKOuniOuluCDrtpMpIOqysDog7IiY7KeBIO2ajSDrgZ3qs7wg7JuQ7Zi4IOq8rOumrOyXkOyEnCDtnanslrTsp4DripQg6rCA64qUIOyEoCAtLT4KICA8ZyBmaWxsPSIjZDdiMjViIiBmaWx0ZXI9InVybCgjZHJ5KSIgb3BhY2l0eT0iMC44Ij4KICAgIDxwYXRoIGQ9Ik0gMTE5IDE0MiBMIDEyMSAxNTYgTCAxMTggMTU3IEwgMTE2IDE0NCBaIi8+CiAgICA8cGF0aCBkPSJNIDEyNSAxNDAgTCAxMjkgMTUyIEwgMTI2IDE1MyBMIDEyMyAxNDIgWiIvPgogICAgPHBhdGggZD0iTSAxMTQgMTM4IEwgMTEzIDE1MCBMIDExMSAxNTAgTCAxMTEgMTM5IFoiLz4KICAgIDxwYXRoIGQ9Ik0gMTY2IDU4IEwgMTc2IDQ4IEwgMTc4IDUxIEwgMTY5IDYxIFoiLz4KICA8L2c+CiAgPCEtLSDrgpnqtIAo6JC95qy+KTog67Cx66y4ICLrp4jsnYwiIOyduOyepSwg7LCN7Z6MIOyekOq1reyymOufvCDrp4jrqqggLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTg0IDE5MCkgcm90YXRlKC02IDE3IDE3KSBzY2FsZSgwLjM2KSI+CjxkZWZzPgogICAgPCEtLSDri7PsnYAg66qo7ISc66aswrfsmrjtiYHrtojtiYHtlZwg7YWM65GQ66asIC0tPgogICAgPGZpbHRlciBpZD0id29ybiIgeD0iLTEwJSIgeT0iLTEwJSIgd2lkdGg9IjEyMCUiIGhlaWdodD0iMTIwJSI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjA5IiBudW1PY3RhdmVzPSIzIiBzZWVkPSIzIiByZXN1bHQ9Im4iLz4KICAgICAgPGZlRGlzcGxhY2VtZW50TWFwIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9Im4iIHNjYWxlPSI0IiB4Q2hhbm5lbFNlbGVjdG9yPSJSIiB5Q2hhbm5lbFNlbGVjdG9yPSJHIi8+CiAgICA8L2ZpbHRlcj4KICAgIDwhLS0g7J247KO86rCAIOuNnCDrrLvsnYAg6rKwOiDrhbjsnbTspojrpbwg7J6E6rOE6rCS7Jy866GcIOyemOudvCDrp4jsiqTtgawgLS0+CiAgICA8bWFzayBpZD0iaW5rbWFzayI+CiAgICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZmZmIi8+CiAgICAgIDxnIGZpbHRlcj0idXJsKCNzcGVja3MpIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAwMCIvPjwvZz4KICAgIDwvbWFzaz4KICAgIDxmaWx0ZXIgaWQ9InNwZWNrcyI+CiAgICAgIDxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjM1IiBudW1PY3RhdmVzPSIzIiBzZWVkPSI5IiByZXN1bHQ9Im4iLz4KICAgICAgPGZlQ29sb3JNYXRyaXggaW49Im4iIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgIDAgMCAwIDAgMCAgMCAwIDAgMCAwICAwIDAgMCAxIDAiIHJlc3VsdD0iYSIvPgogICAgICA8ZmVDb21wb25lbnRUcmFuc2ZlciBpbj0iYSI+PGZlRnVuY0EgdHlwZT0idGFibGUiIHRhYmxlVmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC41IDEgMSIvPjwvZmVDb21wb25lbnRUcmFuc2Zlcj4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBtYXNrPSJ1cmwoI2lua21hc2spIj4KICAgIDwhLS0g7J2466m0OiDrtonsnYAg67CU7YOVLCDslYjsqr3sl5Ag7JaH7J2AIO2dsCDthYwgLS0+CiAgICA8ZyBmaWx0ZXI9InVybCgjd29ybikiPgogICAgICA8cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iOTIiIGhlaWdodD0iOTIiIHJ4PSI1IiBmaWxsPSIjZDdiMjViIi8+CiAgICAgIDxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiByeD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxNDE5IiBzdHJva2Utd2lkdGg9IjIuMiIvPgogICAgPC9nPgogICAgPCEtLSDrsLHrrLgo55m95paHKSAn66eI7J2MJyDigJQg7KCE7IScIOuKkOuCjOydmCDqsIHsp4Qg7ZqNLCDtnbDsg4nsnLzroZwg7YyM64OEIC0tPgogICAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMTIxNDE5IiBzdHJva2Utd2lkdGg9IjYuNSIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgZmlsdGVyPSJ1cmwoI3dvcm4pIj4KICAgICAgPCEtLSDrp4g6IOOFgSArIOOFjyAtLT4KICAgICAgPHJlY3QgeD0iMjIiIHk9IjIwIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiLz4KICAgICAgPHBhdGggZD0iTTYwIDE1IFY0OSBNNjAgMzIgSDc0Ii8+CiAgICAgIDwhLS0g7J2MOiDjhYcgLyDjhaEgLyDjhYEgLS0+CiAgICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNjAiIHI9IjciLz4KICAgICAgPHBhdGggZD0iTTI0IDcyIEg3NiIvPgogICAgICA8cmVjdCB4PSIzNiIgeT0iNzkiIHdpZHRoPSIyOCIgaGVpZ2h0PSI5Ii8+CiAgICA8L2c+CiAgPC9nPgogIDwvZz4KPC9zdmc+Cg==">
+    </button>
+    <p class="power-label" aria-hidden="true">마음 켜기<small>TURN YOUR MIND ON</small></p>
+    <div class="ready" id="ready" role="status" aria-live="polite"><div class="ready-bar"><i id="readyBar"></i></div><small id="readyTxt"></small></div>
+    <div class="gate-lang">
+      <button class="chip" type="button" data-lang="ko">한국어</button>
+      <button class="chip" type="button" data-lang="en">English</button>
+    </div>
+    <p class="gate-note"><span data-i="notMedical"></span> <a href="terms.html" target="_blank" rel="noopener" data-i="helpLine"></a></p>
+    <nav class="legal"><a href="privacy.html" target="_blank" rel="noopener" data-i="privacy"></a><a href="terms.html" target="_blank" rel="noopener" data-i="terms"></a><a href="credits.html" target="_blank" rel="noopener" data-i="credits"></a></nav>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/meshopt_decoder.js"></script>
+<script>
+/* 출처: 마음온/brand/avatar/duck.js (디자인 세션, 컨셉 보드에 맞춘 판) — 그대로 붙여 넣음.
+ * 지금은 Blender 오리(GLB)를 못 받았을 때만 쓰는 대체 오리 */
+/* 마음온 도반 오리 (가칭 심덕) — three.js r128 아바타. 컨셉 보드 「심덕」 기준.
+ * 사용: const duck = new MaumDuck(); scene.add(duck.root); duck.setPose('hapjang'); 매 프레임 duck.update(dt)
+ * 단위: 씬 유닛. 발바닥 y=0, 머리 꼭대기 y≈1.56. 정면은 +z.
+ * root = { rig(몸, 포즈에 따라 내려앉음), 좌복, 연잎 }. 이동·회전은 root 에.
+ */
+(function (global) {
+  const T = global.THREE;
+
+  const COLORS = {
+    cream:   0xf9e9b9, // 몸·머리·손 (연노랑 크림)
+    beak:    0xf0953f, // 부리·발 (주황)
+    beakDark:0xd87a2a, // 부리 아래
+    cheek:   0xf2b1a8, // 볼터치
+    ink:     0x1a1714, // 눈
+    robe:    0xd6d1c7, // 저고리·소매 (밝은 회색)
+    lapel:   0xe8e4db, // 깃 (저고리보다 밝게)
+    sash:    0x8a6240, // 가사 띠 (갈색)
+    belt:    0x6b4a30, // 허리끈 (갈색)
+    pack:    0x8a6240, // 걸망
+    packDark:0x5a3f28, // 걸망 덮개·멜빵
+    cushion: 0x4a4650, // 좌복 (회보라 방석)
+    leaf:    0x6f9a5a  // 연잎
+  };
+
+  function mat(c, extra) { return new T.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.7, metalness: 0 }, extra || {})); }
+  function sphere(r, c, sx, sy, sz) { const m = new T.Mesh(new T.SphereGeometry(r, 40, 28), mat(c)); m.scale.set(sx || 1, sy || 1, sz || 1); return m; }
+  // 회전체: [반지름, 세계 y] 목록 → torso 로컬(y-0.22)
+  function lathe(profile, c, segs) { const pts = profile.map(p => new T.Vector2(p[0], p[1] - 0.22)); return new T.Mesh(new T.LatheGeometry(pts, segs || 48), mat(c)); }
+
+  function MaumDuck() {
+    this.root = new T.Group();
+    this.t = 0; this.pose = 'stand'; this.blend = 1;
+    this.cur = {}; this.from = {}; this.to = {};
+
+    const rig = this.rig = new T.Group(); this.root.add(rig);
+    const hips = this.hips = new T.Group(); rig.add(hips);
+
+    // ── 다리·물갈퀴 발 (피벗: 고관절)
+    this.legs = [-1, 1].map(side => {
+      const p = new T.Group(); p.position.set(side * 0.13, 0.22, 0.02);
+      const leg = new T.Mesh(new T.CylinderGeometry(0.04, 0.045, 0.20, 16), mat(COLORS.beak)); leg.position.y = -0.10; p.add(leg);
+      const foot = sphere(1, COLORS.beak, 0.11, 0.035, 0.17); foot.position.set(0, -0.20, 0.06); p.add(foot);
+      [-1, 0, 1].forEach(k => { const toe = sphere(1, COLORS.beak, 0.035, 0.03, 0.07); toe.position.set(k * 0.06, -0.20, 0.19); p.add(toe); });
+      hips.add(p); return p;
+    });
+
+    // ── 몸통 (피벗 y 0.22). 저고리를 입은 몸 전체를 둥근 회전체 하나로
+    const torso = this.torso = new T.Group(); torso.position.y = 0.22; hips.add(torso);
+    const body = lathe([[0.40, 0.22], [0.45, 0.30], [0.46, 0.42], [0.43, 0.56], [0.36, 0.70], [0.26, 0.82], [0.14, 0.90], [0.0, 0.93]], COLORS.robe);
+    torso.add(body);
+    const hem = new T.Mesh(new T.TorusGeometry(0.40, 0.012, 8, 56), mat(COLORS.robe)); hem.rotation.x = Math.PI / 2; hem.position.y = 0.0; torso.add(hem);
+    // V자 깃: 두 장의 얇은 띠가 가슴 앞에서 겹침
+    [-1, 1].forEach(s => { const l = new T.Mesh(new T.BoxGeometry(0.07, 0.40, 0.025), mat(COLORS.lapel)); l.position.set(s * 0.10, 0.50, 0.40); l.rotation.set(-0.35, 0, s * 0.45); torso.add(l); });
+    // 가사 띠: 왼쪽 어깨에서 오른쪽 허리로
+    const sash = new T.Mesh(new T.TorusGeometry(0.40, 0.05, 12, 56), mat(COLORS.sash)); sash.rotation.set(Math.PI / 2 + 0.55, 0, 0.5); sash.position.y = 0.38; torso.add(sash);
+    const belt = new T.Mesh(new T.TorusGeometry(0.455, 0.035, 10, 56), mat(COLORS.belt)); belt.rotation.x = Math.PI / 2; belt.position.y = 0.26; torso.add(belt);
+    const knot = sphere(1, COLORS.belt, 0.06, 0.045, 0.04); knot.position.set(0.12, 0.26, 0.44); torso.add(knot);
+    // 걸망
+    const pack = new T.Mesh(new T.BoxGeometry(0.30, 0.30, 0.14), mat(COLORS.pack)); pack.position.set(0, 0.42, -0.40); torso.add(pack);
+    const flap = new T.Mesh(new T.BoxGeometry(0.31, 0.10, 0.15), mat(COLORS.packDark)); flap.position.set(0, 0.54, -0.40); torso.add(flap);
+    const buckle = sphere(1, COLORS.packDark, 0.03, 0.03, 0.02); buckle.position.set(0, 0.47, -0.48); torso.add(buckle);
+    [-1, 1].forEach(s => { const strap = new T.Mesh(new T.BoxGeometry(0.045, 0.36, 0.02), mat(COLORS.packDark)); strap.position.set(s * 0.15, 0.56, -0.28); strap.rotation.x = -0.45; torso.add(strap); });
+
+    // ── 소매 + 손 (피벗: 어깨)
+    this.wings = [-1, 1].map(side => {
+      const p = new T.Group(); p.position.set(side * 0.37, 0.52, 0.12); p.userData.side = side;
+      const sleeve = sphere(1, COLORS.robe, 0.11, 0.18, 0.12); sleeve.position.y = -0.14; p.add(sleeve);
+      const cuff = new T.Mesh(new T.TorusGeometry(0.095, 0.02, 8, 32), mat(COLORS.lapel)); cuff.rotation.x = Math.PI / 2; cuff.position.y = -0.29; p.add(cuff);
+      const hand = sphere(1, COLORS.cream, 0.08, 0.065, 0.09); hand.position.y = -0.32; p.add(hand);
+      torso.add(p); return p;
+    });
+
+    // ── 머리 (피벗: 목, torso 로컬 y 0.66 = 세계 0.88). 머리가 몸 위에 겹쳐 앉음
+    const neck = this.neck = new T.Group(); neck.position.y = 0.66; torso.add(neck);
+    const head = sphere(0.44, COLORS.cream, 1.0, 0.96, 1.0); head.position.y = 0.26; neck.add(head);
+    // 머리 위 잔털 세 가닥
+    [[0, 0.68, 0.0, 0.15, 0.0], [-0.07, 0.67, 0.04, 0.35, 0.3], [0.06, 0.67, -0.03, -0.3, -0.25]].forEach(a => {
+      const h = new T.Mesh(new T.ConeGeometry(0.022, 0.12, 8), mat(COLORS.cream)); h.position.set(a[0], a[1], a[2]); h.rotation.set(a[4], 0, a[3]); neck.add(h); });
+    this.eyes = [-1, 1].map(s => {
+      const e = sphere(0.065, COLORS.ink, 1, 1.25, 0.5); e.position.set(s * 0.17, 0.27, 0.405); neck.add(e);
+      const hi = sphere(0.02, 0xffffff); hi.position.set(0.02, 0.03, 0.05); e.add(hi);
+      const hi2 = sphere(0.01, 0xffffff); hi2.position.set(-0.025, -0.025, 0.05); e.add(hi2);
+      const cheek = sphere(1, COLORS.cheek, 0.08, 0.055, 0.03); cheek.position.set(s * 0.31, 0.14, 0.30); neck.add(cheek);
+      return e;
+    });
+    const beakU = sphere(1, COLORS.beak, 0.14, 0.075, 0.11); beakU.position.set(0, 0.15, 0.44); neck.add(beakU);
+    const beakL = sphere(1, COLORS.beakDark, 0.11, 0.05, 0.09); beakL.position.set(0, 0.10, 0.43); neck.add(beakL);
+
+    // ── 소품
+    const cushion = new T.Mesh(new T.CylinderGeometry(0.58, 0.62, 0.10, 40), mat(COLORS.cushion)); cushion.position.y = 0.05; cushion.visible = false; this.root.add(cushion);
+    const leaf = new T.Mesh(new T.CylinderGeometry(0.95, 0.92, 0.04, 48), mat(COLORS.leaf)); leaf.position.y = 0.02; leaf.visible = false; this.root.add(leaf);
+    const vein = new T.Mesh(new T.TorusGeometry(0.6, 0.008, 6, 48), mat(0x5a8247)); vein.rotation.x = Math.PI / 2; vein.position.y = 0.045; leaf.add(vein);
+    this.props = { cushion, leaf };
+
+    this.root.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    this.setPose('stand', true);
+  }
+
+  // 포즈 사전: 각도는 라디안. wing/leg 배열은 [앞으로, 안쪽/바깥쪽으로]
+  const POSES = {
+    stand:   { rootY: 0,     torsoX: 0,    headX: 0,    wing: [0.15, 0.1],  leg: [0, 0],        eye: 1,    prop: null },
+    walk:    { rootY: 0,     torsoX: 0.05, headX: 0.05, wing: [0.15, 0.15], leg: [0, 0],        eye: 1,    prop: null },
+    sit:     { rootY: -0.14, torsoX: 0.04, headX: 0.08, wing: [-0.6, 0.4],  leg: [-1.55, 0.9],  eye: 1,    prop: 'cushion' },
+    breathe: { rootY: -0.18, torsoX: 0.02, headX: 0.12, wing: [-0.6, 0.4],  leg: [-1.55, 0.9],  eye: 0.12, prop: 'leaf' },
+    hands:   { rootY: 0,     torsoX: 0.03, headX: 0.14, wing: [-1.25, 1.0], leg: [0, 0],        eye: 0.6,  prop: null }, // 합장: 손 모음
+    halfbow: { rootY: 0,     torsoX: 0.5,  headX: 0.49, wing: [-1.25, 1.0], leg: [0, 0],        eye: 0.3,  prop: null }, // 합장: 반배로 숙임
+    kneel:   { rootY: -0.14, torsoX: 0.15, headX: 0.1,  wing: [-0.4, 0.2],  leg: [-1.45, 0.15], eye: 1,    prop: 'cushion' },
+    prostrate:{ rootY: -0.16, torsoX: 1.25, headX: 0.45, wing: [-1.7, 0.25], leg: [-1.45, 0.15], eye: 0.12, prop: 'cushion' }
+  };
+  // 시퀀스 동작: [포즈, 초]. loop=false 면 한 번 재생 후 마지막 포즈에 머문다 (duck.done 이 true, onDone 호출)
+  const SEQUENCES = {
+    bow:     { loop: true,  steps: [['stand', 0.48], ['kneel', 0.72], ['prostrate', 1.2], ['kneel', 0.64], ['stand', 0.96]] }, // 큰절 한 번 = 4초
+    hapjang: { loop: false, steps: [['hands', 0.8], ['halfbow', 1.3], ['halfbow', 0.7], ['hands', 1.2]] }                    // 반배: 모으기→숙이기→머물기→일어나기
+  };
+  MaumDuck.POSES = POSES; MaumDuck.SEQUENCES = SEQUENCES; MaumDuck.COLORS = COLORS;
+
+  const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  const lerp = (a, b, k) => a + (b - a) * k;
+  function mix(a, b, k) {
+    return { rootY: lerp(a.rootY, b.rootY, k), torsoX: lerp(a.torsoX, b.torsoX, k), headX: lerp(a.headX, b.headX, k),
+      wing: [lerp(a.wing[0], b.wing[0], k), lerp(a.wing[1], b.wing[1], k)], leg: [lerp(a.leg[0], b.leg[0], k), lerp(a.leg[1], b.leg[1], k)],
+      eye: lerp(a.eye, b.eye, k), prop: k < 0.5 ? a.prop : b.prop };
+  }
+
+  MaumDuck.prototype.setPose = function (name, instant, onDone) {
+    this.pose = name; this.t = 0; this.done = false; this.onDone = onDone || null;
+    const seq = SEQUENCES[name];
+    const target = seq ? POSES[seq.steps[0][0]] : POSES[name];
+    this.from = this.cur.rootY === undefined ? target : Object.assign({}, this.cur);
+    this.to = target; this.blend = instant ? 1 : 0;
+  };
+
+  MaumDuck.prototype.apply = function (p, t) {
+    const breathing = this.pose === 'breathe';
+    const period = breathing ? 8 : 4;
+    const br = Math.sin(t * Math.PI * 2 / period);
+    const amp = breathing ? 0.035 : 0.012;
+    this.rig.position.y = p.rootY + (this.pose === 'walk' ? Math.abs(Math.sin(t * Math.PI * 2 * 1.6)) * 0.025 : 0);
+    this.torso.rotation.x = p.torsoX;
+    this.torso.scale.set(1 - br * amp * 0.5, 1 + br * amp, 1 - br * amp * 0.5);
+    this.neck.rotation.x = p.headX + br * 0.01;
+    this.neck.rotation.y = this.pose === 'walk' ? Math.sin(t * Math.PI * 2 * 0.8) * 0.08 : 0;
+    const swing = this.pose === 'walk' ? Math.sin(t * Math.PI * 2 * 1.6) : 0;
+    this.wings.forEach(w => { const s = w.userData.side;
+      w.rotation.x = p.wing[0] + swing * -s * 0.35;
+      w.rotation.z = -s * p.wing[1];
+    });
+    this.legs.forEach((l, i) => { const s = i === 0 ? -1 : 1;
+      l.rotation.x = p.leg[0] + swing * s * 0.55;
+      l.rotation.z = s * p.leg[1];
+    });
+    this.eyes.forEach(e => { e.scale.y = 1.25 * p.eye; });
+    this.props.cushion.visible = p.prop === 'cushion';
+    this.props.leaf.visible = p.prop === 'leaf';
+  };
+
+  MaumDuck.prototype.update = function (dt) {
+    this.t += dt;
+    let p;
+    const seq = SEQUENCES[this.pose];
+    if (seq) {
+      const steps = seq.steps, total = steps.reduce((a, s) => a + s[1], 0);
+      let u = seq.loop ? this.t % total : Math.min(this.t, total);
+      let acc = 0, p0 = this.from, p1 = POSES[steps[0][0]], k = 1;
+      for (let i = 0; i < steps.length; i++) { const [n, len] = steps[i];
+        if (u < acc + len || i === steps.length - 1) {
+          p0 = i === 0 ? (seq.loop ? POSES[steps[steps.length - 1][0]] : this.from) : POSES[steps[i - 1][0]];
+          p1 = POSES[n]; k = Math.min(1, (u - acc) / len); break; }
+        acc += len; }
+      p = mix(p0, p1, ease(Math.min(1, k * 1.25)));
+      if (!seq.loop && !this.done && this.t >= total) { this.done = true; if (this.onDone) this.onDone(); }
+    } else {
+      this.blend = Math.min(1, this.blend + dt / 0.6);
+      p = mix(this.from, this.to, ease(this.blend));
+    }
+    this.cur = p; this.apply(p, this.t);
+  };
+
+  global.MaumDuck = MaumDuck;
+})(window);
+</script>
+<script>
+/* 출처: 마음온/brand/avatar/blender/duck-glb.js (디자인 세션, Blender 모델) — 포즈·시퀀스는 그대로,
+ * 시제품용으로 바꾼 곳: ① GLB를 한 번만 받아 오리마다 복제(다른 방문자 오리) ② 못 받으면 onError */
+(function (global) {
+  const T = global.THREE;
+  const POSES = {
+    stand:   { rootY: 0,     torsoX: 0,    headX: 0,    wing: [-0.15, 0.1], leg: [0, 0],        eye: 1 },
+    walk:    { rootY: 0,     torsoX: 0.05, headX: 0.05, wing: [-0.15, 0.15], leg: [0, 0],       eye: 1 },
+    sit:     { rootY: -0.14, torsoX: 0.04, headX: 0.08, wing: [-0.6, 0.4],  leg: [-1.55, 0.9],  eye: 1 },
+    breathe: { rootY: -0.18, torsoX: 0.02, headX: 0.12, wing: [-0.6, 0.4],  leg: [-1.55, 0.9],  eye: 0.12 },
+    hands:   { rootY: 0,     torsoX: 0.03, headX: 0.14, wing: [-1.25, 1.0], leg: [0, 0],        eye: 0.6 },
+    halfbow: { rootY: 0,     torsoX: 0.5,  headX: 0.49, wing: [-1.25, 1.0], leg: [0, 0],        eye: 0.3 },
+    kneel:   { rootY: -0.14, torsoX: 0.15, headX: 0.1,  wing: [-0.4, 0.2],  leg: [-1.45, 0.15], eye: 1 },
+    prostrate:{ rootY: -0.16, torsoX: 1.25, headX: 0.45, wing: [-1.7, 0.25], leg: [-1.45, 0.15], eye: 0.12 }
+  };
+  const SEQUENCES = {
+    bow:     { loop: true,  steps: [['stand', 0.48], ['kneel', 0.72], ['prostrate', 1.2], ['kneel', 0.64], ['stand', 0.96]] },
+    hapjang: { loop: false, steps: [['hands', 0.8], ['halfbow', 1.3], ['halfbow', 0.7], ['hands', 1.2]] }
+  };
+  const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const mix = (a, b, k) => ({ rootY: lerp(a.rootY, b.rootY, k), torsoX: lerp(a.torsoX, b.torsoX, k), headX: lerp(a.headX, b.headX, k),
+    wing: [lerp(a.wing[0], b.wing[0], k), lerp(a.wing[1], b.wing[1], k)], leg: [lerp(a.leg[0], b.leg[0], k), lerp(a.leg[1], b.leg[1], k)], eye: lerp(a.eye, b.eye, k) });
+
+  const cache = {}; // url → Promise<gltf.scene> (한 번만 받음)
+  // 모델은 meshopt로 압축(gltfpack) — 풀개 붙인 로더
+  function newLoader() { const l = new T.GLTFLoader(); if (global.MeshoptDecoder) l.setMeshoptDecoder(global.MeshoptDecoder); return l; }
+  // 압축된 법선(정수)은 그대로 다시 계산하면 깨짐 → 지우고 실수로 새로 계산
+  function smoothNormals(g) { const n = g.attributes.normal; if (n && !(n.array instanceof Float32Array)) g.deleteAttribute('normal'); g.computeVertexNormals(); }
+  global.maumGLTF = { newLoader, smoothNormals };
+  function loadScene(url) {
+    if (!cache[url]) cache[url] = new Promise((ok, fail) => {
+      if (!T.GLTFLoader) return fail(new Error('no GLTFLoader'));
+      newLoader().load(url, g => {
+        g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; smoothNormals(o.geometry); } });
+        ok(g.scene);
+      }, undefined, fail);
+    });
+    return cache[url];
+  }
+
+  function MaumDuckGLB(url, onLoad, onError) {
+    this.root = new T.Group(); this.root.rotation.y = Math.PI;
+    this.t = 0; this.pose = 'stand'; this.blend = 1; this.cur = {}; this.from = POSES.stand; this.to = POSES.stand; this.ready = false;
+    const self = this;
+    loadScene(url).then(src => {
+      const s = src.clone(true); self.root.add(s);
+      const get = n => s.getObjectByName(n);
+      self.hips = get('hips'); self.torso = get('torso'); self.neck = get('neck');
+      self.wings = [get('wingL'), get('wingR')]; self.legs = [get('legL'), get('legR')]; self.eyes = [get('eyeL'), get('eyeR')];
+      self.base = { hipsY: self.hips.position.y, eyeY: self.eyes[0].scale.y };
+      self.ready = true; self.setPose(self.pose, true); if (onLoad) onLoad(self);
+    }, e => { if (onError) onError(e); });
+  }
+  MaumDuckGLB.POSES = POSES; MaumDuckGLB.SEQUENCES = SEQUENCES;
+
+  MaumDuckGLB.prototype.setPose = function (name, instant, onDone) {
+    this.pose = name; this.t = 0; this.done = false; this.onDone = onDone || null;
+    const seq = SEQUENCES[name]; const target = seq ? POSES[seq.steps[0][0]] : POSES[name];
+    this.from = this.cur.rootY === undefined ? target : Object.assign({}, this.cur);
+    this.to = target; this.blend = instant ? 1 : 0;
+  };
+
+  MaumDuckGLB.prototype.apply = function (p, t) {
+    if (!this.ready) return;
+    const breathing = this.pose === 'breathe', period = breathing ? 8 : 4, br = Math.sin(t * Math.PI * 2 / period), amp = breathing ? 0.035 : 0.012;
+    const walking = this.pose === 'walk', swing = walking ? Math.sin(t * Math.PI * 2 * 1.6) : 0;
+    this.hips.position.y = this.base.hipsY + p.rootY + (walking ? Math.abs(swing) * 0.025 : 0);
+    // glTF 로컬: 앞으로 숙임 = X 음수 (모델이 -Z를 봄)
+    this.torso.rotation.x = -p.torsoX; this.torso.scale.set(1 - br * amp * 0.5, 1 + br * amp, 1 - br * amp * 0.5);
+    this.neck.rotation.x = -(p.headX + br * 0.01); this.neck.rotation.y = walking ? Math.sin(t * Math.PI * 2 * 0.8) * 0.08 : 0;
+    this.wings.forEach((w, i) => { const s = i === 0 ? -1 : 1;
+      w.rotation.x = -(p.wing[0] + swing * -s * 0.35);   // 앞으로 = X 양수 (Blender +X)
+      w.rotation.z = -s * p.wing[1]; });                   // 안쪽으로 (Blender Y → glTF -Z)
+    this.legs.forEach((l, i) => { const s = i === 0 ? -1 : 1;
+      l.rotation.x = -(p.leg[0] + swing * s * 0.55); l.rotation.z = s * p.leg[1]; });
+    this.eyes.forEach(e => { e.scale.y = this.base.eyeY * p.eye; });
+  };
+
+  MaumDuckGLB.prototype.update = function (dt) {
+    this.t += dt; let p;
+    const seq = SEQUENCES[this.pose];
+    if (seq) {
+      const steps = seq.steps, total = steps.reduce((a, s) => a + s[1], 0);
+      const u = seq.loop ? this.t % total : Math.min(this.t, total);
+      let acc = 0, p0 = this.from, p1 = POSES[steps[0][0]], k = 1;
+      for (let i = 0; i < steps.length; i++) { const [n, len] = steps[i];
+        if (u < acc + len || i === steps.length - 1) { p0 = i === 0 ? (seq.loop ? POSES[steps[steps.length - 1][0]] : this.from) : POSES[steps[i - 1][0]]; p1 = POSES[n]; k = Math.min(1, (u - acc) / len); break; }
+        acc += len; }
+      p = mix(p0, p1, ease(Math.min(1, k * 1.25)));
+      if (!seq.loop && !this.done && this.t >= total) { this.done = true; if (this.onDone) this.onDone(); }
+    } else { this.blend = Math.min(1, this.blend + dt / 0.6); p = mix(this.from, this.to, ease(this.blend)); }
+    this.cur = p; this.apply(p, this.t);
+  };
+
+  global.MaumDuckGLB = MaumDuckGLB;
+})(window);
+</script>
+<script>
+(() => {
+'use strict';
+// 받는 중 표시 (텍스처·3D 모델은 three 의 기본 로딩 관리자를 거침)
+(function readyMeter() {
+  const bar = document.getElementById('readyBar'), txt = document.getElementById('readyTxt'), box = document.getElementById('ready');
+  const ko = !(navigator.language || 'ko').toLowerCase().startsWith('en');
+  const show = (n, total) => { const k = total ? n / total : 0; bar.style.width = Math.round(k * 100) + '%'; txt.textContent = (ko ? '준비 중 ' : 'Preparing ') + Math.round(k * 100) + '%'; };
+  show(0, 1);
+  THREE.DefaultLoadingManager.onProgress = (url, n, total) => show(n, total);
+  THREE.DefaultLoadingManager.onLoad = () => { bar.style.width = '100%'; txt.textContent = ko ? '준비됐어요' : 'Ready'; box.classList.add('done'); };
+})();
+
+/* ───────────── 문구 (한/영) ───────────── */
+const STR = {
+  ko: {
+    tagline: '마음이 쉬어가는 절',
+    gateCap: '둘이 아닌 문',
+    gateSub: '잠시 걸어 들어오세요. 듣고, 절하고, 숨을 고르다 가는 곳입니다.',
+    proto: '프로토타입 · 0단계 그레이박스',
+    place: { gate: '불이문', path: '연못길', hall: '고요당', pond: '연못', lantern: '연등 마당', tea: '찻방' },
+    soon: '준비 중', guide: '안내 따라 걷기', guideStop: '안내 멈추기',
+    places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '108배', sit: '명상', min: '분',
+    leafMoved: '다른 분과 같은 연잎이라 옆자리로 옮겨 앉았어요', leavesFull: '연잎이 모두 차서 물가에 앉았어요',
+    pondLook: '화면을 끌면 둘러보고, 두 손가락으로 가까이·멀리 볼 수 있어요',
+    stand: '일어나기', view: '보기', leave: '나가기', menu: '메뉴', quiet: '조용한 시간', recAll: n => `모두 ${n}배`,
+    chants: { yeongin: '관음정근', yeombul: '염불', silsang: '실상사', seonun: '선운사', yebul: '저녁예불' }, chantSrc: '염불: ',
+    bowTitle: '108배', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
+    bowHint: '시작을 누르면 천천히 108번 절합니다. 끝나면 죽비를 세 번 칩니다. 화면을 끌면 둘러볼 수 있어요.',
+    findSeatShort: '빈 방석 가까이 가 보세요',
+    bowCredit: '목탁 소리: ',
+    findSeat: '빈 방석 가까이 가면 108배를 할 수 있어요',
+    bowToday: (t, a) => `오늘 ${t}배 · 모두 ${a}배`,
+    bowDone: '108배를 마쳤습니다. 수고하셨습니다.',
+    medStop: '그만하기', medTitle: '연잎 명상', medDesc: '들숨 4초, 멈춤 4초, 날숨 6초. 시간을 고르면 시작합니다.',
+    inhale: '들이쉬고', holdB: '멈추고', exhale: '내쉬고',
+    medLeft: s => `남은 시간 ${s}`, medDone: m => `${m}분 동안 숨을 골랐습니다.`,
+    hapMsg: ['잠시 멈추었습니다.', '그것으로 충분합니다.', '여기 온 당신과 이곳은 둘이 아닙니다.'],
+    sndTitle: '소리',
+    snap: '장면 담기', invite: '공유 · 초대 링크', save: '저장', share: '공유', close: '닫기', snapHint: '저장이 안 되면 그림을 길게 눌러 저장하세요', copied: '초대 링크를 복사했어요', inviteMsg: '마음온에서 같이 걸어요',
+    notMedical: '마음온은 의료·심리치료를 대신하지 않습니다.', helpLine: '힘들 땐 109', privacy: '개인정보처리방침', terms: '이용약관', credits: '출처',
+    sndSrc: '자연 소리: JICA·(재)전주정보문화산업진흥원(공공누리 제1유형), 「겨울바람2」 김용배(CC BY) · 한국저작권위원회 공유마당',
+    tod: { dawn: '새벽', day: '낮', dusk: '노을', night: '밤' },
+    season: { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' },
+    rec: (b, m) => `오늘 ${b}배 · 명상 ${m}분`,
+    together: n => `지금 함께 ${n}명`,
+    myName: '나의 이름', myNameNote: '함께 있는 분들에게 이 이름으로 보여요', myNameNoteAlone: '다른 분이 오면 이 이름으로 보여요',
+    someone: '어느 도반', andMore: n => `외 ${n}명`,
+    hapNews: (name, more) => (more > 0 ? `${name}님 외 ${more}명이 합장했어요` : `${name}님이 합장했어요`),
+    hapSent: n => `내 합장이 함께 있는 ${n}명에게 전해졌어요`,
+    bowNews: (name, more) => (more > 0 ? `${name}님 외 ${more}명이 108배를 마쳤어요` : `${name}님이 108배를 마쳤어요`),
+    bowSent: n => `내 108배 소식이 함께 있는 ${n}명에게 전해졌어요`,
+    tapHint: '조이스틱이나 바닥을 눌러 걸어요. 끌면 둘러봅니다. 소리·계절은 오른쪽 위에서 바꿔요.',
+  },
+  en: {
+    tagline: 'MindOn · a quiet temple online',
+    gateCap: 'Burimun · Gate of Not-Two',
+    gateSub: 'Walk in for a while. Listen, bow, and catch your breath.',
+    proto: 'Prototype · stage 0 graybox',
+    place: { gate: 'Gate of Not-Two', path: 'Pond Path', hall: 'Hall of Stillness', pond: 'Lotus Pond', lantern: 'Lantern Court', tea: 'Tea Room' },
+    soon: 'soon', guide: 'Guided walk', guideStop: 'Stop guide',
+    places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: '108 bows', sit: 'Meditate', min: 'min',
+    leafMoved: 'Someone took this leaf at the same moment — you moved to the next one', leavesFull: 'All lotus leaves are taken — you are sitting by the water',
+    pondLook: 'Drag to look around · pinch or scroll to move closer or farther',
+    stand: 'Stand up', view: 'View', leave: 'Leave', menu: 'Menu', quiet: 'Quiet time', recAll: n => `${n} bows in all`,
+    chants: { yeongin: 'Gwaneum', yeombul: 'Chant', silsang: 'Silsangsa', seonun: 'Seonunsa', yebul: 'Evening' }, chantSrc: 'Chant: ',
+    bowTitle: '108 bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
+    bowHint: 'Press Begin to make 108 slow bows. Three claps of the jukbi mark the end. Drag to look around.',
+    findSeatShort: 'Walk up to an empty cushion',
+    bowCredit: 'Moktak: ',
+    findSeat: 'Walk up to an empty cushion to begin 108 bows',
+    bowToday: (t, a) => `${t} today · ${a} in all`,
+    bowDone: 'You finished 108 bows. Rest a moment.',
+    medStop: 'End', medTitle: 'Lotus leaf breathing', medDesc: 'In for 4, hold for 4, out for 6. Pick a length to begin.',
+    inhale: 'Breathe in', holdB: 'Hold', exhale: 'Breathe out',
+    medLeft: s => `${s} left`, medDone: m => `You breathed quietly for ${m} min.`,
+    hapMsg: ['You paused.', 'That is enough.', 'You and this place are not two.'],
+    sndTitle: 'Sound',
+    snap: 'Save this view', invite: 'Share · invite link', save: 'Save', share: 'Share', close: 'Close', snapHint: 'If saving fails, long-press the picture', copied: 'Invite link copied', inviteMsg: 'Walk with me at MindOn',
+    notMedical: 'MindOn does not replace medical or psychological care.', helpLine: 'Need help now?', privacy: 'Privacy', terms: 'Terms', credits: 'Credits',
+    sndSrc: 'Nature sounds: JICA · Jeonju ICT Industry Promotion Agency (KOGL Type 1), "Winter Wind 2" by Kim Yong-bae (CC BY) · Korea Copyright Commission Gongu',
+    tod: { dawn: 'Dawn', day: 'Day', dusk: 'Dusk', night: 'Night' },
+    season: { spring: 'Spring', summer: 'Summer', autumn: 'Autumn', winter: 'Winter' },
+    rec: (b, m) => `Today ${b} bows · ${m} min`,
+    together: n => `${n} here together`,
+    myName: 'My name', myNameNote: 'Others here see you by this name', myNameNoteAlone: 'Others will see you by this name',
+    someone: 'A fellow visitor', andMore: n => `and ${n} more`,
+    hapNews: (name, more) => (more > 0 ? `${name} and ${more} other${more > 1 ? 's' : ''} joined palms` : `${name} joined palms`),
+    hapSent: n => `Your joined palms reached ${n} other${n > 1 ? 's' : ''} here`,
+    bowNews: (name, more) => (more > 0 ? `${name} and ${more} other${more > 1 ? 's' : ''} finished 108 bows` : `${name} finished 108 bows`),
+    bowSent: n => `Your 108 bows were shared with ${n} other${n > 1 ? 's' : ''} here`,
+    tapHint: 'Walk with the joystick or tap the ground. Drag to look around. Sound and season are at the top right.',
+  },
+};
+let lang = (navigator.language || 'ko').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+const T = () => STR[lang];
+// 익명 이름 108개 — 본부장 제공 「심덕 | 익명 닉네임 108개」(2026-10-31, 영문은 번역). 순서·개수가 서버 NAMES_N 과 같아야 함 (docs/익명_닉네임_108.md)
+const NAMES = [
+  ["작은산새", "Little Mountain Bird"], ["고요한솔숲", "Quiet Pine Grove"], ["이른산바람", "Early Mountain Breeze"], ["푸른이끼", "Green Moss"], ["느린산길", "Slow Mountain Trail"], ["잠든솔방울", "Sleeping Pinecone"],
+  ["맑은계곡", "Clear Valley Stream"], ["조용한대나무", "Silent Bamboo"], ["작은산그늘", "Little Mountain Shade"], ["바람든숲길", "Breezy Forest Path"], ["깊은나무결", "Deep Wood Grain"], ["아침산봉우리", "Morning Peak"],
+  ["가벼운솔잎", "Light Pine Needle"], ["수줍은산딸기", "Shy Wild Berry"], ["느긋한청설모", "Easygoing Squirrel"], ["초록산책", "Green Stroll"], ["은은한산향기", "Faint Mountain Scent"], ["낮은산등성이", "Low Ridge"],
+  ["느긋한구름", "Easygoing Cloud"], ["둥근달빛", "Round Moonlight"], ["새벽안개", "Dawn Mist"], ["하얀구름결", "White Cloud Wisp"], ["작은별무리", "Little Star Cluster"], ["먼하늘빛", "Faraway Sky"],
+  ["맑은햇살", "Clear Sunshine"], ["느린노을", "Slow Sunset"], ["아침이슬", "Morning Dew"], ["포근한햇빛", "Cozy Sunlight"], ["바람의쉼표", "Wind's Pause"], ["고운무지개", "Lovely Rainbow"],
+  ["반짝이는별", "Twinkling Star"], ["구름한조각", "A Piece of Cloud"], ["첫눈의기억", "Memory of First Snow"], ["노을빛구름", "Sunset Cloud"], ["선선한바람", "Cool Breeze"], ["파란새벽", "Blue Dawn"],
+  ["잔잔한물결", "Gentle Ripple"], ["작은시냇물", "Little Brook"], ["맑은샘물", "Clear Spring"], ["고요한연못", "Still Pond"], ["물가의달빛", "Moonlight on the Water"], ["은빛물방울", "Silver Droplet"],
+  ["한가로운파도", "Lazy Wave"], ["느릿한물살", "Slow Current"], ["초록연못", "Green Pond"], ["조약돌하나", "One Pebble"], ["차분한강물", "Calm River"], ["작은빗방울", "Little Raindrop"],
+  ["물안개산책", "Mist Walk"], ["둥근물결", "Round Ripple"], ["조용한바닷가", "Quiet Shore"], ["반짝이는모래", "Sparkling Sand"], ["소담한개울", "Modest Creek"], ["물소리따라", "Following the Water"],
+  ["연분홍꽃잎", "Pale Pink Petal"], ["작은연꽃", "Little Lotus"], ["연초록새싹", "Pale Green Sprout"], ["느긋한민들레", "Easygoing Dandelion"], ["하얀목련", "White Magnolia"], ["꽃비내리는날", "Day of Falling Petals"],
+  ["고운동백꽃", "Lovely Camellia"], ["수줍은매화", "Shy Plum Blossom"], ["봄날의진달래", "Spring Azalea"], ["바람맞는갈대", "Reed in the Wind"], ["햇살받은풀잎", "Sunlit Grass"], ["노란개나리", "Yellow Forsythia"],
+  ["풀잎위이슬", "Dew on the Grass"], ["여린버들잎", "Tender Willow Leaf"], ["향기로운쑥", "Fragrant Mugwort"], ["작은들꽃", "Little Wildflower"], ["고요한꽃봉오리", "Quiet Bud"], ["연꽃그늘", "Lotus Shade"],
+  ["졸린다람쥐", "Sleepy Chipmunk"], ["산책하는고양이", "Strolling Cat"], ["달보는토끼", "Moon-gazing Rabbit"], ["느린거북이", "Slow Turtle"], ["작은참새", "Little Sparrow"], ["숲속반딧불", "Forest Firefly"],
+  ["아침을걷는오리", "Duck on a Morning Walk"], ["조용한고슴도치", "Quiet Hedgehog"], ["포근한수달", "Cozy Otter"], ["연못의두루미", "Crane by the Pond"], ["풀밭의노루", "Roe Deer in the Meadow"], ["꽃길따라나비", "Butterfly on the Flower Path"],
+  ["살금살금여우", "Tiptoeing Fox"], ["느긋한판다", "Easygoing Panda"], ["작은개구리", "Little Frog"], ["잎새위잠자리", "Dragonfly on a Leaf"], ["바람타는제비", "Swallow on the Wind"], ["미소짓는오리", "Smiling Duck"],
+  ["작은풍경소리", "Little Wind Chime"], ["은은한목탁", "Soft Moktak"], ["고요한합장", "Quiet Palms Together"], ["가만한마음", "Still Heart"], ["따뜻한도반", "Warm Companion"], ["작은연등불빛", "Little Lantern Light"],
+  ["달빛아래참선", "Moonlit Meditation"], ["다정한마음결", "Kind Heart"], ["고요한찻잔", "Quiet Teacup"], ["느긋한찻잎", "Easygoing Tea Leaf"], ["마음의쉼터", "Heart's Resting Place"], ["잔잔한염주", "Calm Prayer Beads"],
+  ["새벽의종소리", "Dawn Bell"], ["향기로운차한잔", "Fragrant Cup of Tea"], ["맑은마음자리", "Clear Mind"], ["한걸음천천히", "One Slow Step"], ["조용한연등", "Quiet Lantern"], ["오늘도평온", "Peaceful Today"],
+];
+const nameOf = i => (Number.isInteger(i) && i >= 0 && i < NAMES.length ? NAMES[i][lang === 'en' ? 1 : 0] : T().someone);
+
+/* ───────────── 기기 저장 (실패해도 동작) ───────────── */
+const KEY = 'maumon.v0';
+const today = () => new Date().toISOString().slice(0, 10);
+function loadRec() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+}
+const rec = Object.assign({ total: 0, days: {} }, loadRec());
+function day() { return rec.days[today()] || (rec.days[today()] = { bows: 0, med: 0 }); }
+function saveRec() { try { localStorage.setItem(KEY, JSON.stringify(rec)); } catch (e) { /* 저장 불가 환경 */ } }
+
+/* ───────────── 녹음 음원 (출처 표기 필수 — CREDITS.md) ───────────── */
+const REC = {
+  moktak: { file: 'audio/moktak-rhythm.mp3', credit: '「전통사물_목탁_ver.2_치다_연속_중간」 · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+  // 기본 염불 — 음반 녹음이라 공유 저작물이 아님: 영인스님 측 허락을 받아 씀 (2026-10-31 본부장 확인)
+  yeongin: { file: 'audio/yeongin-gwaneum.mp3', credit: '영인스님 「관세음보살정근」 · 음반 「영인스님 염불 따라하기 3」(2010) · 허락을 받아 사용' },
+  yeombul: { file: 'audio/yeombul-kimyongbae.mp3', credit: '김용배 「염불소리1」 · 한국저작권위원회 공유마당 · CC BY' },
+  silsang: { file: 'audio/silsangsa-yeombul-moktak.mp3', credit: '「산_내변산 실상사_염불과 목탁, 새와 매미」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+  seonun: { file: 'audio/seonunsa-yeombul-spring.mp3', credit: '「산_선운산 선운사_새, 샘물, 염불, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+  yebul: { file: 'audio/seonunsa-evening-bell.mp3', credit: '「산_선운산 선운사_저녁예불, 새소리, 범종, 목어, 운판, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+};
+
+/* ───────────── 소리 크기 (기기에 기억) ───────────── */
+const VOL = (() => { const d = { master: 0.9, nature: 0.7, chant: 0.8, bell: 0.9, chantTrack: 'yeongin', bg: true };
+  let v; try { v = Object.assign(d, JSON.parse(localStorage.getItem('maumon.vol')) || {}); } catch (e) { v = d; }
+  if (v.chantOn === false) { v.chant = 0; } delete v.chantOn;            // 예전 '염불 끔' 설정 → 크기 0
+  if (v.cv !== 2) { v.chantTrack = 'yeongin'; v.cv = 2; }               // 기본 염불이 바뀜(10/31) → 예전 기기도 한 번은 새 기본으로
+  if (!REC[v.chantTrack] || v.chantTrack === 'moktak') v.chantTrack = 'yeongin';
+  return v; })();
+function saveVol() { try { localStorage.setItem('maumon.vol', JSON.stringify(VOL)); } catch (e) { /* 저장 불가 */ } }
+
+/* ───────────── 소리 (Web Audio 합성 — 저작권 없음) ───────────── */
+const Snd = {
+  ctx: null, master: null, on: false, wind: null, track: null, timers: [], sleepT: null, cricketT: null,
+  init() {
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.9;
+    this.master.connect(this.ctx.destination);
+    this.fx = this.ctx.createGain(); this.fx.gain.value = VOL.bell; this.fx.connect(this.master); // 종·목탁·죽비·풍경
+    // 바람: 저역 통과 잡음 + 느린 흔들림
+    const len = this.ctx.sampleRate * 3, buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate), d = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const lp = this.ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+    const g = this.ctx.createGain(); g.gain.value = 0.02;
+    const lfo = this.ctx.createOscillator(), lg = this.ctx.createGain();
+    lfo.frequency.value = 0.07; lg.gain.value = 0.03; lfo.connect(lg); lg.connect(g.gain); lfo.start();
+    src.connect(lp); lp.connect(g); g.connect(this.master); src.start();
+    this.wind = g;
+    this.noiseBuf = buf;
+  },
+  setOn(v) {
+    this.on = v;
+    if (v) { this.init(); if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); }
+    if (this.master) this.master.gain.setTargetAtTime(v ? VOL.master : 0, this.ctx.currentTime, 0.2);
+    if (this.audio) this.audio.muted = !v;
+  },
+  ok() { return this.on && this.ctx; },
+  partial(f, t0, amp, decay, type) {
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(amp, t0 + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
+    o.connect(g); g.connect(this.fx); o.start(t0); o.stop(t0 + decay + 0.05);
+  },
+  moktak(acc) {
+    if (!this.ok()) return;
+    const t = this.ctx.currentTime + 0.01, a = acc ? 0.5 : 0.36;
+    // 속이 빈 나무 소리: 낮은 몸통 + 높은 타격음
+    this.partial(410, t, a, 0.22);
+    this.partial(988, t, a * 0.45, 0.09);
+    this.partial(1720, t, a * 0.18, 0.04, 'triangle');
+  },
+  bell(big) {
+    if (!this.ok()) return;
+    const t = this.ctx.currentTime + 0.01;
+    if (big) {
+      // 범종: 낮은 울림 + 비조화 배음, 맥놀이(가까운 두 주파수의 울렁임)를 위해 0.7Hz 차이 쌍
+      const f = 82;
+      [[0.5, 0.32, 14], [1, 0.28, 11], [1.0085, 0.24, 11], [1.19, 0.12, 8], [1.56, 0.1, 6], [2.0, 0.08, 5], [2.74, 0.05, 3.5], [3.76, 0.03, 2.5]]
+        .forEach(([r, a, dcy]) => this.partial(f * r, t, a, dcy));
+      this.partial(f * 6.2, t, 0.05, 0.25, 'triangle');
+    } else {
+      const f = 660;
+      [[1, 0.2, 3.2], [2.76, 0.08, 1.6], [5.4, 0.04, 0.8], [1.004, 0.14, 3.2]].forEach(([r, a, dcy]) => this.partial(f * r, t, a, dcy));
+    }
+  },
+  chime() {
+    if (!this.ok()) return;
+    const t = this.ctx.currentTime + 0.01, f = [1568, 1760, 2093, 2349][Math.floor(Math.random() * 4)];
+    [[1, 0.06, 2.6], [2.76, 0.025, 1.2], [5.4, 0.012, 0.6]].forEach(([r, a, dcy]) => this.partial(f * r, t, a, dcy));
+  },
+  cricket() {
+    if (!this.ok()) return;
+    const t = this.ctx.currentTime + 0.01;
+    for (let i = 0; i < 3; i++) this.partial(4300 + Math.random() * 200, t + i * 0.07, 0.012, 0.05);
+  },
+  clear() { this.timers.forEach(clearTimeout); this.timers.forEach(clearInterval); this.timers = []; },
+  audio: null, bufSrc: null,
+  stopRec() {
+    if (this.audio) { this.audio.pause(); this.audio = null; }
+    if (this.bufSrc) { try { this.bufSrc.stop(); } catch (e) { /* 이미 멈춤 */ } this.bufSrc = null; }
+  },
+  playRec(name) {
+    const a = new Audio(REC[name].file); a.loop = true; a.volume = 0.9; this.audio = a;
+    const viaBuffer = () => {
+      if (this.track !== name || !this.ctx) return;
+      fetch(REC[name].file).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => {
+        if (this.track !== name) return;
+        const src = this.ctx.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(this.master); src.start(); this.bufSrc = src;
+      }).catch(() => {});
+    };
+    a.addEventListener('error', viaBuffer, { once: true });
+    a.play().catch(err => { if (err && err.name === 'NotSupportedError') viaBuffer(); });
+  },
+  play(name) {
+    this.clear(); this.stopRec(); this.track = name;
+    if (REC[name]) {
+      if (this.wind) this.wind.gain.setTargetAtTime(0.02, this.ctx.currentTime, 1);
+      this.playRec(name); return;
+    }
+    if (this.wind) this.wind.gain.setTargetAtTime(name === 'chime' ? 0.11 : 0.05, this.ctx.currentTime, 1);
+    if (name === 'moktak') {
+      let n = 0;
+      const id = setInterval(() => { n++; this.moktak(n % 8 === 0); if (n % 8 === 0) setTimeout(() => this.moktak(false), 180); }, 820);
+      this.timers.push(id); this.moktak(true);
+    } else if (name === 'bell') {
+      this.bell(true);
+      this.timers.push(setInterval(() => this.bell(true), 15000));
+    } else if (name === 'chime') {
+      const loop = () => { this.chime(); this.timers.push(setTimeout(loop, 1800 + Math.random() * 5200)); };
+      loop();
+    }
+  },
+  shots: {},
+  loadShots() {
+    if (!this.ctx || this.shotsLoading) return; this.shotsLoading = true;
+    [['moktak', 'audio/moktak-strike.mp3'], ['jukbi1', 'audio/jukbi-1.mp3'], ['jukbi3', 'audio/jukbi-3.mp3']].forEach(([k, f]) =>
+      fetch(f).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => { this.shots[k] = buf; }).catch(() => {}));
+  },
+  shot(k, gain) {
+    if (!this.ok()) return;
+    const buf = this.shots[k];
+    if (!buf) { if (k === 'moktak') this.moktak(true); else this.bell(false); return; } // 아직 못 받았으면 합성음으로
+    const src = this.ctx.createBufferSource(), g = this.ctx.createGain(); g.gain.value = gain || 0.9;
+    src.buffer = buf; src.connect(g); g.connect(this.fx); src.start();
+  },
+  stop() { this.clear(); this.stopRec(); this.track = null; if (this.wind && this.ctx) this.wind.gain.setTargetAtTime(0.05, this.ctx.currentTime, 1); },
+};
+
+/* ───────────── 배경 소리: 자연(시간대 × 계절) + 연못 물소리 + 고요당 염불(거리) ───────────── */
+const AMB_FILES = {
+  birds: 'audio/nature-birds.mp3', cicada: 'audio/nature-cicada.mp3', sumNight: 'audio/nature-summer-night.mp3',
+  autNight: 'audio/nature-autumn-night.mp3', wind: 'audio/nature-winter-wind.mp3', stream: 'audio/nature-stream.mp3',
+  chant: REC[VOL.chantTrack].file,
+};
+// [새, 매미, 여름밤, 가을밤, 겨울바람]
+const AMB_MIX = {
+  spring: { dawn: [0.9, 0, 0, 0, 0], day: [1, 0, 0, 0, 0], dusk: [0.5, 0, 0.35, 0, 0], night: [0, 0, 0.7, 0, 0] },
+  summer: { dawn: [0.6, 0.3, 0, 0, 0], day: [0.3, 0.85, 0, 0, 0], dusk: [0.2, 0.4, 0.5, 0, 0], night: [0, 0, 1, 0, 0] },
+  autumn: { dawn: [0.7, 0, 0, 0, 0.15], day: [0.7, 0, 0, 0, 0.2], dusk: [0.3, 0, 0, 0.6, 0.15], night: [0, 0, 0, 1, 0.1] },
+  winter: { dawn: [0.15, 0, 0, 0, 0.7], day: [0.2, 0, 0, 0, 0.8], dusk: [0, 0, 0, 0, 0.75], night: [0, 0, 0, 0, 0.6] },
+};
+const Amb = {
+  ready: false, tracks: {}, lastT: 0,
+  // 아이폰·사파리는 소리 파일을 조각(Range)으로 받으려 해서, 서버가 조각을 안 주면 반복 재생이 끊길 수 있다.
+  // → 애플 계열은 파일을 통째로 받아 blob 주소로 바꿔 끼움(압축 그대로라 메모리 부담 작음). 다른 곳은 오류 날 때만.
+  // WebKit(아이폰·아이패드 모든 브라우저와 앱 안 브라우저, 맥 사파리) — 크롬·안드로이드 계열 제외
+  appleWebKit: /AppleWebKit/i.test(navigator.userAgent) && !/Chrome|Chromium|Android/i.test(navigator.userAgent),
+  SILENT: 'data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==',
+  viaBlob(el, f) {
+    if (el.dataset.src !== f) return;                 // 이미 다른 곡으로 바뀜 — 받지 않음
+    fetch(f).then(r => (r.ok ? r.blob() : Promise.reject())).then(b => {
+      if (el.dataset.src !== f) return;               // 그사이 곡이 바뀜
+      if (el.dataset.blob) URL.revokeObjectURL(el.dataset.blob);
+      const u = URL.createObjectURL(b); el.dataset.blob = u; el.src = u; el.play().catch(() => {});
+      if (this.tracks.chant && el === this.tracks.chant.el) BG.follow(u);   // 백그라운드용 염불도 같은 파일로
+    }).catch(() => {});
+  },
+  load(el, f) {
+    el.dataset.src = f;
+    if (this.appleWebKit) {
+      // 애플: 짧은 무음으로 지금(누른 순간) 재생을 열어 두고, 파일은 한 번만 통째로 받아 바꿔 끼움
+      if (!el.dataset.blob) { el.src = this.SILENT; el.play().catch(() => {}); }
+      this.viaBlob(el, f); return;
+    }
+    el.src = f; el.play().catch(() => {});
+    if (el._onErr) el.removeEventListener('error', el._onErr);
+    el._onErr = () => this.viaBlob(el, f);
+    el.addEventListener('error', el._onErr, { once: true });
+  },
+  start() {                                         // 입장 버튼(사용자 동작) 안에서 한 번
+    Snd.init(); Snd.loadShots(); if (!Snd.ctx || this.ready) return;
+    const ctx = Snd.ctx;
+    this.natBus = ctx.createGain(); this.natBus.gain.value = VOL.nature; this.natBus.connect(Snd.master);
+    this.chantBus = ctx.createGain(); this.chantBus.gain.value = VOL.chant; this.chantBus.connect(Snd.master);
+    Object.entries(AMB_FILES).forEach(([k, f]) => {
+      const el = new Audio(); el.loop = true; el.preload = 'auto';
+      const t = { el, g: null };
+      try { const src = ctx.createMediaElementSource(el); t.g = ctx.createGain(); t.g.gain.value = 0; src.connect(t.g); t.g.connect(k === 'chant' ? this.chantBus : this.natBus); }
+      catch (e) { el.volume = 0; }                 // Web Audio로 못 묶으면 요소 볼륨으로
+      this.load(el, f);
+      this.tracks[k] = t;
+    });
+    this.ready = true;
+    BG.prime();
+  },
+  setChant(k) {                                     // 소리 패널에서 염불 곡 바꾸기
+    VOL.chantTrack = k; saveVol();
+    const t = this.tracks.chant; if (!t) return;
+    this.load(t.el, REC[k].file);
+  },
+  set(k, v) {
+    const t = this.tracks[k]; if (!t) return;
+    if (t.g) t.g.gain.setTargetAtTime(v, Snd.ctx.currentTime, 0.8);
+    else t.el.volume = Math.max(0, Math.min(1, v * (k === 'chant' ? VOL.chant : VOL.nature) * (Snd.on ? VOL.master : 0)));
+  },
+  update(now) {
+    if (!this.ready || now - this.lastT < 250) return; this.lastT = now;
+    const indoor = inHallBox(S.pos) ? 0.35 : 1;
+    const mix = AMB_MIX[season][tod];
+    ['birds', 'cicada', 'sumNight', 'autNight', 'wind'].forEach((k, i) => this.set(k, mix[i] * indoor));
+    const dp = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z);
+    // 연못은 고인 물이라 잔잔하게: 물가 가까이(10m 안)에서만 살짝 (2026-10-30 사용자 '물소리가 크지 않아')
+    this.set('stream', Math.max(0, Math.min(1, 1 - (dp - POND_R) / 10)) * (season === 'winter' ? 0.08 : 0.22) * indoor);
+    // 염불: 법당 안에선 가득, 밖에선 문에서 멀어질수록 작아짐
+    const dh = Math.hypot(S.pos.x, S.pos.z - HALL.front);
+    let ch = inHallBox(S.pos) ? 1 : Math.pow(Math.max(0, 1 - dh / 34), 1.6);
+    this.set('chant', ch);
+    this.natBus.gain.setTargetAtTime(VOL.nature, Snd.ctx.currentTime, 0.3);
+    this.chantBus.gain.setTargetAtTime(VOL.chant, Snd.ctx.currentTime, 0.3);
+  },
+};
+
+/* ───────────── 백그라운드 재생 (2026-10-31 사용자 '산사처럼') ─────────────
+   켜 둠(기본): 다른 탭을 보거나 화면을 꺼도 소리가 이어짐. 크롬·안드로이드·맥은 원래 이어지니 그대로 두고,
+   아이폰·아이패드는 화면이 숨으면 Web Audio 가 멈추므로 염불만 따로 <audio> 하나로 계속 틀어 두되(소리 끔),
+   숨는 순간 소리를 켠다 — 숨은 뒤엔 새로 틀 수 없어서 미리 틀어 둠. 잠금 화면엔 곡 이름이 보임.
+   꺼 둠: 숨는 순간 모든 소리를 멈추고, 돌아오면 다시. */
+const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const BG = {
+  el: null, out: false,
+  prime() {                                         // 입장 버튼(사용자 동작) 안에서 한 번
+    if (!IOS || this.el) return;
+    const el = new Audio(); el.loop = true; el.muted = true; el.preload = 'auto';
+    const t = Amb.tracks.chant;
+    el.src = (t && t.el.dataset.blob) || Amb.SILENT; el.play().catch(() => {});
+    this.el = el;
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.setActionHandler('play', () => { el.play().catch(() => {}); });
+        navigator.mediaSession.setActionHandler('pause', () => { el.pause(); });
+      } catch (e) { /* 지원 안 함 */ }
+    }
+  },
+  follow(u) { if (this.el && this.el.src !== u) { this.el.src = u; this.el.play().catch(() => {}); if (document.hidden) this.hide(); } },
+  hide() {
+    if (!entered || !Snd.ctx || !Snd.on) return;
+    if (!VOL.bg) {                                  // 끔: 다 멈춤
+      Snd.ctx.suspend().catch(() => {}); Object.values(Amb.tracks).forEach(t => t.el.pause()); return;
+    }
+    const t = Amb.tracks.chant;
+    if (!this.el || !t || !(VOL.chant > 0)) return;
+    if (t.el.dataset.blob) { try { this.el.currentTime = t.el.currentTime; } catch (e) { /* 아직 못 받음 */ } }   // 파일이 아직이면 무음 고리를 켠 채로 두고 follow 가 바꿔 끼움
+    this.el.muted = false; this.out = true;
+    if (t.g) t.g.gain.setValueAtTime(0, Snd.ctx.currentTime);   // 화면 안 염불은 잠깐 끔(둘이 겹치지 않게)
+    if (this.el.paused) this.el.play().catch(() => {});
+    if ('mediaSession' in navigator && window.MediaMetadata) {
+      try { navigator.mediaSession.metadata = new MediaMetadata({ title: STR[lang].chants[VOL.chantTrack], artist: lang === 'ko' ? '마음온' : 'MindOn', album: lang === 'ko' ? '마음이 쉬어가는 절' : 'A quiet temple online', artwork: [{ src: 'img/og.jpg', sizes: '1200x630', type: 'image/jpeg' }] }); } catch (e) { /* 그대로 */ }
+    }
+  },
+  show() {
+    if (this.el) { this.el.muted = true; this.out = false; if (this.el.paused && Snd.on) this.el.play().catch(() => {}); }
+    if (!entered || !Snd.ctx) return;
+    if (Snd.ctx.state !== 'running' && Snd.on) Snd.ctx.resume().catch(() => {});   // 아이폰은 돌아와도 'interrupted' 로 남을 때가 있음
+    if (Snd.on) Object.values(Amb.tracks).forEach(t => { if (t.el.paused) t.el.play().catch(() => {}); });
+    Amb.lastT = 0;                                  // 곧바로 거리 따라 크기 다시 맞춤
+  },
+};
+document.addEventListener('visibilitychange', () => { if (document.hidden) BG.hide(); else BG.show(); });
+
+/* ───────────── 3D 경내 ───────────── */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15; // 보드 색감 (디자인 세션 권장)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(62, 1, 0.1, 400);
+scene.fog = new THREE.Fog(0xc9d6d8, 20, 110);
+
+const hemi = new THREE.HemisphereLight(0xc9d6e8, 0x5b5446, 0.8);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff4e0, 0.9);
+sun.position.set(-30, 40, 20);
+scene.add(sun);
+const hallLight = new THREE.PointLight(0xffb764, 0, 16, 2);
+hallLight.position.set(0, 2.2, -8.6);
+scene.add(hallLight);
+
+const M = (color, extra) => new THREE.MeshLambertMaterial(Object.assign({ color }, extra || {}));
+const TREES = [];   // 나무 자리(잎 덩어리 반지름·아래·위 높이, 줄기 반지름, 재질) — 오리를 가리는 나무는 흐리게(fadeTrees)
+const add = (geo, mat, x, y, z, parent) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); (parent || scene).add(m); return m; };
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+// 하늘: 세로 그라데이션 구
+const skyGeo = new THREE.SphereGeometry(300, 24, 12);
+const skyCol = new Float32Array(skyGeo.attributes.position.count * 3);
+skyGeo.setAttribute('color', new THREE.BufferAttribute(skyCol, 3));
+const sky = new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false }));
+scene.add(sky);
+
+// 별
+const starGeo = new THREE.BufferGeometry(), starPos = [];
+for (let i = 0; i < 500; i++) {
+  const th = Math.random() * Math.PI * 2, ph = Math.random() * 1.2;
+  starPos.push(250 * Math.sin(ph) * Math.cos(th), 250 * Math.cos(ph) + 20, 250 * Math.sin(ph) * Math.sin(th));
+}
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xeef2ff, size: 1.1, fog: false, transparent: true }));
+scene.add(stars);
+const moon = add(new THREE.CircleGeometry(7, 32), new THREE.MeshBasicMaterial({ color: 0xf3ead2, fog: false }), -90, 110, -200);
+moon.lookAt(0, 0, 0);
+
+// 땅
+const groundMat = M(0x6d7a4f);
+const ground = add(new THREE.PlaneGeometry(400, 400), groundMat, 0, 0, 0);
+ground.rotation.x = -Math.PI / 2;
+ground.userData.ground = true;
+
+// 먼 산 (안개 속 겹겹 — 수묵 느낌)
+const mountMats = [M(0x5d6b78, { fog: false }), M(0x5d6b78, { fog: false })];
+for (let i = 0; i < 26; i++) {
+  const a = (i / 26) * Math.PI * 2 + rnd(-0.1, 0.1), r = rnd(85, 140), h = rnd(18, 42);
+  const m = add(new THREE.ConeGeometry(rnd(20, 36), h, 6), mountMats[r < 110 ? 0 : 1], Math.cos(a) * r, h / 2 - 1, Math.sin(a) * r);
+  m.rotation.y = rnd(0, 3);
+}
+
+// 기와 지붕 단면 (처마 끝이 들린 곡선) → 앞뒤로 밀어낸 형태
+function roofGeo(w, h, depth) {
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2, 0.28 * h);
+  s.quadraticCurveTo(-w * 0.3, -0.02 * h, -w * 0.07, h);
+  s.lineTo(w * 0.07, h);
+  s.quadraticCurveTo(w * 0.3, -0.02 * h, w / 2, 0.28 * h);
+  s.lineTo(w / 2 - 0.25, 0); s.lineTo(-w / 2 + 0.25, 0); s.closePath();
+  const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 10 });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+
+// 현판 텍스처
+// 현판: 한글을 크게, 영어를 작게 (한자는 쓰지 않음)
+function plaque(text, sub, w, h) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 170;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1c1a17'; x.fillRect(0, 0, c.width, c.height);
+  x.strokeStyle = '#d7b25b'; x.lineWidth = 10; x.strokeRect(12, 12, c.width - 24, c.height - 24);
+  x.fillStyle = '#d7b25b'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = '700 84px "Gowun Batang", serif';
+  [...text].forEach((ch, i, arr) => x.fillText(ch, (c.width / (arr.length + 1)) * (i + 1), 72));
+  x.font = '700 22px "Gowun Batang", serif';
+  x.fillText(sub.split('').join(String.fromCharCode(8202)), c.width / 2, 134);
+  const tex = new THREE.CanvasTexture(c);
+  return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex }));
+}
+
+const RED = M(0x8e2b22), DAN = M(0x2f6b5e), TILE = M(0x5c5a62), STONE = M(0x9a958a), WOOD = M(0xb59a76), DARKWOOD = M(0x5a4030);
+const plaques = [];
+
+// 입구 문 (불이문)
+const gate = new THREE.Group(); gate.position.set(0, 0, 30); scene.add(gate);
+[-2.3, 2.3].forEach(x => add(new THREE.CylinderGeometry(0.32, 0.36, 4.6, 10), RED, x, 2.3, 0, gate));
+add(new THREE.BoxGeometry(6, 0.4, 0.55), RED, 0, 4.3, 0, gate);
+add(new THREE.BoxGeometry(6.4, 0.42, 0.75), DAN, 0, 4.7, 0, gate);
+add(roofGeo(8.2, 1.8, 2.6), TILE, 0, 4.9, 0, gate);
+const gp = plaque('불이문', 'GATE OF NOT-TWO', 2.4, 0.8); gp.position.set(0, 3.75, 0.3); gate.add(gp); plaques.push(gp);
+const gpBack = gp.clone(); gpBack.position.z = -0.3; gpBack.rotation.y = Math.PI; gate.add(gpBack);
+
+// 고요당: 걸어 들어갈 수 있는 큰 법당 (앞벽 z=-9, 뒷벽 z=-31, 폭 24, 바닥 높이 1)
+const HALL = { front: -9, back: -51, half: 21, floor: 1.2, height: 16, door: 10.5 }; // 42×42m, 안 높이 16m (2026-10-30 더 크게)
+function canvasTex(w, h, draw, rx, ry) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  if (rx) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); }
+  return t;
+}
+const latticeTex = canvasTex(256, 256, (x, w, h) => {
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+  x.strokeStyle = '#4a3020'; x.lineWidth = 5;
+  for (let i = 0; i <= w; i += 32) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, h); x.stroke(); x.beginPath(); x.moveTo(0, i); x.lineTo(w, i); x.stroke(); }
+  x.lineWidth = 3;
+  for (let i = -h; i <= w; i += 32) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + h, h); x.stroke(); x.beginPath(); x.moveTo(i + h, 0); x.lineTo(i, h); x.stroke(); }
+  x.lineWidth = 14; x.strokeRect(0, 0, w, h);
+});
+const latticeAlphaTex = canvasTex(256, 256, (x, w, h) => {
+  x.clearRect(0, 0, w, h); x.strokeStyle = '#3a2618'; x.lineWidth = 6;
+  for (let i = 0; i <= w; i += 32) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, h); x.stroke(); x.beginPath(); x.moveTo(0, i); x.lineTo(w, i); x.stroke(); }
+  x.lineWidth = 16; x.strokeRect(0, 0, w, h);
+});
+const hall = new THREE.Group(); scene.add(hall);
+const DARKWOOD2 = M(0x4a3222), WALL = M(0xcdb894);
+const H = HALL, FL = H.floor, MID = (H.front + H.back) / 2, DEPTH = H.front - H.back;
+const tex = (url, rx, ry, srgb) => { const t = new THREE.TextureLoader().load(url); if (rx) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); } if (srgb) t.encoding = THREE.sRGBEncoding; return t; };
+// 기단과 돌계단
+const platform = add(new THREE.BoxGeometry(H.half * 2 + 3, FL, DEPTH + 3), STONE, 0, FL / 2, MID, hall);
+for (let i = 0; i < 3; i++) add(new THREE.BoxGeometry(12, FL * (i + 1) / 3, 0.6), STONE, 0, FL * (i + 1) / 6, H.front + 1.5 + 0.3 + (2 - i) * 0.6, hall);
+// 바닥: 옹이 박힌 오래된 소나무 마루 (CC0 ambientCG WoodFloor043 — 색·노멀·거칠기 맵)
+const floorMat = new THREE.MeshStandardMaterial({
+  map: tex('img/wood-floor-color.webp', 7, 14), normalMap: tex('img/wood-floor-normalgl.webp', 7, 14),
+  roughnessMap: tex('img/wood-floor-roughness.webp', 7, 14), roughness: 0.85, metalness: 0, color: 0x8c7660,
+});
+floorMat.normalScale = new THREE.Vector2(0.9, 0.9);
+const floor = add(new THREE.PlaneGeometry(H.half * 2 - 0.4, DEPTH - 0.4), floorMat, 0, FL + 0.02, MID, hall);
+floor.rotation.x = -Math.PI / 2;
+// 벽: 뒤벽 + 앞 바깥 두 칸 (가운데 세 칸은 열림)
+add(new THREE.BoxGeometry(H.half * 2 + 0.3, H.height, 0.3), WALL, 0, FL + H.height / 2, H.back, hall);
+[-1, 1].forEach(s => add(new THREE.BoxGeometry(H.half - H.door, H.height, 0.3), WALL, s * (H.door + (H.half - H.door) / 2), FL + H.height / 2, H.front, hall));
+add(new THREE.BoxGeometry(H.door * 2, 2.6, 0.3), WALL, 0, FL + H.height - 1.3, H.front, hall);
+// 옆벽: 다섯 칸, 칸마다 아래는 트이고 위는 창살 — 밖의 나무와 산이 보인다
+const WIN_LOW = FL + 0.9, WIN_MID = FL + H.height * 0.45, WIN_TOP = FL + H.height * 0.72;
+const BAYS = Math.round(DEPTH / 6), BAY = DEPTH / BAYS;
+const latticeMat = new THREE.MeshBasicMaterial({ map: latticeAlphaTex, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide });
+[-1, 1].forEach(s => {
+  const x = s * H.half;
+  add(new THREE.BoxGeometry(0.3, WIN_LOW - FL, DEPTH), WALL, x, (FL + WIN_LOW) / 2, MID, hall);           // 아래 턱
+  add(new THREE.BoxGeometry(0.3, FL + H.height - WIN_TOP, DEPTH), WALL, x, (WIN_TOP + FL + H.height) / 2, MID, hall); // 위 벽
+  for (let i = 0; i <= BAYS; i++) add(new THREE.BoxGeometry(0.45, H.height, 0.45), DARKWOOD2, x, FL + H.height / 2, H.front - i * BAY, hall); // 칸 기둥
+  for (let i = 0; i < BAYS; i++) {
+    const z = H.front - BAY / 2 - i * BAY;
+    const lat = add(new THREE.PlaneGeometry(BAY - 0.45, WIN_TOP - WIN_MID), latticeMat, x, (WIN_MID + WIN_TOP) / 2, z, hall); lat.rotation.y = Math.PI / 2;
+    add(new THREE.BoxGeometry(0.34, 0.18, BAY - 0.45), DARKWOOD2, x, WIN_MID, z, hall);                     // 창살 아래 가로대
+  }
+});
+// 앞 바깥 두 칸의 창살문 (낮엔 밝게, 밤엔 어둡게)
+const windowMat = new THREE.MeshBasicMaterial({ map: latticeTex, color: 0xf6eedb });
+const pane = (w, h, x, y, z, ry) => { const m = add(new THREE.PlaneGeometry(w, h), windowMat, x, y, z, hall); m.rotation.y = ry; return m; };
+const PANE_W = H.half - H.door - 1.4, PANE_H = H.height * 0.6;
+[-1, 1].forEach(s => { const x = s * (H.door + (H.half - H.door) / 2); pane(PANE_W, PANE_H, x, FL + PANE_H / 2 + 0.4, H.front + 0.17, 0); pane(PANE_W, PANE_H, x, FL + PANE_H / 2 + 0.4, H.front - 0.17, Math.PI); });
+// 기둥: 바깥 붉은 기둥 + 안쪽 큰 나무 기둥
+const INNER_X = H.half * 0.83; // 안쪽 큰 기둥 줄 (방석 밖)
+[-H.half, -H.door, -H.door / 3, H.door / 3, H.door, H.half].forEach(x => add(new THREE.CylinderGeometry(0.55, 0.62, H.height + 0.5, 14), RED, x, FL + H.height / 2 + 0.25, H.front + 0.6, hall));
+for (let i = 0; i < 5; i++) { const z = H.front - 7 - i * (DEPTH - 16) / 4; [-1, 1].forEach(s => add(new THREE.CylinderGeometry(0.75, 0.82, H.height, 16), DARKWOOD2, s * INNER_X, FL + H.height / 2, z, hall)); }
+// 천장: 어두운 나무 천장에 드러난 서까래·도리·대들보
+const ceil = add(new THREE.PlaneGeometry(H.half * 2, DEPTH), M(0x2b1e15), 0, FL + H.height - 0.02, MID, hall);
+ceil.rotation.x = Math.PI / 2;
+const RAFTER = M(0x3d2a1c);
+for (let x = -H.half + 0.6; x <= H.half - 0.6; x += 0.9) add(new THREE.BoxGeometry(0.16, 0.2, DEPTH), RAFTER, x, FL + H.height - 0.14, MID, hall);
+[-INNER_X, -INNER_X / 2, 0, INNER_X / 2, INNER_X].forEach(x => add(new THREE.BoxGeometry(0.6, 0.65, DEPTH), DARKWOOD2, x, FL + H.height - 0.55, MID, hall));
+[0, 1, 2, 3, 4, 5, 6].map(i => H.front - 4 - i * (DEPTH - 8) / 6).forEach(z => { add(new THREE.BoxGeometry(H.half * 2, 0.8, 0.75), DARKWOOD2, 0, FL + H.height - 1.0, z, hall); add(new THREE.BoxGeometry(H.half * 2, 0.14, 0.77), DAN, 0, FL + H.height - 1.45, z, hall); });
+// 바깥: 단청 띠 + 큰 기와 지붕 + 현판
+add(new THREE.BoxGeometry(H.half * 2 + 1.4, 1.1, DEPTH + 1.4), DAN, 0, FL + H.height + 0.55, MID, hall);
+add(new THREE.BoxGeometry(H.half * 2 + 1.6, 0.2, DEPTH + 1.6), RED, 0, FL + H.height + 0.02, MID, hall);
+add(roofGeo(H.half * 2 + 13, 9, DEPTH + 7), TILE, 0, FL + H.height + 1.1, MID, hall);
+const eaveMat = new THREE.MeshBasicMaterial({ color: 0x8a6a4a });
+const eaveLamp = (x, y, z, parent) => {
+  add(new THREE.CylinderGeometry(0.34, 0.34, 0.75, 12), eaveMat, x, y, z, parent);
+  [0.4, -0.4].forEach(dy => add(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 12), M(0x5a3f28), x, y + dy, z, parent));
+  add(new THREE.CylinderGeometry(0.01, 0.01, 0.8, 4), M(0x2a2018), x, y + 0.8, z, parent);
+};
+[-0.8, -0.4, 0.4, 0.8].forEach(k => eaveLamp(k * H.half, FL + H.height + 0.1, H.front + 2.2, hall));
+[-3, 3].forEach(x => eaveLamp(x, 3.9, 0.9, gate)); // 불이문 처마 등불
+const hp = plaque('고요당', 'HALL OF STILLNESS', 7.2, 2.4); hp.position.set(0, FL + H.height - 1.3, H.front + 0.2); hall.add(hp); plaques.push(hp);
+// 좌복: 11줄 × 10열 (2026-10-30 더 많이)
+const CUSH = M(0x6b7a94), CUSH_EDGE = M(0x515d74); // 아트 디렉션 cushion
+const CUSHIONS = []; // 모든 방석에 앉을 수 있음 (다른 사람이 앉아 있으면 빼고)
+const CUSH_COLS = 11, CUSH_ROWS = 10;
+for (let r = 0; r < CUSH_ROWS; r++) for (let c = 0; c < CUSH_COLS; c++) {
+  const x = (c - (CUSH_COLS - 1) / 2) * 2.6, z = -14 - r * 2.6;
+  add(new THREE.BoxGeometry(1.6, 0.05, 1.15), CUSH_EDGE, x, FL + 0.03, z, hall);
+  const top = add(new THREE.BoxGeometry(1.5, 0.1, 1.05), CUSH, x, FL + 0.08, z, hall);
+  top.userData.cushion = CUSHIONS.length; CUSHIONS.push({ x, z, mesh: top });
+}
+const FRONT_SEAT = CUSHIONS.findIndex(c => c.x === 0 && c.z === -14 - (CUSH_ROWS - 1) * 2.6);
+// 지금 다가간 빈 방석 표시 (금빛 테)
+const seatRing = add(new THREE.RingGeometry(0.85, 0.95, 40), new THREE.MeshBasicMaterial({ color: 0xd7b25b, transparent: true, opacity: 0.8 }), 0, FL + 0.16, 0, hall);
+seatRing.rotation.x = -Math.PI / 2; seatRing.visible = false;
+// 연등: 세 줄로 매달린 연꽃등
+// 연등 다섯 색: lotus·gold·dan-red·leaf·lantern-violet (아트 디렉션)
+const lanternMats = [0xf08aa6, 0xd7b25b, 0xb8432f, 0x6f9a5a, 0x9b7fb8].map(c => { const m = new THREE.MeshBasicMaterial({ color: c }); m.userData.base = new THREE.Color(c); return m; });
+const stringMat = new THREE.MeshBasicMaterial({ color: 0x2a2018 });
+[-16, -22, -28, -34].forEach((z, ri) => { for (let c = 0; c < 11; c++) {
+  const x = (c - 5) * 2.6, y = FL + H.height - 3.2;
+  const l = add(new THREE.SphereGeometry(0.4, 12, 10), lanternMats[(c + ri * 2) % lanternMats.length], x, y, z, hall); l.scale.set(1, 0.85, 1);
+  add(new THREE.CylinderGeometry(0.012, 0.012, 2.8, 4), stringMat, x, y + 1.7, z, hall);
+} });
+// 불단(수미단) + 후불 벽화: 국립중앙박물관 「아미타극락회도」(덕수448, 공공누리 제1유형)를 뒷벽 가득
+const ALTAR_Z = H.back + 5.6, ALTAR_TOP = FL + 2.2, BUDDHA_H = 10.5, ALTAR_W = 18, ALTAR_D = 6.4; // 부처님 10.5m (2026-10-30 더 크게)
+add(new THREE.BoxGeometry(ALTAR_W, 2.12, ALTAR_D), M(0x5a2a1c), 0, FL + 1.06, ALTAR_Z, hall);
+const GILT = new THREE.MeshStandardMaterial({ color: 0xc9a24f, metalness: 0.6, roughness: 0.35 }); // 아트 디렉션 gilt
+[0.06, 2.14].forEach(y => add(new THREE.BoxGeometry(ALTAR_W + 0.2, 0.14, ALTAR_D + 0.2), GILT, 0, FL + y, ALTAR_Z, hall));
+// 뒷벽을 거의 가득: 높이는 벽 높이, 폭은 벽의 4/5. 위 테두리와 아래 발치는 잘라 쓰고(세로 72%) 가로로 조금 늘림
+const PAINT_H = H.height - 0.8, PAINT_W = H.half * 2 * 0.8;
+const paintTex = tex('img/painting-amitabha-wide.webp', 0, 0, false); paintTex.repeat.set(0.96, 0.72); paintTex.offset.set(0.02, 0.24);
+add(new THREE.BoxGeometry(PAINT_W + 0.8, PAINT_H + 0.6, 0.12), DARKWOOD2, 0, FL + PAINT_H / 2 + 0.3, H.back + 0.2, hall);
+add(new THREE.PlaneGeometry(PAINT_W, PAINT_H), new THREE.MeshBasicMaterial({ map: paintTex }), 0, FL + PAINT_H / 2 + 0.4, H.back + 0.3, hall);
+// 부처님: 국립중앙박물관 「목조불좌상」(덕수3373, 공공누리 제1유형) 사진을 오려 세움 — 가만히 정면(입구 쪽)을 봄
+const buddhaMat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.08, depthWrite: true });
+const buddhaImg = new THREE.Mesh(new THREE.PlaneGeometry(BUDDHA_H * 810 / 1190, BUDDHA_H), buddhaMat);
+buddhaImg.position.set(0, ALTAR_TOP + BUDDHA_H / 2 + 0.45, ALTAR_Z + 0.2); hall.add(buddhaImg);
+new THREE.TextureLoader().load('img/buddha-wood-seated.webp', t => { buddhaMat.map = t; buddhaMat.needsUpdate = true; });
+// 진짜 3D 부처님: 국립중앙박물관 「철제여래좌상」(본관5191, 통일신라, 높이 259cm) 3D 데이터 — 공공누리 제1유형.
+// 박물관 OBJ(면 17만)를 glTF로 바꾸고, 겉은 금(gilt)에 박물관 스캔 노멀맵(2048)으로 표면 결을 살림. 받으면 사진 부처님을 숨김
+const BUDDHA3D_H = 9.4, BUDDHA3D_FACE = 0;
+const buddha3d = new THREE.Group(); buddha3d.position.set(0, ALTAR_TOP + 0.56, ALTAR_Z); hall.add(buddha3d);
+if (THREE.GLTFLoader) maumGLTF.newLoader().load('buddha/buddha-gilt.gltf.json', g => {
+  const m = g.scene;
+  m.traverse(o => { if (o.isMesh) { maumGLTF.smoothNormals(o.geometry); o.material.flatShading = false; o.material.needsUpdate = true; } });
+  m.scale.setScalar(BUDDHA3D_H); m.rotation.y = BUDDHA3D_FACE; buddha3d.add(m);
+  buddhaImg.visible = false;
+}, undefined, () => {});
+// 대좌: 팔각 이단 받침
+const PED = M(0x7a5a2a), PED_TRIM = GILT;
+add(new THREE.CylinderGeometry(4.7, 5.1, 0.5, 8), PED, 0, ALTAR_TOP + 0.25, ALTAR_Z, hall);
+add(new THREE.CylinderGeometry(4.8, 4.8, 0.08, 8), PED_TRIM, 0, ALTAR_TOP + 0.52, ALTAR_Z, hall);
+// 광배: 은은한 금빛 두광·신광
+const haloMat = new THREE.MeshBasicMaterial({ color: 0xd7b25b, transparent: true, opacity: 0.5 });
+const HS = BUDDHA_H / 7.2; // 광배는 부처님 크기에 맞춤
+add(new THREE.RingGeometry(1.28 * HS, 1.36 * HS, 64), haloMat, 0, ALTAR_TOP + 0.45 + BUDDHA_H * 0.8, ALTAR_Z - 2.9, hall);
+const haloBody = add(new THREE.RingGeometry(0.97, 1.0, 64), haloMat, 0, ALTAR_TOP + 0.45 + BUDDHA_H * 0.5, ALTAR_Z - 3.0, hall); haloBody.scale.set(2.9 * HS, 3.6 * HS, 1);
+// 불단 양옆 연꽃 장식
+const LOTUS_P = M(0xf0a6b8), LOTUS_C = M(0xe2c25a);
+function altarLotus(x, y, z, sc) {
+  const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(sc); hall.add(g);
+  for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2, pe = add(new THREE.SphereGeometry(0.16, 8, 6), LOTUS_P, Math.cos(a) * 0.13, 0.16, Math.sin(a) * 0.13, g); pe.scale.set(0.6, 1.5, 0.35); pe.rotation.set(Math.sin(a) * 0.55, 0, -Math.cos(a) * 0.55); }
+  add(new THREE.CylinderGeometry(0.08, 0.06, 0.08, 8), LOTUS_C, 0, 0.22, 0, g);
+}
+[-8, -6, 6, 8].forEach(x => altarLotus(x, ALTAR_TOP, ALTAR_Z + 2.6, 2.6));
+// 촛불
+const flameMat = new THREE.MeshBasicMaterial({ color: 0xffc56b });
+[-7.4, -6.8, -5.2, 5.2, 6.8, 7.4].forEach(x => {
+  add(new THREE.CylinderGeometry(0.12, 0.12, 1.0, 10), M(0xf3ece4), x, ALTAR_TOP + 0.5, ALTAR_Z + 2.8, hall);
+  add(new THREE.SphereGeometry(0.1, 8, 6), flameMat, x, ALTAR_TOP + 1.12, ALTAR_Z + 2.8, hall).scale.set(1, 1.8, 1);
+});
+const buddhaLight = new THREE.PointLight(0xffd59a, 1.0, 34, 1.3); buddhaLight.position.set(0, FL + 10, ALTAR_Z + 8); scene.add(buddhaLight);
+hallLight.position.set(0, FL + 11, MID + 6); hallLight.distance = 34;
+
+// 연기·반딧불용 둥근 빛 점
+const dot = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
+  const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.4, 'rgba(255,255,255,0.45)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c);
+})();
+
+// 좌복 + 향로
+const BURNER_X = 3.6, BURNER_Z = -3.8; // 향로는 법당 앞마당 옆에
+add(new THREE.CylinderGeometry(0.35, 0.28, 0.7, 12), M(0x6f5a3a), BURNER_X, 0.35, BURNER_Z);
+const smokeGeo = new THREE.BufferGeometry(), smokeN = 26, smokeP = new Float32Array(smokeN * 3);
+for (let i = 0; i < smokeN; i++) { smokeP[i * 3] = BURNER_X; smokeP[i * 3 + 1] = 0.75 + (i / smokeN) * 2.2; smokeP[i * 3 + 2] = BURNER_Z; }
+smokeGeo.setAttribute('position', new THREE.BufferAttribute(smokeP, 3));
+const smoke = new THREE.Points(smokeGeo, new THREE.PointsMaterial({ color: 0xe9e4da, size: 0.32, map: dot, transparent: true, opacity: 0.22, depthWrite: false }));
+scene.add(smoke);
+
+// 돌길
+const slabMat = M(0xb7b0a2);
+for (let z = 27; z > -5; z -= 1.15) add(new THREE.BoxGeometry(1.6, 0.06, 0.85), slabMat, rnd(-0.12, 0.12), 0.03, z).rotation.y = rnd(-0.06, 0.06);
+
+// 석등
+const lanternGlow = [];
+function stoneLantern(x, z) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); scene.add(g);
+  add(new THREE.CylinderGeometry(0.42, 0.5, 0.3, 8), STONE, 0, 0.15, 0, g);
+  add(new THREE.CylinderGeometry(0.13, 0.13, 1.0, 8), STONE, 0, 0.8, 0, g);
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0x8a7a5a });
+  add(new THREE.BoxGeometry(0.42, 0.42, 0.42), glowMat, 0, 1.5, 0, g);
+  add(new THREE.ConeGeometry(0.55, 0.45, 4), STONE, 0, 1.94, 0, g).rotation.y = Math.PI / 4;
+  lanternGlow.push(glowMat);
+}
+[22, 13, 4].forEach(z => { stoneLantern(-2.7, z); stoneLantern(2.7, z); });
+
+// 대나무 · 소나무
+const BAMBOO = M(0x5f8a4a), PINE = M(0x2f4a36), TRUNK = M(0x8a6240); // bark
+function bamboo(x, z) { for (let i = 0; i < 7; i++) add(new THREE.CylinderGeometry(0.06, 0.07, rnd(4, 6.5), 5), BAMBOO, x + rnd(-0.8, 0.8), 2.6, z + rnd(-0.8, 0.8)).rotation.z = rnd(-0.06, 0.06); }
+function pine(x, z, s) {
+  const mat = PINE.clone(), bark = TRUNK.clone();      // 나무마다 재질 — 오리를 가릴 때 그 나무만 흐리게
+  TREES.push({ x, z, r: 1.6 * s + 0.4, bot: 1.2 * s, top: 4.8 * s, trunk: 0.22 * s + 0.15, mats: [mat, bark] });
+  add(new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 2 * s, 6), bark, x, s, z);
+  for (let k = 0; k < 3; k++) add(new THREE.ConeGeometry((1.6 - k * 0.35) * s, 1.6 * s, 7), mat, x, (2 + k * 0.9) * s, z);
+}
+[[-6, 24], [-7, 16], [-5.5, 8], [6, 26], [7.5, 18]].forEach(([x, z]) => bamboo(x, z));
+// 계절 나무 (봄 벚꽃 · 여름 초록 · 가을 단풍 · 겨울 눈꽃)
+const canopyMats = [M(0xf2b3c4), M(0xf8d2dc)];
+function seasonTree(x, z, s) {
+  const mats = canopyMats.map(m => m.clone()), bark = TRUNK.clone();   // 계절 색은 applyTod 에서 같이 바꿈(canopy)
+  TREES.push({ x, z, r: 2.1 * s + 0.4, bot: 1.6 * s, top: 4.7 * s, trunk: 0.24 * s + 0.15, mats: mats.concat(bark), canopy: mats });
+  add(new THREE.CylinderGeometry(0.16 * s, 0.24 * s, 2.4 * s, 7), bark, x, 1.2 * s, z);
+  for (let k = 0; k < 7; k++) {
+    const a = (k / 7) * Math.PI * 2, r = k === 0 ? 0 : 0.9 * s;
+    add(new THREE.IcosahedronGeometry(rnd(0.8, 1.1) * s, 1), mats[k % 2], x + Math.cos(a) * r, (2.9 + (k === 0 ? 0.5 : rnd(-0.2, 0.3))) * s, z + Math.sin(a) * r);
+  }
+}
+[[-9.5, 28], [9.5, 27], [-10, 18], [10.5, 17], [-9, 8], [-13, -1], [-14, -6.5], [-13, 12], [26.5, 3], [20, -7], [-18, 3], [7, 34]].forEach(([x, z], i) => seasonTree(x, z, 0.95 + (i % 3) * 0.15));
+// 삼층 석탑 (앞마당 왼쪽)
+(function pagoda(x, z) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); scene.add(g);
+  const ST = M(0xb4ad9f);
+  add(new THREE.BoxGeometry(3.4, 0.5, 3.4), ST, 0, 0.25, 0, g); add(new THREE.BoxGeometry(2.8, 0.6, 2.8), ST, 0, 0.8, 0, g);
+  let y = 1.1;
+  for (let i = 0; i < 3; i++) {
+    const bw = 1.7 - i * 0.28, bh = i === 0 ? 1.3 : 0.6, rw = 2.7 - i * 0.4;
+    add(new THREE.BoxGeometry(bw, bh, bw), ST, 0, y + bh / 2, 0, g); y += bh;
+    add(new THREE.BoxGeometry(rw * 0.8, 0.12, rw * 0.8), ST, 0, y + 0.06, 0, g);
+    add(new THREE.BoxGeometry(rw, 0.2, rw), ST, 0, y + 0.22, 0, g); y += 0.32;
+  }
+  add(new THREE.CylinderGeometry(0.08, 0.1, 1.1, 8), M(0x8a7a5a), 0, y + 0.55, 0, g);
+  [0.25, 0.5, 0.75].forEach(t => add(new THREE.SphereGeometry(0.13, 8, 6), M(0x8a7a5a), 0, y + t * 1.1, 0, g));
+})(-8, -3);
+// 법당 앞 돌 마당
+const pavingTex = canvasTex(512, 512, (x, w, h) => {
+  x.fillStyle = '#6f6a60'; x.fillRect(0, 0, w, h);
+  for (let r = 0; r < 8; r++) { let cx = (r % 2) * -32; while (cx < w) { const sw = 48 + Math.random() * 40, l = 58 + Math.random() * 14;
+    x.fillStyle = `hsl(35, 8%, ${l}%)`; x.fillRect(cx + 3, r * 64 + 3, sw - 6, 58); cx += sw; } }
+}, 6, 3);
+const paving = add(new THREE.PlaneGeometry(30, 7), new THREE.MeshLambertMaterial({ map: pavingTex }), 0, 0.015, -3.9);
+paving.rotation.x = -Math.PI / 2;
+// 꽃 무더기 (봄·여름)
+const flowerGroup = new THREE.Group(); scene.add(flowerGroup);
+const FLOWERS = [M(0xf08fb0), M(0xfff3f6), M(0xffd45c), M(0xc792e8)], BUSH = M(0x4f7d3c);
+for (let z = 26; z > -1; z -= 3.2) [-1, 1].forEach(sd => {
+  const x = sd * rnd(1.6, 2.1);
+  add(new THREE.SphereGeometry(0.42, 8, 6), BUSH, x, 0.25, z, flowerGroup).scale.set(1.2, 0.6, 1);
+  for (let k = 0; k < 6; k++) add(new THREE.SphereGeometry(0.09, 6, 4), FLOWERS[(k + Math.floor(z)) & 3], x + rnd(-0.4, 0.4), 0.48 + rnd(0, 0.06), z + rnd(-0.3, 0.3), flowerGroup);
+});
+// 법당 옆 창 너머 대나무·소나무
+[-1, 1].forEach(sd => { const X = HALL.half + 4.5; bamboo(sd * X, -15); bamboo(sd * (X + 1), -29); bamboo(sd * X, -43); pine(sd * (X + 1.5), -22, 1.3); pine(sd * (X + 0.5), -36, 1.5); pine(sd * (X + 1.5), -48, 1.4); });
+for (let i = 0; i < 34; i++) {
+  const x = rnd(-46, 46), z = rnd(-58, 40);
+  if (Math.abs(x) < HALL.half + 8 && z > HALL.back - 8 && z < 34) continue;
+  if (Math.hypot(x - 16, z - 8) < 12) continue;        // 연못 자리
+  pine(x, z, rnd(0.9, 1.6));
+}
+
+// 연못
+const POND = new THREE.Vector3(16, 0, 8), POND_R = 7; // 법당 앞벽(z -9)에서 물가까지 10m — 2026-10-30 사용자 '법당에서 조금 더 떨어지게'
+const water = add(new THREE.CircleGeometry(POND_R, 48), new THREE.MeshPhongMaterial({ color: 0x8fa8a4, shininess: 80, transparent: true, opacity: 0.8 }) /* tokens v5 water: 탁한 청록 80% */, POND.x, 0.04, POND.z);
+water.rotation.x = -Math.PI / 2;
+for (let i = 0; i < 40; i++) { const a = (i / 40) * Math.PI * 2; add(new THREE.DodecahedronGeometry(rnd(0.3, 0.55)), STONE, POND.x + Math.cos(a) * (POND_R + 0.2), 0.12, POND.z + Math.sin(a) * (POND_R + 0.2)); }
+const LEAF = M(0x4f7d3c), LEAF_SIT = M(0x6a9a48), PETAL = M(0xe7a3b6), PETAL_W = M(0xf3ece4), SEED = M(0xd9b44a);
+const leaves = [];
+function leaf(x, z, r, mat) {
+  const m = add(new THREE.CylinderGeometry(r, r, 0.05, 22, 1, false, 0.25, Math.PI * 2 - 0.5), mat || LEAF, x, 0.07, z);
+  m.rotation.y = rnd(0, 6.28); m.userData.phase = rnd(0, 6.28); leaves.push(m); return m;
+}
+function lotus(x, z, white) {
+  const g = new THREE.Group(); g.position.set(x, 0.1, z); scene.add(g);
+  for (let i = 0; i < 9; i++) {
+    const p = add(new THREE.SphereGeometry(0.16, 6, 4), white ? PETAL_W : PETAL, 0, 0.16, 0, g);
+    p.scale.set(0.6, 1.5, 0.35); const a = (i / 9) * Math.PI * 2;
+    p.position.set(Math.cos(a) * 0.12, 0.16, Math.sin(a) * 0.12); p.rotation.set(Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5);
+  }
+  add(new THREE.CylinderGeometry(0.08, 0.06, 0.08, 8), SEED, 0, 0.22, 0, g);
+  leaves.push(g); g.userData.phase = rnd(0, 6.28);
+}
+const SIT = new THREE.Vector3(POND.x - 3.2, 0, POND.z + 2.4);
+const POND_STAND = POND.clone().add(SIT.clone().sub(POND).normalize().multiplyScalar(POND_R + 1.2)); // 앉는 연잎 앞 물가
+// 앉는 자리: 물가 쪽 연잎(SIT)부터 연못 가운데 둘레 4m에 연잎 8장(서로 3m — 오리가 안 겹침), 연잎이 다 차면 물가 16자리.
+// 다른 사람이 앉은 자리는 건너뜀 (2026-10-31 사용자 '연잎에 둘 이상 올라가면 겹침')
+const SEAT_R = Math.hypot(SIT.x - POND.x, SIT.z - POND.z), SEAT_A0 = Math.atan2(SIT.z - POND.z, SIT.x - POND.x), BANK_R = POND_R + 1.2;
+const POND_SEATS = [];
+for (let i = 0; i < 8; i++) { const a = SEAT_A0 + i * Math.PI / 4; POND_SEATS.push({ x: POND.x + Math.cos(a) * SEAT_R, z: POND.z + Math.sin(a) * SEAT_R, leaf: true }); }
+for (let i = 0; i < 16; i++) { const a = SEAT_A0 + (i + 0.5) * Math.PI / 8; POND_SEATS.push({ x: POND.x + Math.cos(a) * BANK_R, z: POND.z + Math.sin(a) * BANK_R, leaf: false }); }
+const pondLift = p => (Math.hypot(p.x - POND.x, p.z - POND.z) < POND_R ? 0.1 : 0);   // 연잎 위면 10cm 위, 물가는 땅
+for (let i = 0, tries = 0; i < 26 && tries < 500; tries++) {           // 작은 연잎·연꽃은 앉는 연잎을 피해서
+  const a = rnd(0, 6.28), r = rnd(1.5, POND_R - 0.8), x = POND.x + Math.cos(a) * r, z = POND.z + Math.sin(a) * r;
+  if (POND_SEATS.some(s => s.leaf && Math.hypot(s.x - x, s.z - z) < 2.1)) continue;
+  leaf(x, z, rnd(0.35, 0.8));
+  if (i % 3 === 0) lotus(x + 0.3, z, i % 2 === 0);
+  i++;
+}
+// 연못 가는 갈림길: 돌길(z 18.4)에서 물가까지 디딤돌. 석등은 메인 돌길에만 (2026-10-30 사용자)
+const POND_FORK = new THREE.Vector3(0.8, 0, 18.4);
+(function pondPath() {
+  const d = POND_STAND.clone().sub(POND_FORK), len = d.length(); d.normalize();
+  const ang = Math.atan2(d.x, d.z);
+  for (let t = 0.6; t < len - 0.5; t += 1.15) add(new THREE.BoxGeometry(0.85, 0.06, 1.1), slabMat, POND_FORK.x + d.x * t + rnd(-0.08, 0.08), 0.03, POND_FORK.z + d.z * t + rnd(-0.08, 0.08)).rotation.y = ang + rnd(-0.08, 0.08);
+})();
+const seatLeaves = [];
+POND_SEATS.forEach((s, i) => { if (!s.leaf) return; const m = leaf(s.x, s.z, 1.25, LEAF_SIT); m.userData.action = 'pond'; m.userData.seat = i; seatLeaves.push(m); });
+// 금빛 고리: 지금 '연잎'을 누르면 앉게 될 빈 자리에 (0.5초마다 다시 고름)
+const ring = add(new THREE.RingGeometry(1.35, 1.48, 40), new THREE.MeshBasicMaterial({ color: 0xd7b25b, transparent: true, opacity: 0.6 }), SIT.x, 0.1, SIT.z);
+ring.rotation.x = -Math.PI / 2;
+
+// 반딧불
+const flyN = 40, flyGeo = new THREE.BufferGeometry(), flyP = new Float32Array(flyN * 3), flySeed = [];
+for (let i = 0; i < flyN; i++) flySeed.push([rnd(-9, 9), rnd(0.4, 2.2), rnd(-9, 9), rnd(0, 6.28)]);
+flyGeo.setAttribute('position', new THREE.BufferAttribute(flyP, 3));
+const flies = new THREE.Points(flyGeo, new THREE.PointsMaterial({ color: 0xf6e58d, size: 0.22, map: dot, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending }));
+scene.add(flies);
+
+// 떨어지는 꽃잎·낙엽·눈: 내 주변 상자 안에서 순환 (디자인 시스템: 20~40개, 폰 20)
+const FALL_R = 12, FALL_N = matchMedia('(max-width: 600px)').matches ? 20 : 36, fallGeo = new THREE.BufferGeometry(), fallP = new Float32Array(FALL_N * 3), fallSeed = [];
+for (let i = 0; i < FALL_N; i++) { fallP[i * 3] = rnd(-FALL_R, FALL_R); fallP[i * 3 + 1] = rnd(0, 14); fallP[i * 3 + 2] = rnd(-FALL_R, FALL_R); fallSeed.push(rnd(0, 6.28)); }
+fallGeo.setAttribute('position', new THREE.BufferAttribute(fallP, 3));
+const fallPts = new THREE.Points(fallGeo, new THREE.PointsMaterial({ color: 0xf7c3d0, size: 0.16, map: dot, transparent: true, depthWrite: false }));
+fallPts.frustumCulled = false; scene.add(fallPts);
+
+/* ───────────── 시간대 ───────────── */
+const TOD = {
+  dawn:  { top: 0x6f86a6, bot: 0xe8c9b8, fog: 0xb9b8c4, hemi: [0xc9d6e8, 0x5b5446, 0.7], sun: [0xffd2b0, 0.6], ground: 0x5f6b4c, mount: 0x7a8396, lamp: 0.35, stars: 0.15 },
+  day:   { top: 0x86b4dd, bot: 0xf2ead6, fog: 0xe4dccb, hemi: [0xeef0e6, 0x6b5a3e, 0.92], sun: [0xffefd2, 1.08], ground: 0x6d7a4f, mount: 0x72838f, lamp: 0, stars: 0 },
+  dusk:  { top: 0x3d3f6b, bot: 0xe7966a, fog: 0xa77b72, hemi: [0xb59ab0, 0x4a3a34, 0.55], sun: [0xffb07a, 0.7], ground: 0x55583e, mount: 0x5a5470, lamp: 0.7, stars: 0.3 },
+  night: { top: 0x0b1022, bot: 0x1e2a44, fog: 0x172036, hemi: [0x4a5a88, 0x1a1a22, 0.32], sun: [0x9fb3ff, 0.32], ground: 0x2c3528, mount: 0x232c40, lamp: 1, stars: 1 },
+};
+const TOD_ORDER = ['dawn', 'day', 'dusk', 'night'];
+// 계절: 나무 색·땅 색·떨어지는 것(꽃잎·낙엽·눈)이 바뀜. 기본은 지금 달
+const SEASONS = {
+  spring: { canopy: [0xf2b8c6, 0xf7d3dc], ground: 0x6f8a4c, fall: { color: 0xf7c3d0, size: 0.16, speed: 0.6 }, flowers: true },
+  summer: { canopy: [0x4f8f42, 0x6aa84f], ground: 0x5f7f40, fall: null, flowers: true },
+  autumn: { canopy: [0xc85a3a, 0xd98a4a], ground: 0x857a48, fall: { color: 0xd98a4a, size: 0.22, speed: 0.9 }, flowers: false },
+  winter: { canopy: [0xeef2f6, 0xdfe7ef], ground: 0xe6ebef, fall: { color: 0xffffff, size: 0.13, speed: 0.5 }, flowers: false },
+};
+const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
+let season = (m => m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter')(new Date().getMonth() + 1);
+function autoTod() { const h = new Date().getHours(); return h >= 5 && h < 8 ? 'dawn' : h >= 8 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'dusk' : 'night'; }
+let tod = autoTod();
+function applyTod() {
+  const p = TOD[tod], top = new THREE.Color(p.top), bot = new THREE.Color(p.bot), pos = skyGeo.attributes.position, c = new THREE.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const t = Math.max(0, Math.min(1, (pos.getY(i) + 20) / 180));
+    c.copy(bot).lerp(top, Math.pow(t, 0.7)); skyCol.set([c.r, c.g, c.b], i * 3);
+  }
+  skyGeo.attributes.color.needsUpdate = true;
+  scene.fog.color.set(p.fog);
+  hemi.color.set(p.hemi[0]); hemi.groundColor.set(p.hemi[1]); hemi.intensity = hemi.userData.base = p.hemi[2];
+  sun.color.set(p.sun[0]); sun.intensity = sun.userData.base = p.sun[1];
+  sun.position.set(tod === 'dusk' ? -60 : -30, tod === 'dusk' || tod === 'dawn' ? 14 : 40, 20);
+  const se = SEASONS[season], lum = { dawn: 0.82, day: 1, dusk: 0.72, night: 0.36 }[tod];
+  groundMat.color.set(se.ground).multiplyScalar(lum);
+  mountMats.forEach((m, i) => { m.color.set(new THREE.Color(p.mount).lerp(new THREE.Color(p.fog), i ? 0.62 : 0.38)); if (season === 'winter') m.color.lerp(new THREE.Color(0xffffff).multiplyScalar(lum), 0.45); });
+  canopyMats.forEach((m, i) => m.color.set(se.canopy[i]));
+  TREES.forEach(t => { if (t.canopy) t.canopy.forEach((m, i) => m.color.set(se.canopy[i])); });
+  flowerGroup.visible = se.flowers;
+  fallPts.visible = !!se.fall;
+  if (se.fall) { fallPts.material.color.set(se.fall.color); fallPts.material.size = se.fall.size; }
+  lanternMats.forEach(m => m.color.copy(m.userData.base).multiplyScalar(0.7 + Math.max(0.25, p.lamp) * 0.5));
+  lanternGlow.forEach(m => m.color.set(new THREE.Color(0x8a7a5a).lerp(new THREE.Color(0xffc56b), p.lamp)));
+  buddhaLight.intensity = 0.7 + p.lamp * 0.8;
+  eaveMat.color.set(new THREE.Color(0x8a6a4a).lerp(new THREE.Color(0xf0a04b), p.lamp)); // 안쪽 빛 lantern
+  windowMat.color.set(new THREE.Color(0xf6eedb).lerp(new THREE.Color(0x26324f), p.lamp));
+  hallLight.intensity = 0.25 + p.lamp * 0.9;
+  stars.material.opacity = p.stars; stars.visible = p.stars > 0;
+  moon.visible = tod === 'night' || tod === 'dusk';
+  flies.visible = tod === 'night' || tod === 'dusk';
+  renderUI();
+}
+
+/* ───────────── 이동 · 시점 ───────────── */
+const S = {
+  pos: new THREE.Vector3(0, 0, 40), yaw: 0, pitch: 0.02, eye: 1.6, zoom: 1,
+  target: null, queue: [], speed: 2.4, mode: 'walk', guided: false, pause: 0,
+  bow: 0, bowT: -1, done108: 0, zone: 'gate', userLook: 0, autoBow: false, bowWait: 0, nearCushion: -1, seat: -1,
+};
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 3인칭: 나 = 도반 오리. face 는 오리가 바라보는 방향(카메라 yaw 와 같은 규칙: 앞 = (-sin, -cos))
+// 오리 = Blender GLB(디자인 세션). 받기 전·못 받으면 도형 오리(duck.js)로 대신함. root 는 바깥 묶음이라 돌려도 안쪽 180°가 유지됨
+// 모델을 바꾸면 AV 를 올림 — 파일은 하루 동안 기기에 남아 있어서, 주소가 같으면 다시 온 사람이 예전 오리를 봄
+const AV = '?v=1031', DUCK_GLB = 'avatar/maumon-duck.gltf.json' + AV, DUCK_LITE = 'avatar/maumon-duck-lite.gltf.json' + AV, DUCK_SCALE = 1; // 도형 오리와 같은 키(머리 꼭대기 ≈1.56)
+function makeDuck(url = DUCK_GLB) { // 다른 방문자는 가벼운 판(정점 2만)
+  const a = { root: new THREE.Group(), impl: null, get pose() { return this.impl.pose; },
+    setPose(n, i, cb) { this.impl.setPose(n, i, cb); },
+    update(dt) { const d = this.impl; d.update(dt); if (d.props) d.props.cushion.visible = d.props.leaf.visible = false; } }; // 경내의 실제 좌복·연잎을 씀
+  const use = (d, scale) => {
+    const prev = a.impl; if (prev) { a.root.remove(prev.root); d.setPose(prev.pose, true, prev.onDone); d.t = prev.t; }
+    d.root.scale.setScalar(scale); a.root.add(d.root); a.impl = d;
+  };
+  use(new MaumDuck(), 1);
+  const g = new MaumDuckGLB(url, () => use(g, DUCK_SCALE), () => {});
+  return a;
+}
+const duck = makeDuck(); scene.add(duck.root);
+const D = { face: 0, moving: false, override: null, overrideT: 0, turn: null }; // turn: 도착 뒤 돌아설 방향
+const CAM = { yaw: 0, el: 0.36, dist: 4.0, lookY: 1.0, snap: true };
+const V = (x, z) => new THREE.Vector3(x, 0, z);
+const HALL_STAND = V(0, -24), DOOR_OUT = V(0, -6), DOOR_IN = V(0, -11);
+const PLACES = {
+  gate: [V(0, 36)],
+  path: [V(0, 14)],
+  hall: [V(0, 0), HALL_STAND],
+  pond: [POND_FORK.clone(), POND_STAND.clone()],
+};
+const GUIDE = [
+  { p: new THREE.Vector3(0, 0, 26) }, { p: new THREE.Vector3(0, 0, 14) }, { p: new THREE.Vector3(0, 0, 3) },
+  { p: DOOR_OUT }, { p: DOOR_IN }, { p: HALL_STAND, wait: 6 }, { p: DOOR_IN }, { p: DOOR_OUT },
+  { p: POND_FORK.clone() },
+  { p: POND_STAND.clone(), wait: 0, look: POND },
+];
+
+// 법당 안인가 (벽 안쪽 걸을 수 있는 곳)
+const inHall = p => Math.abs(p.x) < HALL.half - 0.6 && p.z < HALL.front - 0.3 && p.z > HALL.back + 0.6;
+const inHallBox = p => Math.abs(p.x) < HALL.half + 0.4 && p.z < HALL.front + 0.35 && p.z > HALL.back - 0.4;
+const STEP_TOP = HALL.front + 1.5, STEP_BOTTOM = STEP_TOP + 1.8;
+function groundY(x, z) {
+  if (Math.abs(x) < HALL.half + 1.5 && z < STEP_TOP && z > HALL.back - 1.5) return HALL.floor;
+  if (Math.abs(x) < 6 && z >= STEP_TOP && z < STEP_BOTTOM) return HALL.floor * (STEP_BOTTOM - z) / 1.8; // 돌계단
+  return 0;
+}
+function legal(p, from) {
+  const q = p.clone(); q.y = 0;
+  q.x = Math.max(-34, Math.min(34, q.x)); q.z = Math.max(-40, Math.min(42, q.z));
+  const d = Math.hypot(q.x - POND.x, q.z - POND.z);
+  if (d < POND_R + 0.7) { const k = (POND_R + 0.7) / (d || 1); q.x = POND.x + (q.x - POND.x) * k; q.z = POND.z + (q.z - POND.z) * k; }
+  const was = from || q;
+  if (inHall(was) || (inHallBox(was) && Math.abs(was.x) < HALL.door)) {
+    // 안에서: 벽 안쪽에 머물고, 앞쪽은 문으로만 나감
+    const out = q.z >= HALL.front - 0.3 && Math.abs(q.x) < HALL.door - 0.4;
+    // 벽에서 2cm 안쪽에 세움: 경계선에 딱 붙이면 inHall(<)이 거짓이 되어 다음부터 '밖에서 벽 뚫기'로 판정돼 꼼짝 못 함
+    if (!out) { const e = 0.02; q.x = Math.max(-(HALL.half - 0.6 - e), Math.min(HALL.half - 0.6 - e, q.x)); q.z = Math.max(HALL.back + 0.6 + e, Math.min(HALL.front - 0.3 - e, q.z)); }
+    if (Math.abs(q.x) < ALTAR_W / 2 + 0.5 && q.z < ALTAR_Z + ALTAR_D / 2 + 0.6) q.z = ALTAR_Z + ALTAR_D / 2 + 0.6; // 불단 앞까지
+  } else if (inHallBox(q)) {
+    // 밖에서: 문(가운데 세 칸)으로만 들어감
+    const viaDoor = Math.abs(q.x) < HALL.door - 0.4 && was.z >= HALL.front - 0.4;
+    if (!viaDoor) return was.clone();
+  }
+  return q;
+}
+// 안팎을 오가면 문을 거쳐 가도록 경로를 만든다
+function route(from, to) {
+  const a = inHall(from), b = inHall(to), dx = Math.max(-6, Math.min(6, (a ? from : to).x));
+  if (a === b) return [to];
+  return a ? [V(dx, DOOR_IN.z), V(dx, DOOR_OUT.z), to] : [V(dx, DOOR_OUT.z), V(dx, DOOR_IN.z), to];
+}
+function goTo(list, look) {
+  let from = S.pos.clone(); const q = [];
+  list.forEach(p => { const t = legal(p, inHall(p) ? V(0, -18) : V(0, 0)); route(from, t).forEach(w => q.push({ p: w })); from = t; });
+  if (look && q.length) q[q.length - 1].look = look;   // 도착하면 이쪽을 바라봄
+  S.queue = q; S.target = null; D.turn = null;
+}
+// 도착한 곳에서 바라볼 방향 (연못은 물 쪽)
+const LOOK = { pond: POND };
+const faceTo = (from, at) => Math.atan2(-(at.x - from.x), -(at.z - from.z));
+function standUp() {
+  if (S.mode === 'walk') return;
+  endMed(false); Snd.stop();
+  const from = S.mode;
+  S.mode = 'walk'; S.pitch = 0.02; S.bowT = -1; S.autoBow = false; D.override = null; S.yaw = D.face; CAM.snap = true;
+  if (from === 'pond') {                                   // 앉았던 자리 바로 바깥 물가에 일어섬 (모두 한 점에 모이지 않게)
+    const d = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z) || 1, r = Math.max(BANK_R, d + 1.0);
+    S.pos.set(POND.x + (S.pos.x - POND.x) / d * r, 0, POND.z + (S.pos.z - POND.z) / d * r); S.pondSeat = null;
+  }
+  else S.pos.set(S.pos.x, 0, S.pos.z + 1.0); // 방석 바로 뒤에 일어섬
+  openPanel(null);
+}
+function sitHall(panel) {
+  stopGuide(); S.queue = []; S.target = null;
+  const c = CUSHIONS[S.nearCushion >= 0 ? S.nearCushion : FRONT_SEAT];
+  S.mode = 'hall'; S.seat = CUSHIONS.indexOf(c); S.pos.set(c.x, 0, c.z); D.face = 0; S.yaw = 0;
+  seatRing.visible = false; S.autoBow = false; toast(T().bowHint, 4200);
+  Object.assign(BOWCAM, BOWCAM.def); if (c.x > 9) BOWCAM.yaw = -BOWCAM.def.yaw; // 벽 쪽 방석이면 반대편에서
+  openPanel(panel);
+}
+// 빈 방석 찾기: 내 옆 1.2m 안, 다른 사람이 앉아 있지 않은 방석
+function cushionFree(c) {
+  for (const o of Room.others.values()) if (o.mode === 'hall' && Math.hypot(o.tx - c.x, o.tz - c.z) < 0.6) return false;
+  return true;
+}
+function findNearCushion() {
+  if (S.mode !== 'walk' || !inHall(S.pos)) return -1;
+  let best = -1, bd = 1.2;
+  CUSHIONS.forEach((c, i) => { const d = Math.hypot(c.x - S.pos.x, c.z - S.pos.z); if (d < bd && cushionFree(c)) { bd = d; best = i; } });
+  return best;
+}
+// 연못 자리: 다른 사람이 앉아 있지 않은 곳
+function pondSeatFree(s) {
+  for (const o of Room.others.values()) if (o.mode === 'pond' && Math.hypot(o.tx - s.x, o.tz - s.z) < 0.8) return false;
+  return true;
+}
+// 비어 있는 연잎 중 나와 가까운 곳 → 연잎이 다 찼으면 가까운 물가 자리 → 그래도 없으면 null
+function pickPondSeat(from, skip) {
+  for (const onLeaf of [true, false]) {
+    let best = null, bd = Infinity;
+    POND_SEATS.forEach(s => { if (s.leaf !== onLeaf || s === skip || !pondSeatFree(s)) return; const d = Math.hypot(s.x - from.x, s.z - from.z); if (d < bd) { bd = d; best = s; } });
+    if (best) return best;
+  }
+  return null;
+}
+const bankSpot = p => { const d = Math.hypot(p.x - POND.x, p.z - POND.z) || 1; return { x: POND.x + (p.x - POND.x) / d * BANK_R, z: POND.z + (p.z - POND.z) / d * BANK_R, leaf: false }; };
+// 오리(a)→카메라(b) 사이를 이 나무(잎 덩어리·줄기)가 가리는가 — 나무 밑이나 위로 지나가면 안 가림
+const fadeLook = new THREE.Vector3();
+function treeHit(t, a, b) {
+  const dx = b.x - a.x, dz = b.z - a.z, L = dx * dx + dz * dz || 1;
+  const k = Math.max(0, Math.min(1, ((t.x - a.x) * dx + (t.z - a.z) * dz) / L));
+  const d = Math.hypot(a.x + dx * k - t.x, a.z + dz * k - t.z), y = a.y + (b.y - a.y) * k;
+  return (d < t.r && y > t.bot && y < t.top) || d < t.trunk;
+}
+// 오리를 가리는 나무만 반투명하게 (2026-10-31 사용자 화면에서 단풍나무가 반을 가림). 카메라를 당기면 오리가 화면을 꽉 채워서 이쪽으로.
+function fadeTrees(a, b, dt) {
+  for (const t of TREES) {
+    // 카메라가 잎 속에 들어가 있으면 거의 지움(뿌옇게 보이지 않게), 오리를 가리기만 하면 반투명
+    const inside = Math.hypot(b.x - t.x, b.z - t.z) < t.r - 0.2 && b.y > t.bot - 0.3 && b.y < t.top;
+    const want = inside ? 0 : treeHit(t, a, b) ? 0.12 : 1;   // 잎 덩어리가 여러 겹이라 한 겹은 옅게
+    if (t.op === undefined) t.op = 1;
+    if (t.op === want) continue;
+    t.op += (want - t.op) * Math.min(1, dt * 7);
+    if (Math.abs(want - t.op) < 0.01) t.op = want;
+    const tr = t.op < 1;
+    t.mats.forEach(m => { m.opacity = t.op; m.visible = t.op > 0.03; if (m.transparent !== tr) { m.transparent = tr; m.depthWrite = !tr; m.needsUpdate = true; } });
+  }
+}
+// 연잎 위 카메라: 처음엔 오리 앞에서, 끌면 오리 둘레를 돌고 위아래로 (2026-10-31 사용자 '명상 중에 카메라 회전')
+// 아래로 끝까지 끌면 카메라는 물 위에 멈추고 시선이 위로 들림(하늘·법당), 두 손가락·휠로 1.6~14m (연못 전체까지)
+const PONDCAM = { yaw: 0, el: 0.22, dist: 3.4 };
+function sitPond(s) {
+  S.mode = 'pond'; S.pondSeat = s; S.sitAt = performance.now(); S.pos.set(s.x, 0, s.z);
+  D.face = faceTo(s, POND); CAM.snap = true;                // 연못 가운데를 바라봄
+  PONDCAM.yaw = 0; PONDCAM.el = 0.22;                       // 거리는 그대로 (멀리 보던 사람은 계속 멀리)
+}
+function sitLeafNow() {
+  stopGuide(); S.queue = []; S.target = null;
+  const s = pickPondSeat(S.pos) || bankSpot(S.pos);
+  sitPond(s);
+  openPanel('medPanel'); toast(s.leaf ? T().medDesc : T().leavesFull, 4200);
+  // 처음 몇 번은 둘러보기 안내 (기기에 기억, 세 번까지)
+  let n = 0; try { n = +localStorage.getItem('maumon.pondHint') || 0; } catch (e) { /* 저장 불가 */ }
+  if (n < 3) setTimeout(() => {                             // 숨쉬기 안내 글자 위에 겹치지 않게: 명상을 시작하기 전에만, 보여 준 때만 셈
+    if (S.mode === 'pond' && !med.on) { toast(T().pondLook, 3800); try { localStorage.setItem('maumon.pondHint', String(n + 1)); } catch (e) { /* 그대로 */ } }
+  }, 4400);
+}
+// 거의 같은 때 같은 자리에 앉았으면(서로 아직 못 본 사이) 한 사람만 옆자리로 옮긴다.
+// 먼저 와 있던 사람이 있으면 내가, 비슷한 때면 이름 번호가 큰 쪽이 — 양쪽 화면이 같은 규칙으로 판단해 한 명만 움직임
+function pondResolve() {
+  if (S.mode !== 'pond' || !S.pondSeat || !Room.on) return;
+  const me = Room.myName();
+  for (const o of Room.others.values()) {
+    if (o.mode !== 'pond' || Math.hypot(o.tx - S.pos.x, o.tz - S.pos.z) > 0.8) { o.ovl = 0; continue; }
+    if (!o.ovl) o.ovl = performance.now();
+    const before = o.pondAt < S.sitAt - 3000;
+    const near = Math.abs(o.pondAt - S.sitAt) <= 3000 && (me > o.nm || (me === o.nm && Math.random() < 0.5));
+    // 연결이 3초 넘게 늦어 둘 다 '안 옮겨도 된다'고 볼 때: 겹친 채 4초 지나면 이름 번호 큰 쪽이, 8초면 작은 쪽도 (옛 화면을 연 상대가 안 움직일 때)
+    const stuck = performance.now() - Math.max(o.ovl, S.sitAt) > (me > o.nm || (me === o.nm && Math.random() < 0.5) ? 4000 : 8000);
+    if (!before && !near && !stuck) continue;
+    const s = pickPondSeat(S.pos, S.pondSeat);
+    if (s) { sitPond(s); toast(T().leafMoved, 2600); }
+    return;
+  }
+}
+function startGuide() { openPanel(null); if (S.mode !== 'walk') standUp(); S.guided = true; S.queue = GUIDE.map(g => ({ p: g.p.clone(), wait: g.wait })); S.target = null; renderUI(); }
+function stopGuide() { S.guided = false; S.pause = 0; renderUI(); }
+
+/* 포인터: 탭=이동/행동, 끌기=둘러보기 */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let pd = null;
+const touches = new Map(); let pinch = 0;
+const bowView = () => S.mode === 'hall' && view === 'bowPanel';
+// 두 손가락·휠로 가까이/멀리: 108배 땐 108배 구도, 평소엔 걷는 카메라 거리
+const zoomBow = k => { if (bowView()) BOWCAM.dist = Math.max(2.2, Math.min(8, BOWCAM.dist * k)); else if (S.mode === 'pond') PONDCAM.dist = Math.max(1.6, Math.min(14, PONDCAM.dist * k)); else S.zoom = Math.max(0.5, Math.min(2.4, S.zoom * k)); };
+canvas.addEventListener('pointerdown', e => {
+  if (closeDrops()) return;
+  touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); canvas.setPointerCapture(e.pointerId);
+  if (touches.size === 2) { const [a, b] = [...touches.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); pd = null; return; }
+  pd = { x: e.clientX, y: e.clientY, t: performance.now(), drag: false };
+});
+canvas.addEventListener('pointermove', e => {
+  if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (touches.size === 2 && pinch) {
+    const [a, b] = [...touches.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (d > 0) zoomBow(pinch / d); pinch = d; return;
+  }
+  if (!pd) return;
+  const dx = e.clientX - pd.x, dy = e.clientY - pd.y;
+  if (!pd.drag && Math.hypot(dx, dy) > 8) pd.drag = true;
+  if (!pd.drag) return;
+  // 끄는 방향으로 시선이 돎 (오른쪽으로 끌면 오른쪽을 봄, 아래로 끌면 아래를 봄) — 걷기·108배 같은 규칙
+  if (bowView()) { BOWCAM.yaw -= dx * 0.006; BOWCAM.el = Math.max(-0.8, Math.min(1.25, BOWCAM.el + dy * 0.004)); }
+  else if (S.mode === 'pond') { PONDCAM.yaw -= dx * 0.006; PONDCAM.el = Math.max(-0.6, Math.min(1.3, PONDCAM.el + dy * 0.004)); }
+  else { S.yaw -= dx * 0.005; S.pitch = Math.max(-1.2, Math.min(0.6, S.pitch + dy * 0.004)); S.userLook = performance.now(); }
+  pd.x = e.clientX; pd.y = e.clientY;
+});
+['pointercancel', 'lostpointercapture'].forEach(ev => canvas.addEventListener(ev, e => { touches.delete(e.pointerId); if (touches.size < 2) pinch = 0; }));
+canvas.addEventListener('wheel', e => { e.preventDefault(); zoomBow(Math.exp(e.deltaY * 0.001)); }, { passive: false });
+canvas.addEventListener('pointerup', e => {
+  touches.delete(e.pointerId); if (touches.size < 2) pinch = 0;
+  if (!pd) return;
+  const tap = !pd.drag && performance.now() - pd.t < 450; pd = null;
+  if (!tap || !entered) return;
+  if (S.mode !== 'walk') return;
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(CUSHIONS.map(c => c.mesh).concat(seatLeaves, [floor, platform, ground]), false)[0];
+  if (!hit) return;
+  stopGuide();
+  if (hit.object.userData.cushion !== undefined) {     // 방석을 누르면 그 뒤에 섬. 다른 사람이 앉아 있으면 가까운 빈 방석으로
+    let c = CUSHIONS[hit.object.userData.cushion];
+    if (!cushionFree(c)) { const o = c; c = CUSHIONS.filter(cushionFree).sort((a, b) => Math.hypot(a.x - o.x, a.z - o.z) - Math.hypot(b.x - o.x, b.z - o.z))[0]; toast(T().findSeatShort, 2600); if (!c) return; }
+    goTo([V(c.x, c.z + 0.6)]); return;
+  }
+  if (hit.object.userData.action === 'pond') {            // 누른 연잎 바로 앞 물가로 → '연잎'을 누르면 그 연잎(비었으면)에 앉음
+    const s = POND_SEATS[hit.object.userData.seat], b = bankSpot(s);
+    // 연못을 가로지르지 않게 물가를 따라 45°씩 돌아감 (맞은편 연잎을 눌러도 도착)
+    const a0 = Math.atan2(S.pos.z - POND.z, S.pos.x - POND.x), a1 = Math.atan2(b.z - POND.z, b.x - POND.x);
+    const da = Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0)), near = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z) < POND_R + 4;
+    const n = near ? Math.max(1, Math.ceil(Math.abs(da) / (Math.PI / 4))) : 1, pts = [];
+    for (let i = 1; i <= n; i++) { const a = n === 1 ? a1 : a0 + da * i / n; pts.push(V(POND.x + Math.cos(a) * BANK_R, POND.z + Math.sin(a) * BANK_R)); }
+    goTo(pts, POND); return;
+  }
+  goTo([hit.point]);
+});
+// 조이스틱: 위로 밀면 화면 안쪽(앞)으로, 옆으로 밀면 옆으로 — 미는 만큼 빠르게
+const JOY = { x: 0, y: 0, id: null };
+const joyEl = document.getElementById('joy'), joyKnob = document.getElementById('joyKnob');
+function joyMove(e) {
+  const r = joyEl.getBoundingClientRect(), R = r.width / 2 - 10;
+  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const d = Math.hypot(dx, dy); if (d > R) { dx *= R / d; dy *= R / d; }
+  JOY.x = dx / R; JOY.y = dy / R; joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+}
+function joyEnd(e) {
+  if (e.pointerId !== JOY.id) return;
+  JOY.id = null; JOY.x = JOY.y = 0; joyKnob.style.transform = ''; joyEl.classList.remove('on');
+}
+const joyGrip = document.getElementById('joyGrip'), JOY_KEY = 'maumon.joy';
+let joyDrag = null;
+function joyPlace(fx, fy) { // 화면 비율로 저장한 자리 → px, 화면 밖으로 안 나가게
+  const w = joyEl.offsetWidth || 104, x = Math.max(8, Math.min(innerWidth - w - 8, fx * innerWidth)), y = Math.max(8, Math.min(innerHeight - w - 8, fy * innerHeight));
+  joyEl.classList.add('free'); joyEl.style.left = x + 'px'; joyEl.style.top = y + 'px';
+}
+function joyRestore() { try { const j = JSON.parse(localStorage.getItem(JOY_KEY)); if (j && isFinite(j.x) && isFinite(j.y)) joyPlace(j.x, j.y); } catch (e) { /* 저장 불가 */ } }
+joyGrip.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation(); joyGrip.setPointerCapture(e.pointerId);
+  const r = joyEl.getBoundingClientRect(); joyDrag = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top }; joyEl.classList.add('moving');
+});
+joyGrip.addEventListener('pointermove', e => {
+  if (!joyDrag || e.pointerId !== joyDrag.id) return;
+  joyPlace((e.clientX - joyDrag.dx) / innerWidth, (e.clientY - joyDrag.dy) / innerHeight);
+});
+['pointerup', 'pointercancel'].forEach(ev => joyGrip.addEventListener(ev, e => {
+  if (!joyDrag || e.pointerId !== joyDrag.id) return;
+  joyDrag = null; joyEl.classList.remove('moving');
+  try { localStorage.setItem(JOY_KEY, JSON.stringify({ x: parseFloat(joyEl.style.left) / innerWidth, y: parseFloat(joyEl.style.top) / innerHeight })); } catch (err) { /* 저장 불가 */ }
+}));
+joyGrip.addEventListener('dblclick', () => { joyEl.classList.remove('free'); joyEl.style.left = joyEl.style.top = ''; try { localStorage.removeItem(JOY_KEY); } catch (e) { /* 저장 불가 */ } });
+addEventListener('resize', () => { if (joyEl.classList.contains('free')) joyRestore(); });
+joyRestore();
+joyEl.addEventListener('pointerdown', e => { e.preventDefault(); JOY.id = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyEl.classList.add('on'); joyMove(e); });
+joyEl.addEventListener('pointermove', e => { if (e.pointerId === JOY.id) joyMove(e); });
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => joyEl.addEventListener(ev, joyEnd));
+const keys = {};
+addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+function zoneOf(p) {
+  if (S.mode === 'hall') return 'hall';
+  if (S.mode === 'pond') return 'pond';
+  if (Math.hypot(p.x - POND.x, p.z - POND.z) < POND_R + 4) return 'pond';
+  if (inHallBox(p) || (Math.abs(p.x) < 8 && p.z < -3 && p.z > HALL.front)) return 'hall';
+  if (p.z > 25) return 'gate';
+  return 'path';
+}
+
+/* ───────────── 108배 ───────────── */
+function paintMala() { // 진행 카운트 "53 / 108" + 금 막대
+  document.getElementById('bowN').textContent = S.bow;
+  document.getElementById('bowBar').style.width = (S.bow / 108 * 100).toFixed(1) + '%';
+  document.getElementById('bowCount').classList.toggle('done', S.bow >= 108);
+  document.getElementById('bowTotal').textContent = T().bowToday(day().bows, rec.total);
+}
+const BOWCAM = { yaw: 0.67, el: 0.42, dist: 4.2, def: { yaw: 0.67, el: 0.42, dist: 4.2 } }; // 108배 구도 (오리 옆 뒤) — 끌어서 돌려 볼 수 있음
+const BOW_SEC = 6; // 큰절 한 번 6초 — 천천히 (108배 약 11분)
+function doBow() {
+  if (S.bowT >= 0) return; // 한 번 절하는 동안은 무시
+  S.bowT = 0; D.override = 'bow'; duck.setPose('bow');
+  Snd.shot('moktak');
+  S.bow = Math.min(108, S.bow + 1);
+  day().bows++; rec.total++; saveRec();
+  if (S.bow % 27 === 0 && S.bow < 108) Snd.bell(false);
+  paintMala(); renderRec();
+}
+function bowDone() { // 108번째 절이 끝나면
+  S.autoBow = false; S.bowWait = 0;
+  S.done108++;                                                       // 같은 방 사람들에게 '108배를 마쳤어요' (presence c)
+  if (Room.on && Room.others.size) News.self(Room.others.size, 'bow');
+  Snd.shot('jukbi3'); toast(T().bowDone, 5000);
+  setTimeout(() => { S.bow = 0; paintMala(); renderBowBtn(); }, 5000);
+  renderBowBtn();
+}
+function renderBowBtn() { renderActions(); paintMala(); }
+function toggleAutoBow() {
+  if (S.autoBow) { S.autoBow = false; renderBowBtn(); return; }
+  if (S.bow >= 108) S.bow = 0;
+  S.autoBow = true; S.bowWait = S.bow === 0 ? 1.4 : 0.4;   // 처음엔 죽비 한 번 치고 시작
+  if (S.bow === 0) Snd.shot('jukbi1');
+  renderBowBtn(); paintMala();
+}
+
+/* ───────────── 합장 ───────────── */
+const hands = document.getElementById('hands');
+let hapBusy = false;
+function hapjang() {
+  if (hapBusy || S.bowT >= 0) return; hapBusy = true;
+  S.queue = []; S.target = null; if (S.guided) stopGuide(); // 걷던 중이면 그 자리에 멈춤
+  D.override = 'hapjang'; duck.setPose('hapjang', false, () => { if (D.override === 'hapjang') D.override = null; hapBusy = false; }); // 반배 4초
+  setTimeout(() => Snd.bell(false), 700);
+  const msgs = T().hapMsg; toast(msgs[Math.floor(Math.random() * msgs.length)], 3200);
+  if (Room.on && Room.others.size) News.self(Room.others.size);   // 함께 있는 분들에게 전해졌다고 알려 줌
+
+}
+function holdButton(btn, ms, fn) {
+  const fill = btn.querySelector('.fill'); let t0 = 0, raf = 0;
+  const step = () => {
+    const k = Math.min(1, (performance.now() - t0) / ms); fill.style.transform = `scaleX(${k})`;
+    if (k >= 1) { cancel(); fn(); return; }
+    raf = requestAnimationFrame(step);
+  };
+  const cancel = () => { cancelAnimationFrame(raf); raf = 0; fill.style.transform = 'scaleX(0)'; };
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); t0 = performance.now(); raf = requestAnimationFrame(step); });
+  btn.addEventListener('pointerup', () => { if (raf) { cancel(); toast(T().hapHold, 2000); } }); // 짧게 누르면 '길게 누르세요'
+  ['pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, () => { if (raf) cancel(); }));
+  btn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
+}
+
+/* ───────────── 연잎 명상 ───────────── */
+const breath = document.getElementById('breath'), orb = document.getElementById('orb');
+const med = { on: false, end: 0, start: 0, mins: 0, lock: null };
+function startMed(mins) {
+  med.on = true; med.mins = mins; med.start = performance.now(); med.end = med.start + mins * 60000;
+  clearTimeout(med.timer); med.timer = setTimeout(() => { if (med.on) endMed(true); }, mins * 60000);   // 화면이 꺼져(백그라운드 재생) 그림이 멈춰도 제때 끝냄
+  breath.hidden = false;
+  actionsFor('med');
+  Snd.bell(false);
+  if (Snd.wind && Snd.ctx) Snd.wind.gain.setTargetAtTime(0.025, Snd.ctx.currentTime, 2);
+  if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { med.lock = l; }).catch(() => {});
+}
+function endMed(done) {
+  clearTimeout(med.timer);
+  if (!med.on) return;
+  med.on = false; breath.hidden = true;
+  const m = Math.round((performance.now() - med.start) / 60000);
+  if (m > 0) { day().med += m; saveRec(); renderRec(); }
+  if (med.lock) { med.lock.release().catch(() => {}); med.lock = null; }
+  if (done) { [0, 2600, 5200].forEach(d => setTimeout(() => Snd.bell(false), d)); toast(T().medDone(med.mins), 4500); }
+  if (Snd.wind && Snd.ctx) Snd.wind.gain.setTargetAtTime(0.05, Snd.ctx.currentTime, 2);
+  if (S.mode === 'pond') openPanel('medPanel');
+}
+function tickMed(now) {
+  if (!med.on) return;
+  if (now >= med.end) { endMed(true); return; }
+  const c = ((now - med.start) / 1000) % 14; // 4 + 4 + 6
+  let k, w;
+  if (c < 4) { k = c / 4; w = T().inhale; } else if (c < 8) { k = 1; w = T().holdB; } else { k = 1 - (c - 8) / 6; w = T().exhale; }
+  const e = 0.5 - Math.cos(k * Math.PI) / 2;
+  orb.style.transform = `scale(${(0.55 + e * 0.6).toFixed(3)})`;
+  document.getElementById('breathWord').textContent = w;
+  const left = Math.ceil((med.end - now) / 1000);
+  document.getElementById('breathTime').textContent = T().medLeft(`${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`);
+}
+
+/* ───────────── UI ───────────── */
+const $ = id => document.getElementById(id);
+let view = null;                // 앉아서 하는 일: 'bowPanel'(108배) · 'medPanel'(연잎) · null(걷기)
+let entered = false, toastT = 0, signT = 0, placesOpen = false, chimeOn = false;
+function toast(msg, ms) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2600); }
+function openPanel(id) {
+  view = id; placesOpen = false;
+  $('bowCount').hidden = id !== 'bowPanel';
+  if (id === 'bowPanel') paintMala();
+  renderActions(); renderPlaces();
+}
+function el(tag, cls, text, attrs) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; Object.assign(e, attrs || {}); return e; }
+// 선 아이콘 (24px, 한지색 선)
+const ICON = {
+  places: '<path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/>',
+  hap: '<path d="M11.6 3.5C10 5.2 9 8.2 9 11.6V16l-2.2 3.2h4.8zM12.4 3.5C14 5.2 15 8.2 15 11.6V16l2.2 3.2h-4.8z"/><path d="M6.5 21.5h11"/>',
+  bow: '<circle cx="12" cy="11" r="6.5" stroke-width="3" stroke-dasharray="0.01 3.4"/><path d="M12 17.5V21"/>',
+  lotus: '<path d="M12 6c-2 2.5-2 6.5 0 9 2-2.5 2-6.5 0-9z"/><path d="M12 15c-3-.5-5.5-2.6-6.5-5.5 2.8 0 5.2 1.8 6.5 5.5zM12 15c3-.5 5.5-2.6 6.5-5.5-2.8 0-5.2 1.8-6.5 5.5z"/><path d="M5 18.5h14"/>',
+  play: '<path d="M8 5.5v13l11-6.5z"/>', pause: '<path d="M9 5.5v13M15 5.5v13"/>',
+  stand: '<path d="M12 17V6M7.5 10.5L12 6l4.5 4.5M6 20.5h12"/>',
+  timer: '<circle cx="12" cy="13" r="7"/><path d="M12 13V9.5M10 3h4"/>', stop: '<rect x="7" y="7" width="10" height="10" rx="1.5"/>',
+  spk: '<path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  spkOff: '<path d="M4 9.5v5h3.5L12 18V6L7.5 9.5z"/><path d="M3.5 3.5l17 17"/>',
+  camera: '<path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.6l1.6-2.2h5.6L16.4 7H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/><circle cx="12" cy="12.8" r="3.4"/>',
+  share: '<circle cx="17.5" cy="5.5" r="2.3"/><circle cx="6.5" cy="12" r="2.3"/><circle cx="17.5" cy="18.5" r="2.3"/><path d="M8.5 10.8l7-4.1M8.5 13.2l7 4.1"/>',
+  view: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5"/>',
+};
+const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+function renderRec() { const d = day(); $('rec').textContent = T().rec(d.bows, d.med) + ' · ' + T().recAll(rec.total); }
+// 행동 바: 아이콘 위 · 글자 아래, 4개 이하
+function actionsFor(kind) {
+  const box = $('actions'); box.innerHTML = '';
+  const t = T();
+  const add = (icon, label, fn, cls) => {
+    const b = el('button', 'act' + (cls ? ' ' + cls : ''), null, { type: 'button' });
+    b.innerHTML = svg(icon) + '<span></span>'; b.querySelector('span').textContent = label;
+    if (fn) b.addEventListener('click', fn); box.append(b); return b;
+  };
+  if (kind === 'med') { add('stop', t.medStop, () => endMed(false)); return; }
+  if (view === 'bowPanel') {
+    const going = S.autoBow;
+    add(going ? 'pause' : 'play', going ? t.bowPause : S.bow > 0 && S.bow < 108 ? t.bowResume : t.bowStart, toggleAutoBow, going ? 'on' : 'main').id = 'bowBtn';
+    add('stand', t.stand, standUp); return;
+  }
+  if (view === 'medPanel') { [3, 5, 10].forEach(m => add('timer', `${m}${t.min}`, () => startMed(m))); add('stand', t.stand, standUp); return; }
+  add('places', t.places, () => { placesOpen = !placesOpen; renderPlaces(); renderActions(); }, placesOpen || S.guided ? 'on' : '');
+  const hap = add('hap', t.hap, null, 'hold'); hap.insertAdjacentHTML('afterbegin', '<i class="fill"></i>'); holdButton(hap, 800, hapjang);
+  if (S.mode === 'walk' && kind === 'hall' && S.nearCushion >= 0) add('bow', t.bow, () => sitHall('bowPanel'), 'main');
+  if (S.mode === 'walk' && kind === 'pond') add('lotus', t.sit, sitLeafNow, 'main');
+}
+function renderActions() { actionsFor(med.on ? 'med' : S.zone); }
+// 장소 고르기 (행동 바의 '장소'를 누르면 위로 펼쳐짐)
+function renderPlaces() {
+  const nav = $('placesPop'); nav.hidden = !placesOpen; if (!placesOpen) return;
+  nav.innerHTML = ''; const t = T();
+  nav.append(el('button', 'guide', S.guided ? t.guideStop : t.guide, { type: 'button', onclick: () => { placesOpen = false; S.guided ? stopGuide() : startGuide(); } }));
+  ['gate', 'path', 'hall', 'pond'].forEach(k => {
+    const b = el('button', S.zone === k ? 'here' : '', null, { type: 'button' });
+    b.append(el('span', '', STR.ko.place[k]), el('span', 'en', STR.en.place[k]));
+    b.onclick = () => { placesOpen = false; openPanel(null); if (S.mode !== 'walk') standUp(); stopGuide(); goTo(PLACES[k], LOOK[k]); };
+    nav.append(b);
+  });
+  ['lantern', 'tea'].forEach(k => {
+    const b = el('button', '', null, { type: 'button', disabled: true });
+    b.append(el('span', '', t.place[k]), el('span', 'soon', t.soon)); nav.append(b);
+  });
+}
+// 함께 있기: 로고 옆 등불색 배지에 지금 함께 있는 사람 수(나 포함). 혼자면 배지 없음
+function renderTogether() {
+  const n = Room.others.size, b = $('togetherBadge'), t = T();
+  b.hidden = n === 0; b.textContent = n + 1;
+  $('logoBtn').setAttribute('aria-label', (n ? t.together(n + 1) + ' · ' : '') + t.menu);
+  $('logoBtn').setAttribute('aria-expanded', String(!$('menuPanel').hidden));
+  $('menuTogether').innerHTML = n ? '<i></i>' : ''; $('menuTogether').append(n ? t.together(n + 1) : t.quiet);
+  $('menuLanterns').innerHTML = n ? '<i class="me"></i>' + '<i></i>'.repeat(Math.min(n, 23)) : '';
+  $('menuMyName').textContent = nameOf(Room.myName());
+  $('menuMyNote').textContent = n ? t.myNameNote : t.myNameNoteAlone;
+  const names = [...Room.others.values()].map(o => nameOf(o.nm));
+  $('menuNames').textContent = n ? names.slice(0, 6).join(' · ') + (n > 6 ? ' ' + t.andMore(n - 6) : '') : '';
+}
+// 현판 식 제목: 장소에 들어설 때 2초
+function signboard(z) {
+  if (!entered || !STR.ko.place[z]) return;
+  $('signKo').textContent = STR.ko.place[z]; $('signEn').textContent = STR.en.place[z].toUpperCase();
+  const sb = $('signboard'); sb.classList.add('show'); clearTimeout(signT); signT = setTimeout(() => sb.classList.remove('show'), 2000);
+}
+function setSlider(id, v) { const r = $(id); r.value = Math.round(v * 100); r.style.setProperty('--v', r.value + '%'); }
+function chips(id, items, cur, fn) {
+  const box = $(id); box.innerHTML = '';
+  items.forEach(([k, label]) => { const b = el('button', 'chip', label, { type: 'button', onclick: () => fn(k) }); b.setAttribute('aria-pressed', String(k === cur)); box.append(b); });
+}
+function renderUI() {
+  const t = T();
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(n => { const v = t[n.dataset.i]; if (typeof v === 'string') n.textContent = v; });
+  $('soundBtn').innerHTML = svg(Snd.on ? 'spk' : 'spkOff');
+  $('soundBtn').setAttribute('aria-pressed', String(Snd.on)); $('soundBtn').setAttribute('aria-label', t.sndTitle);
+  $('soundBtn').setAttribute('aria-expanded', String(!$('soundPanel').hidden));
+  $('viewBtn').innerHTML = svg('view'); $('viewBtn').setAttribute('aria-label', t.view);
+  $('snapBtn').innerHTML = svg('camera'); $('snapBtn').setAttribute('aria-label', t.snap); $('snapBtn').title = t.snap;
+  $('inviteBtn').innerHTML = svg('share'); $('inviteBtn').setAttribute('aria-label', t.invite); $('inviteBtn').title = t.invite;
+  $('viewBtn').setAttribute('aria-expanded', String(!$('viewPanel').hidden));
+  $('sndToggle').setAttribute('aria-checked', String(Snd.on)); $('sndToggle').setAttribute('aria-label', t.sndTitle);
+  $('bgToggle').setAttribute('aria-checked', String(!!VOL.bg));
+  setSlider('volNature', VOL.nature); setSlider('volChant', VOL.chant); setSlider('volBell', VOL.bell);
+  chips('chantPick', Object.keys(t.chants).map(k => [k, t.chants[k]]), VOL.chantTrack, k => { Amb.setChant(k); renderUI(); });
+  $('sndSrc').textContent = `${t.sndSrc} · ${t.chantSrc}${REC[VOL.chantTrack].credit} · ${t.bowCredit}${REC.moktak.credit}`;
+  chips('seasonPick', SEASON_ORDER.map(k => [k, t.season[k]]), season, k => { season = k; applyTod(); });
+  chips('todPick', TOD_ORDER.map(k => [k, t.tod[k]]), tod, k => { tod = k; applyTod(); });
+  chips('langPick', [['ko', '한국어'], ['en', 'English']], lang, k => { lang = k; renderUI(); });
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  $('menuPlace').textContent = `${STR.ko.place[S.zone]} · ${STR.en.place[S.zone]}`;
+  $('leaveBtn').innerHTML = `${STR.ko.leave}<span class="en">Leave</span>`;
+  renderPlaces(); renderActions(); renderRec(); paintMala(); renderTogether();
+}
+function setSound(v) {
+  Snd.setOn(v);
+  if (BG.el) { if (v) BG.el.play().catch(() => {}); else BG.el.pause(); }   // 소리를 끄거나 나가면 백그라운드용 염불도 쉼
+  renderUI();
+}
+const DROPS = ['soundPanel', 'viewPanel', 'menuPanel'];
+function toggleDrop(id) {
+  const open = $(id).hidden; DROPS.forEach(k => { $(k).hidden = !(open && k === id); }); renderUI();
+}
+function closeDrops() { if (DROPS.every(k => $(k).hidden)) return false; DROPS.forEach(k => { $(k).hidden = true; }); renderUI(); return true; }
+
+$('soundBtn').addEventListener('click', () => toggleDrop('soundPanel'));
+$('viewBtn').addEventListener('click', () => toggleDrop('viewPanel'));
+// 장면 담기: 지금 화면을 한 장으로 (오른쪽 아래 '마음온' 글씨)
+function captureScene() {
+  renderer.render(scene, camera);                    // 그리고 나서 곧바로 읽어야 비어 있지 않음
+  const src = renderer.domElement, w = src.width, h = src.height;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(src, 0, 0);
+  const k = Math.max(1, w / 900);
+  x.textAlign = 'right'; x.fillStyle = 'rgba(241,234,220,0.92)'; x.shadowColor = 'rgba(0,0,0,0.6)'; x.shadowBlur = 8 * k;
+  x.font = `700 ${Math.round(24 * k)}px "Gowun Batang", serif`; x.fillText('마음온', w - 20 * k, h - 36 * k);
+  x.font = `${Math.round(11 * k)}px "Gowun Dodum", sans-serif`; x.fillText('MindOn · 마음이 쉬어가는 절', w - 20 * k, h - 16 * k);
+  return c;
+}
+let snapBlob = null, snapUrl = '';
+$('snapBtn').addEventListener('click', () => {
+  closeDrops();
+  const c = captureScene();
+  c.toBlob(b => {
+    snapBlob = b; if (snapUrl) URL.revokeObjectURL(snapUrl); snapUrl = URL.createObjectURL(b);
+    $('snapImg').src = snapUrl; $('snapSave').href = snapUrl;
+    $('snapShare').hidden = !(navigator.canShare && navigator.canShare({ files: [new File([b], 'maumon.jpg', { type: 'image/jpeg' })] }));
+    $('snapView').hidden = false;
+  }, 'image/jpeg', 0.9);
+});
+$('snapShare').addEventListener('click', () => {
+  if (!snapBlob) return;
+  navigator.share({ files: [new File([snapBlob], 'maumon.jpg', { type: 'image/jpeg' })], title: '마음온', text: T().inviteMsg }).catch(() => {});
+});
+// 아티팩트 화면에선 링크로 내려받기가 막혀 있어 플랫폼 downloads 로 저장 (정식 배포에선 그냥 링크)
+let DL = null;
+if (window.claude && typeof window.claude.use === 'function') window.claude.use('downloads').then(d => { DL = d; }).catch(() => {});
+$('snapSave').addEventListener('click', e => {
+  if (!DL || !snapBlob) return;
+  e.preventDefault();
+  DL.save({ filename: 'maumon.jpg', data: snapBlob }).catch(() => {});
+});
+$('snapClose').addEventListener('click', () => { $('snapView').hidden = true; });
+// 초대 링크: 지금 있는 장소로 바로 들어오는 주소 (?at=장소, 방이 생기면 &room=방)
+function inviteUrl() {
+  const u = new URL(location.href); u.search = ''; u.hash = '';
+  u.searchParams.set('at', S.zone); if (Room.roomName) u.searchParams.set('room', Room.roomName);
+  return u.toString();
+}
+$('inviteBtn').addEventListener('click', () => {
+  const url = inviteUrl(), t = T();
+  if (navigator.share) { navigator.share({ title: '마음온', text: t.inviteMsg, url }).catch(() => {}); return; }
+  const done = () => toast(t.copied, 2200);
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => prompt(t.invite, url)); else prompt(t.invite, url);
+});
+// 로고를 누르면 메뉴 (지금 있는 곳 · 함께 있기 · 오늘 기록 · 나가기)
+$('logoBtn').addEventListener('click', () => toggleDrop('menuPanel'));
+$('leaveBtn').addEventListener('click', () => leave());
+function leave() {
+  entered = false;
+  Room.stop();                                       // 함께 있기에서도 나감 (다시 들어오면 같은 방으로)
+  if (med.on) endMed(false);
+  if (S.mode !== 'walk') standUp();
+  S.autoBow = false; S.queue = []; S.target = null; stopGuide(); placesOpen = false; closeDrops();
+  $('toast').classList.remove('show'); $('signboard').classList.remove('show');
+  $('top').hidden = true; $('bottom').hidden = true;
+  setSound(false);
+  S.pos.set(0, 0, 40); S.yaw = 0; D.face = 0; CAM.snap = true;
+  const g = $('gate'); g.hidden = false; $('enterSound').classList.remove('on');
+  requestAnimationFrame(() => g.classList.remove('leaving'));
+}
+$('sndToggle').addEventListener('click', () => { setSound(!Snd.on); if (Snd.on) Amb.start(); });
+$('bgToggle').addEventListener('click', () => { VOL.bg = !VOL.bg; saveVol(); renderUI(); });
+[['volNature', 'nature'], ['volChant', 'chant'], ['volBell', 'bell']].forEach(([id, k]) => {
+  $(id).addEventListener('input', e => {
+    VOL[k] = e.target.value / 100; e.target.style.setProperty('--v', e.target.value + '%'); saveVol();
+    if (k === 'bell' && Snd.fx) Snd.fx.gain.setTargetAtTime(VOL.bell, Snd.ctx.currentTime, 0.1);
+  });
+});
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { lang = b.dataset.lang; renderUI(); }));
+function enter() {
+  entered = true;
+  Room.start();                                      // 들어온 뒤에야 함께 있기에 보임
+  setSound(true); Amb.start();
+  if (Snd.on) setTimeout(() => Snd.bell(true), 300);
+  $('gate').classList.add('leaving');
+  setTimeout(() => { $('gate').hidden = true; }, 1300);
+  $('top').hidden = false; $('bottom').hidden = false;
+  const at = new URLSearchParams(location.search).get('at');
+  if (at && at !== 'gate' && Object.prototype.hasOwnProperty.call(PLACES, at)) {
+    const p = PLACES[at][PLACES[at].length - 1]; S.pos.set(p.x, 0, p.z); CAM.snap = true;
+    if (LOOK[at]) { D.face = S.yaw = faceTo(p, LOOK[at]); }                       // 초대받은 곳에서 그쪽을 보고 시작
+  }
+  else goTo([new THREE.Vector3(0, 0, 27)]);
+  setTimeout(() => toast(T().tapHint, 3800), 1600);
+  // 길 위 풍경 소리 가끔
+  if (!chimeOn) { chimeOn = true; (function chimeLoop() { if (entered && Snd.on && !document.hidden && Snd.ctx && Snd.ctx.state === 'running' && S.zone !== 'hall') Snd.chime(); setTimeout(chimeLoop, 9000 + Math.random() * 14000); })(); }
+}
+$('enterSound').addEventListener('click', () => {
+  const b = $('enterSound'); if (b.classList.contains('on')) return;
+  b.classList.add('on'); setSound(true); Amb.start();
+  setTimeout(() => enter(), reduceMotion ? 0 : 950);
+});
+
+/* ───────────── 매 프레임 ───────────── */
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  camera.fov = w < h ? 72 : 62; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+// 폰 성능 맞춤: 2초마다 평균 화면 수를 보고 느리면(초당 40 아래) 해상도를 한 단계 낮추고 가까운 오리 수도 줄인다.
+// 넉넉해지면(초당 56 넘게 10초) 한 단계씩 되돌린다. 화면이 숨겨져 있을 땐 재지 않음.
+const Quality = {
+  steps: [], i: 0, n: 0, t0: 0, good: 0,
+  init() {
+    const top = Math.min(window.devicePixelRatio || 1, 1.75);
+    this.steps = [top, top * 0.8, top * 0.65, top * 0.55].map(v => Math.max(0.75, Math.round(v * 100) / 100))
+      .filter((v, i, a) => a.indexOf(v) === i);
+  },
+  apply() {
+    renderer.setPixelRatio(this.steps[this.i]); resize();
+    Room.near = this.i >= 2 ? 6 : 12;                  // (frame 이 돌 때는 Room 이 이미 있음)
+  },
+  tick(now) {
+    if (document.hidden) { this.t0 = 0; return; }
+    if (!this.t0) { this.t0 = now; this.n = 0; return; }
+    this.n++;
+    if (now - this.t0 < 2000) return;
+    const fps = this.n * 1000 / (now - this.t0); this.t0 = now; this.n = 0;
+    if (fps < 40 && this.i < this.steps.length - 1) { this.i++; this.good = 0; this.apply(); }
+    else if (fps > 56 && this.i > 0) { if (++this.good >= 5) { this.i--; this.good = 0; this.apply(); } }
+    else this.good = 0;
+  },
+};
+Quality.init();
+
+let last = performance.now(), walkPhase = 0;
+const tmp = new THREE.Vector3();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  const tsec = now / 1000;
+  Quality.tick(now);
+
+  const prevX = S.pos.x, prevZ = S.pos.z;
+  if (S.mode === 'walk' && !hapBusy) { // 합장하는 동안은 움직이지 않음
+    // 키보드 · 조이스틱
+    let f = (keys.w || keys.arrowup ? 1 : 0) - (keys.s || keys.arrowdown ? 1 : 0);
+    let r = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0);
+    if (Math.hypot(JOY.x, JOY.y) > 0.15) { f -= JOY.y; r += JOY.x; }
+    const fm = Math.hypot(f, r); if (fm > 1) { f /= fm; r /= fm; }
+    if (f || r) {
+      if (S.target || S.queue.length || S.guided) { S.queue = []; S.target = null; stopGuide(); }
+      const fx = -Math.sin(S.yaw), fz = -Math.cos(S.yaw);
+      tmp.set(S.pos.x + (fx * f - fz * r) * S.speed * dt, 0, S.pos.z + (fz * f + fx * r) * S.speed * dt);
+      S.pos.copy(legal(tmp, S.pos)); walkPhase += dt * 7;
+    }
+    // 경로 따라 걷기
+    if (!S.target && S.queue.length && S.pause <= 0) S.target = S.queue.shift();
+    if (S.pause > 0) S.pause -= dt;
+    if (S.target) {
+      tmp.copy(S.target.p).sub(S.pos); tmp.y = 0;
+      const d = tmp.length();
+      if (d < 0.08) {
+        if (S.target.wait) S.pause = S.target.wait;
+        if (S.target.look) D.turn = faceTo(S.pos, S.target.look);
+        S.target = null;
+        if (!S.queue.length && S.guided) stopGuide();
+      } else {
+        const step = Math.min(d, S.speed * dt * Math.min(1, d / 0.6 + 0.35));
+        const next = S.pos.clone().addScaledVector(tmp.normalize(), step), ok = legal(next, S.pos);
+        if (ok.distanceTo(S.pos) < step * 0.3) { S.target = null; S.queue = []; } // 벽에 막힘
+        else S.pos.copy(ok);
+        walkPhase += dt * 7;
+      }
+    }
+  }
+  // 오리: 움직인 방향을 바라보고, 상황에 맞는 동작
+  const mdx = S.pos.x - prevX, mdz = S.pos.z - prevZ;
+  D.moving = S.mode === 'walk' && Math.hypot(mdx, mdz) > dt * 0.3;
+  if (D.moving) { let dy = Math.atan2(-mdx, -mdz) - D.face; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); D.face += dy * Math.min(1, dt * 8); }
+  // 도착하면 바라볼 곳(연못)으로 천천히 돌아섬 — 오리 먼저, 카메라는 그 뒤를 따라
+  if (D.turn != null) {
+    if (D.moving || S.mode !== 'walk') D.turn = null;
+    else {
+      let a = D.turn - D.face; a = Math.atan2(Math.sin(a), Math.cos(a)); D.face += a * Math.min(1, dt * 3);
+      if (now - S.userLook > 1200) { let b = D.face - S.yaw; b = Math.atan2(Math.sin(b), Math.cos(b)); S.yaw += b * Math.min(1, dt * 1.6); }
+      if (Math.abs(a) < 0.01) D.turn = null;
+    }
+  }
+  // 시선은 가는 방향을 천천히 따라감 (손으로 둘러본 직후 1.2초는 그대로 둠)
+  if (D.moving && now - S.userLook > 1200) {
+    let dy = D.face - S.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+    S.yaw += dy * Math.min(1, dt * (reduceMotion ? 3 : 0.75));
+    S.pitch += (0.02 - S.pitch) * Math.min(1, dt * 1.2);
+  }
+  const joyShow = entered && S.mode === 'walk' && !med.on;
+  if (joyEl.hidden === joyShow) { joyEl.hidden = !joyShow; if (!joyShow) joyEnd({ pointerId: JOY.id }); }
+  if (S.bowT >= 0) { S.bowT += dt; if (S.bowT > BOW_SEC) { S.bowT = -1; D.override = null; if (S.bow >= 108) bowDone(); } }
+  else if (S.autoBow && S.mode === 'hall') { S.bowWait -= dt; if (S.bowWait <= 0) { doBow(); S.bowWait = 0.6; } } // 다음 절까지 잠깐 숨 고르기
+  // 법당 안에서 걸을 때: 빈 방석 가까이 가면 108배·듣기 버튼
+  const nc = findNearCushion();
+  if (nc !== S.nearCushion) { S.nearCushion = nc; if (!med.on) renderActions(); }
+  if (nc >= 0) { seatRing.visible = true; seatRing.position.set(CUSHIONS[nc].x, HALL.floor + 0.16, CUSHIONS[nc].z); } else seatRing.visible = false;
+  const base = S.mode === 'hall' ? (view === 'bowPanel' ? 'stand' : 'sit') : S.mode === 'pond' ? 'breathe' /* 연잎 위에선 앉아서 눈을 감음 (2026-10-31 사용자) */ : (D.moving ? 'walk' : 'stand');
+  if (!D.override && duck.pose !== base) duck.setPose(base);
+  duck.update(D.override === 'bow' ? dt * 4 / BOW_SEC : dt); // duck.js 큰절 4초 → 6초로 천천히
+  const gy = groundY(S.pos.x, S.pos.z) + (S.mode === 'hall' ? 0.17 : S.mode === 'pond' ? pondLift(S.pos) : 0);
+  duck.root.position.set(S.pos.x, gy, S.pos.z);
+  duck.root.rotation.y = D.face + Math.PI;
+
+  // 3인칭 카메라: 걸을 땐 등 뒤, 합장·연잎 숨쉬기 땐 앞에서, 좌복에선 오리와 부처님을 함께
+  if (S.mode === 'hall' && view === 'bowPanel') {
+    // 오리를 가운데 두고 빙 돌아봄. 바라보는 점을 조금 낮춰 오리가 패널 위쪽에 오게
+    const FL = HALL.floor, B = BOWCAM, px = S.pos.x, py = FL + 0.6, pz = S.pos.z;
+    const el = Math.max(0.06, B.el), up = Math.max(0, 0.06 - B.el); // 끝까지 끌어 올리면 시선을 위로 (부처님 올려다보기)
+    camera.position.set(px + Math.sin(B.yaw) * Math.cos(el) * B.dist, py + Math.sin(el) * B.dist, pz + Math.cos(B.yaw) * Math.cos(el) * B.dist);
+    camera.position.y = Math.min(camera.position.y, FL + HALL.height - 1.5);
+    camera.lookAt(px, py - B.dist * 0.08 + up * 4, pz);
+    CAM.snap = true;
+  } else if (S.mode === 'hall') {
+    camera.position.set(S.pos.x, HALL.floor + 2.4, S.pos.z + 8);
+    camera.lookAt(0, HALL.floor + 1.35, ALTAR_Z);
+    CAM.snap = true;
+  } else {
+    const front = S.mode === 'pond';
+    const wantYaw = front ? D.face + Math.PI + 0.35 + PONDCAM.yaw : S.yaw;
+    const wantEl = front ? Math.max(0.04, PONDCAM.el) : Math.max(0.05, Math.min(1.2, 0.36 + S.pitch));
+    const wantDist = front ? PONDCAM.dist : 4.0 * S.zoom, wantLook = front ? 0.95 : 1.0;
+    const wrap = a => Math.atan2(Math.sin(a), Math.cos(a));
+    // 합장할 때는 카메라를 돌리지 않음 (사용자 지시 2026-10-30) — 보던 자리 그대로
+    const k = CAM.snap ? 1 : Math.min(1, dt * (reduceMotion ? 20 : 3));
+    const dy = wrap(wantYaw - CAM.yaw);
+    CAM.yaw += dy * k; CAM.el += (wantEl - CAM.el) * k; CAM.dist += (wantDist - CAM.dist) * k; CAM.lookY += (wantLook - CAM.lookY) * k; CAM.snap = false;
+    const look = tmp.set(S.pos.x, gy + CAM.lookY, S.pos.z);
+    camera.position.set(look.x + Math.sin(CAM.yaw) * Math.cos(CAM.el) * CAM.dist, look.y + Math.sin(CAM.el) * CAM.dist, look.z + Math.cos(CAM.yaw) * Math.cos(CAM.el) * CAM.dist);
+    // 연잎에선 멀리 빼도 법당 벽 안으로는 안 들어감 (나무는 당기지 않고 흐리게 — fadeTrees)
+    if (front) for (let i = 0; i < 14 && inHallBox(camera.position); i++) camera.position.lerp(look, 0.2);
+    const lookUp = front ? Math.max(0, 0.04 - PONDCAM.el) * CAM.dist * 0.9 : Math.max(0, 0.05 - (0.36 + S.pitch)) * 3.2; // 카메라가 바닥(물)까지 내려온 뒤로는 시선을 위로 듦
+    camera.lookAt(look.x, look.y + 0.15 + lookUp, look.z);
+  }
+  fadeTrees(fadeLook.set(S.pos.x, groundY(S.pos.x, S.pos.z) + 1.0, S.pos.z), camera.position, dt);
+  const dimTo = inHallBox(camera.position) ? 0.6 : 1;
+  CAM.dim = CAM.dim === undefined ? dimTo : CAM.dim + (dimTo - CAM.dim) * Math.min(1, dt * 2);
+  hemi.intensity = hemi.userData.base * CAM.dim; sun.intensity = sun.userData.base * CAM.dim;
+
+  // 구역 바뀌면 UI 갱신
+  const z = zoneOf(S.pos);
+  if (z !== S.zone) {
+    S.zone = z; $('menuPlace').textContent = `${STR.ko.place[z]} · ${STR.en.place[z]}`;
+    signboard(z); renderPlaces(); if (!med.on) renderActions();
+    if (z === 'hall' && S.mode === 'walk' && S.nearCushion < 0) setTimeout(() => { if (S.zone === 'hall' && S.mode === 'walk' && S.nearCushion < 0) toast(T().findSeatShort, 2600); }, 2400);
+  }
+
+  // 물 위 흔들림 · 향 연기 · 반딧불
+  leaves.forEach(m => { m.position.y = (m.userData.action ? 0.07 : 0.07) + Math.sin(tsec * 0.8 + m.userData.phase) * 0.015; });
+  if (performance.now() - (S.pondT || 0) > 500) {            // 0.5초마다(실제 시간 — 느린 폰도 같게): 고리를 빈 자리로 · 같은 자리에 겹쳐 앉았는지 확인
+    S.pondT = performance.now();
+    const s = S.mode === 'walk' ? pickPondSeat(S.zone === 'pond' ? S.pos : POND_STAND) : null;
+    ring.visible = !!s; if (s) ring.position.set(s.x, s.leaf ? 0.1 : 0.04, s.z);
+    pondResolve();
+  }
+  ring.material.opacity = S.mode === 'pond' ? 0 : 0.35 + Math.sin(tsec * 2) * 0.25;
+  for (let i = 0; i < smokeN; i++) {
+    let y = smokeP[i * 3 + 1] + dt * 0.35; if (y > 3.1) y = 0.75;
+    smokeP[i * 3 + 1] = y; smokeP[i * 3] = BURNER_X + Math.sin(y * 2.2 + tsec * 0.6 + i) * 0.12 * (y - 0.7);
+  }
+  smokeGeo.attributes.position.needsUpdate = true;
+  if (flies.visible) {
+    flySeed.forEach((s, i) => {
+      flyP[i * 3] = POND.x + s[0] + Math.sin(tsec * 0.3 + s[3]) * 0.8;
+      flyP[i * 3 + 1] = s[1] + Math.sin(tsec * 0.9 + s[3] * 2) * 0.3;
+      flyP[i * 3 + 2] = POND.z + s[2] + Math.cos(tsec * 0.25 + s[3]) * 0.8;
+    });
+    flyGeo.attributes.position.needsUpdate = true;
+    flies.material.opacity = 0.55 + Math.sin(tsec * 3) * 0.35;
+  }
+  if (fallPts.visible) {
+    const f = SEASONS[season].fall, cx = camera.position.x, cz = camera.position.z;
+    for (let i = 0; i < FALL_N; i++) {
+      let x = fallP[i * 3], y = fallP[i * 3 + 1] - f.speed * dt, z = fallP[i * 3 + 2];
+      x += Math.sin(tsec * 0.7 + fallSeed[i]) * 0.4 * dt; z += Math.cos(tsec * 0.5 + fallSeed[i]) * 0.3 * dt;
+      if (y < 0 || Math.abs(x - cx) > FALL_R + 2 || Math.abs(z - cz) > FALL_R + 2) { x = cx + rnd(-FALL_R, FALL_R); y = rnd(8, 14); z = cz + rnd(-FALL_R, FALL_R); }
+      fallP[i * 3] = x; fallP[i * 3 + 1] = y; fallP[i * 3 + 2] = z;
+    }
+    fallGeo.attributes.position.needsUpdate = true;
+  }
+  tickMed(now);
+  Room.update(dt);
+  Amb.update(now);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+// 현판 글꼴이 늦게 오면 다시 그림
+if (document.fonts && document.fonts.load) {
+  Promise.all([document.fonts.load('700 84px "Gowun Batang"', '불이문고요당')]).then(() => {
+    [['불이문', 'GATE OF NOT-TWO', 2.4, 0.8], ['고요당', 'HALL OF STILLNESS', 2.8, 0.92]].forEach(([txt, sub, w, h], i) => {
+      const fresh = plaque(txt, sub, w, h); plaques[i].material.map = fresh.material.map; plaques[i].material.needsUpdate = true;
+      if (i === 0) gpBack.material = plaques[0].material;
+    });
+  }).catch(() => {});
+}
+
+/* ───────────── 함께 있기: 지금 같은 방에 있는 사람들 ─────────────
+   아티팩트에선 플랫폼의 room, 정식 배포에선 우리 서버(/ws, 방 하나 108명)로 위치·방향·동작만 나눈다.
+   들어온 사람은 모두 같은 오리가 같은 동작으로 보인다(산사처럼). 오리를 부위(몸통·목·날개·다리·눈…) × 재질로 나눠
+   부위마다 InstancedMesh 하나로 모든 사람을 한꺼번에 그린다(Crowd) — 108명이어도 그리기 수십 번.
+   가까운 12명은 원래 모양, 나머지는 같은 뼈대의 가벼운 모양. 동작은 모두 같은 규칙으로 계산하되
+   멀수록 덜 자주(가까우면 매 화면, 18m 안 초당 15번, 그 밖 6번, 화면 밖은 멈춤). 연결이 안 되면 혼자 보는 화면 그대로. */
+const POSES_OK = ['stand', 'walk', 'sit', 'breathe', 'hapjang', 'bow'], MODES_OK = ['walk', 'hall', 'pond'];
+const ROOM_MAX = 107;
+// 소식: 같은 방 사람이 합장하거나 108배를 마치면 위쪽 가운데에 잠깐. 같은 종류가 한꺼번에 여럿이면 묶어서("○○님 외 n명"),
+// 같은 사람의 합장은 15초에 한 번, 108배는 1분에 한 번만. 입장 전·연잎 명상 중에는 조용히.
+const News = {
+  q: [], busy: false,
+  hap(o) { const now = performance.now(); if (o.lastHap && now - o.lastHap < 15000) return; o.lastHap = now; this.q.push({ k: 'hap', nm: o.nm }); this.pump(); },
+  bow(o) { const now = performance.now(); if (o.lastBow && now - o.lastBow < 60000) return; o.lastBow = now; this.q.push({ k: 'bow', nm: o.nm }); this.pump(); },
+  self(n, k) { this.q.unshift({ self: n, k: k || 'hap' }); this.pump(); },
+  pump() {
+    if (this.busy || !this.q.length) return;
+    if (!entered || med.on) { this.q = []; return; }
+    const t = T(), first = this.q[0]; let msg;
+    if (first.self != null) { this.q.shift(); msg = (first.k === 'bow' ? t.bowSent : t.hapSent)(first.self); }
+    else {
+      const same = this.q.filter(x => x.self == null && x.k === first.k); this.q = this.q.filter(x => !(x.self == null && x.k === first.k));
+      msg = (first.k === 'bow' ? t.bowNews : t.hapNews)(nameOf(same[0].nm), same.length - 1);
+    }
+    const el = $('news'); el.querySelector('.news-ic').innerHTML = svg(first.k === 'bow' ? 'bow' : 'hap');
+    el.querySelector('span').textContent = msg; el.classList.add('show'); this.busy = true;
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => { this.busy = false; this.pump(); }, 700); }, first.k === 'bow' ? 5000 : 3600);
+  },
+};
+const DUCK_FAR = 'avatar/maumon-duck-far.gltf.json' + AV; // 먼 사람용 (삼각형 4천, gltfpack -si 0.1 -se 0.05 -sa) — 뼈대 이름은 같음
+const ANIM = ['hips', 'torso', 'neck', 'wingL', 'wingR', 'legL', 'legR', 'eyeL', 'eyeR']; // 움직이는 뼈 (부모가 앞에 오는 순서)
+
+// 오리(쉬는 자세)를 '뼈 × 재질' 덩어리로 굽는다: 각 조각을 자기 뼈 기준 좌표로 옮겨 합침.
+// meshopt 로 줄인 위치값(정수)은 r128 이 getX 에서 풀지 않아 직접 푼다(정규화된 경우).
+function bakeParts(d) {
+  const nodes = [d.root].concat(ANIM.map(n => d.root.getObjectByName(n)));
+  d.root.updateMatrixWorld(true);
+  const inv = nodes.map(n => new THREE.Matrix4().copy(n.matrixWorld).invert()), groups = new Map();
+  d.root.traverseVisible(o => {
+    if (!o.isMesh || !o.geometry.attributes.position) return;
+    let b = o, bi = -1;
+    while (b && (bi = nodes.indexOf(b)) < 0) b = b.parent;
+    if (bi < 0) bi = 0;
+    const key = bi + '|' + o.material.uuid;
+    if (!groups.has(key)) groups.set(key, { bone: bi, material: o.material, parts: [] });
+    groups.get(key).parts.push({ geo: o.geometry, m: new THREE.Matrix4().multiplyMatrices(inv[bi], o.matrixWorld) });
+  });
+  const unq = a => { if (!a.normalized) return 1; const arr = a.isInterleavedBufferAttribute ? a.data.array : a.array;
+    return arr instanceof Int8Array ? 1 / 127 : arr instanceof Uint8Array ? 1 / 255 : arr instanceof Int16Array ? 1 / 32767 : arr instanceof Uint16Array ? 1 / 65535 : 1; };
+  return [...groups.values()].map(g => {
+    let nv = 0, ni = 0;
+    g.parts.forEach(({ geo }) => { nv += geo.attributes.position.count; ni += geo.index ? geo.index.count : geo.attributes.position.count; });
+    const pos = new Float32Array(nv * 3), idx = new Uint32Array(ni), v = new THREE.Vector3();
+    let ov = 0, oi = 0;
+    g.parts.forEach(({ geo, m }) => {
+      const a = geo.attributes.position, k = unq(a);
+      for (let i = 0; i < a.count; i++) { v.set(a.getX(i) * k, a.getY(i) * k, a.getZ(i) * k).applyMatrix4(m); pos[(ov + i) * 3] = v.x; pos[(ov + i) * 3 + 1] = v.y; pos[(ov + i) * 3 + 2] = v.z; }
+      const ix = geo.index;
+      if (ix) for (let i = 0; i < ix.count; i++) idx[oi++] = ix.getX(i) + ov; else for (let i = 0; i < a.count; i++) idx[oi++] = i + ov;
+      ov += a.count;
+    });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setIndex(new THREE.BufferAttribute(idx, 1));
+    geo.computeVertexNormals(); geo.computeBoundingSphere();
+    return { bone: g.bone, material: g.material, geometry: geo };
+  });
+}
+
+const Crowd = {
+  ready: false, loading: false, lods: null, puppet: null, bones: null,
+  R: new THREE.Matrix4(), M: new THREE.Matrix4(), q: new THREE.Quaternion(), up: new THREE.Vector3(0, 1, 0), one: new THREE.Vector3(1, 1, 1), p: new THREE.Vector3(),
+  frus: new THREE.Frustum(), pv: new THREE.Matrix4(), sph: new THREE.Sphere(new THREE.Vector3(), 1.3),
+  load() {
+    if (this.loading || !window.MaumDuckGLB) return; this.loading = true;
+    const near = new MaumDuckGLB(DUCK_LITE, () => {
+      const far = new MaumDuckGLB(DUCK_FAR, () => this.build(near, far), () => this.build(near, null));
+    }, () => {});
+  },
+  build(near, far) {
+    const make = (d, shadow) => bakeParts(d).map(g => {
+      const im = new THREE.InstancedMesh(g.geometry, g.material, ROOM_MAX);
+      im.count = 0; im.frustumCulled = false; im.castShadow = shadow; im.receiveShadow = shadow;
+      im.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(im);
+      return { bone: g.bone, mesh: im };
+    });
+    const lod0 = make(near, true);
+    this.lods = [lod0, far ? make(far, false) : lod0];
+    // 동작 계산용 꼭두각시 = 굽고 난 가까운 오리 (장면엔 안 넣음). 사람마다 자세 상태만 따로 두고 뼈를 빌려 쓴다.
+    this.puppet = near; near.root.updateMatrixWorld(true);
+    this.bones = [near.root].concat(ANIM.map(n => near.root.getObjectByName(n)));
+    this.ready = true;
+  },
+  // 사람 한 명의 자세 상태 (꼭두각시의 함수·뼈는 물려받고 시간·자세만 자기 것)
+  state() { const st = Object.create(this.puppet); st.cur = {}; st.setPose('stand', true); return st; },
+  // 이 사람 자세를 dt 만큼 진행해 꼭두각시 뼈에 씌우고, 뼈 행렬을 복사해 둔다
+  pose(o, dt) {
+    o.st.update(dt);
+    for (let i = 1; i < this.bones.length; i++) { const b = this.bones[i]; b.updateMatrix(); b.matrixWorld.multiplyMatrices(b.parent.matrixWorld, b.matrix); }
+    for (let i = 0; i < this.bones.length; i++) o.bm[i].copy(this.bones[i].matrixWorld);
+  },
+  begin() {
+    this.lods.forEach(l => l.forEach(g => { g.mesh.count = 0; }));
+    this.pv.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); this.frus.setFromProjectionMatrix(this.pv);
+  },
+  put(o, y) {
+    this.q.setFromAxisAngle(this.up, o.face + Math.PI); this.p.set(o.x, y, o.z);
+    this.R.compose(this.p, this.q, this.one);
+    const lod = this.lods[o.lod];
+    for (let i = 0; i < lod.length; i++) { const g = lod[i]; this.M.multiplyMatrices(this.R, o.bm[g.bone]); g.mesh.setMatrixAt(g.mesh.count++, this.M); }
+  },
+  end() { this.lods.forEach(l => l.forEach(g => { g.mesh.instanceMatrix.needsUpdate = true; })); },
+  visible(x, y, z) { this.sph.center.set(x, y + 0.8, z); return this.frus.intersectsSphere(this.sph); },
+};
+
+const Room = {
+  room: null, roomName: null, others: new Map(), lastSent: 0, lastKey: '', rank: 0, lights: null, near: 12,
+  // 나의 익명 이름: 처음 오면 108개 중 무작위로 정해 기기에 기억. 우리 서버는 그 방에서 겹치면 빈 이름을 대신 줌(myName)
+  myPref: (() => {
+    let n = -1; try { n = parseInt(localStorage.getItem('maumon.name'), 10); } catch (e) { /* 저장 공간 막힘 */ }
+    if (!(n >= 0 && n < NAMES.length)) { n = Math.floor(Math.random() * NAMES.length); try { localStorage.setItem('maumon.name', String(n)); } catch (e) { /* 그대로 */ } }
+    return n;
+  })(),
+  myName() { return this.room && this.room.myName >= 0 ? this.room.myName : this.myPref; },
+  on: false,
+  init(room) {
+    this.room = room;
+    Crowd.load();
+    room.onPeers(ch => {
+      if (room.roomName) this.roomName = room.roomName;
+      ch.left.forEach(p => this.drop(p.peer));
+      ch.peers.forEach(p => { if (!(p.isMe && p.sameTab) && p.kind === 'viewer') this.upsert(p, !!ch.snap); });
+      renderTogether();
+    }, () => { [...this.others.keys()].forEach(k => this.drop(k)); renderTogether(); });
+  },
+  upsert(p, snap) {
+    const pr = p.presence || {};
+    const num = (v, lo, hi) => (typeof v === 'number' && isFinite(v) ? Math.max(lo, Math.min(hi, v)) : null);
+    const x = num(pr.x, -40, 40), z = num(pr.z, -60, 45);
+    if (x === null || z === null) { if (this.others.delete(p.peer)) renderTogether(); return; } // 위치를 비운 사람(나감)·아직 안 보낸 사람
+    let o = this.others.get(p.peer);
+    if (!o) {
+      if (this.others.size >= ROOM_MAX) return;
+      o = { x, z, face: num(pr.f, -100, 100) || 0, bob: Math.random() * 6, pose: 'stand', lod: 1, acc: 1, st: null, bm: null, dist: 99 };
+      this.others.set(p.peer, o);
+      this.rank = 0;                                          // 새 사람이 오면 바로 다시 고른다
+    }
+    o.tx = x; o.tz = z; o.tf = num(pr.f, -100, 100) || 0; o.seen = performance.now();
+    const pose = POSES_OK.includes(pr.p) ? pr.p : 'stand';
+    if (pose === 'hapjang' && o.pose !== 'hapjang' && o.known) News.hap(o);   // 합장을 시작한 순간에만 (처음 보이는 사람은 빼고)
+    const c = Number.isInteger(pr.c) && pr.c >= 0 ? pr.c : 0;     // 이번 방문에서 108배를 마친 횟수
+    if (o.known && c > (o.c || 0)) News.bow(o);
+    o.c = c; o.pose = pose; o.known = true;
+    o.nm = Number.isInteger(pr.nm) && pr.nm >= 0 && pr.nm < NAMES.length ? pr.nm : -1;   // 익명 이름 번호
+    const mode = MODES_OK.includes(pr.m) ? pr.m : 'walk';
+    // 연못에 앉은 때(내 화면 기준): 들어올 때 받은 명단에 이미 앉아 있던 사람은 0 = '나보다 먼저'.
+    // 중간에 새로 보인 사람(다시 접속해 내 자리에 앉은 사람)은 지금 앉은 것으로 — 그쪽이 옮김 (플랫폼 room 은 명단 구분이 없어 예전처럼)
+    if (mode === 'pond' && (o.mode !== 'pond' || Math.hypot(x - o.px, z - o.pz) > 0.5)) { o.pondAt = o.mode === undefined && (snap || !this.room.ws) ? 0 : performance.now(); o.px = x; o.pz = z; }
+    o.mode = mode;
+  },
+  drop(peer) { this.others.delete(peer); },
+  // 들어올 때 켜고 나갈 때 끔. 우리 서버는 연결 자체를 열고 닫고, 플랫폼 room 은 내 위치를 비움.
+  start() { this.on = true; this.lastKey = ''; this.lastSent = 0; if (this.room && this.room.start) this.room.start(); },
+  stop() {
+    this.on = false;
+    // 플랫폼 room 은 presence 를 필드별로 합치므로 null 로 지워야 다른 사람 화면에서 사라짐
+    if (this.room) { if (this.room.stop) this.room.stop(); else this.room.presence({ x: null, z: null, f: null, p: null, m: null }).catch(() => {}); }
+    this.others.clear(); renderTogether();
+  },
+  // 등불: 오리 모델을 받기 전(또는 못 받으면) 사람마다 따뜻한 빛 한 점
+  makeLights() {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,240,200,1)'); gr.addColorStop(0.25, 'rgba(255,196,110,0.85)'); gr.addColorStop(1, 'rgba(255,170,80,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ROOM_MAX + 1) * 3), 3));
+    geo.setDrawRange(0, 0);
+    const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.9, map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffd08a }));
+    pts.frustumCulled = false; scene.add(pts); this.lights = pts;
+  },
+  update(dt) {
+    if (!this.room) return;
+    if (!this.on) {                                   // 입장 전·나간 뒤: 아무도 안 그리고 안 보냄
+      if (Crowd.ready) { Crowd.begin(); Crowd.end(); }
+      if (this.lights) this.lights.geometry.setDrawRange(0, 0);
+      return;
+    }
+    // 내 상태 보내기 (바뀌었을 때만, 초당 5번까지 · 가만히 있어도 20초마다 '여기 있어요')
+    const r2 = v => Math.round(v * 100) / 100;
+    const me = { x: r2(S.pos.x), z: r2(S.pos.z), f: r2(Math.atan2(Math.sin(D.face), Math.cos(D.face))), p: D.override || duck.pose, m: S.mode, nm: this.myName(), c: S.done108 }; // 방향은 ±π 로 접어서 · nm 은 플랫폼 room 용(우리 서버는 자기가 준 이름을 씀)
+    const key = JSON.stringify(me), now = performance.now();
+    if ((key !== this.lastKey && now - this.lastSent > 200) || now - this.lastSent > 20000) { this.lastKey = key; this.lastSent = now; this.room.presence(me).catch(() => {}); }
+    // 75초 넘게 소식 없는 사람은 정리 (연결이 조용히 끊긴 경우)
+    let gone = false;
+    if (this.room.ws) this.others.forEach((o, id) => { if (now - o.seen > 75000) { this.drop(id); gone = true; } });
+    if (gone) renderTogether();
+    // 0.25초마다: 가까운 12명(15m 안)은 원래 모양, 나머지는 가벼운 모양
+    if ((this.rank -= dt) <= 0) {
+      this.rank = 0.25;
+      const list = [...this.others.values()];
+      list.forEach(o => { o.dist = Math.hypot(o.x - S.pos.x, o.z - S.pos.z) - (o.lod === 0 ? 0.8 : 0); }); // 0.8m 덤: 경계에서 깜빡이지 않게
+      list.sort((a, b) => a.dist - b.dist).forEach((o, i) => { o.lod = i < this.near && o.dist < 15 ? 0 : 1; });
+    }
+    const k = Math.min(1, dt * 8), cam = camera.position;
+    let n = 0;
+    if (Crowd.ready) Crowd.begin();
+    this.others.forEach(o => {
+      const moving = Math.hypot(o.tx - o.x, o.tz - o.z) > 0.02;
+      o.x += (o.tx - o.x) * k; o.z += (o.tz - o.z) * k;
+      let df = o.tf - o.face; df = Math.atan2(Math.sin(df), Math.cos(df)); o.face += df * k;
+      const gy = groundY(o.x, o.z) + (o.mode === 'hall' ? 0.17 : o.mode === 'pond' ? pondLift(o) : 0);
+      o.acc += dt;
+      if (Crowd.ready) {
+        if (!o.st) { o.st = Crowd.state(); o.bm = Crowd.bones.map(() => new THREE.Matrix4()); }
+        const want = o.pose === 'walk' && !moving ? 'stand' : o.pose;
+        if (o.st.pose !== want) { o.st.setPose(want); o.acc = Math.max(o.acc, 1); }      // 동작이 바뀌면 바로 한 번 계산
+        if (Math.hypot(o.x - cam.x, o.z - cam.z) < 1.0) return;                    // 카메라에 너무 붙은 오리는 잠깐 숨김
+        if (!Crowd.visible(o.x, gy, o.z)) return;                                   // 화면 밖: 그리지도, 움직이지도 않음(시간은 모아 둠)
+        const every = o.lod === 0 ? 0 : o.dist < 18 ? 1 / 15 : 1 / 6;
+        if (o.acc >= every) { Crowd.pose(o, o.st.pose === 'bow' ? o.acc * 4 / BOW_SEC : o.acc); o.acc = 0; }
+        Crowd.put(o, gy);
+      } else {
+        if (!this.lights) this.makeLights();
+        o.bob += dt;
+        this.lights.geometry.attributes.position.setXYZ(n++, o.x, gy + 1.1 + Math.sin(o.bob * 1.3) * 0.08, o.z);
+      }
+    });
+    if (Crowd.ready) Crowd.end();
+    if (this.lights) { this.lights.visible = !Crowd.ready; this.lights.geometry.setDrawRange(0, n); this.lights.geometry.attributes.position.needsUpdate = n > 0; }
+  },
+};
+
+/* 정식 배포용: 우리 서버 웹소켓을 플랫폼 room 과 같은 모양(presence·onPeers)으로 감싼다.
+   서버 → {t:'hi', id, room, u} 처음 한 번, {t:'s', u:{id:[x,z,f,포즈번호,장소번호]}, l:[나간 id]} 0.2초마다.
+   방이 꽉 차면 {t:'full'} → 다른 방을 다시 묻는다. 끊기면 1·2·4…30초 뒤 같은 방으로 다시 붙는다.
+   입장할 때 start(), 나갈 때 stop(). 화면을 숨긴 사이 서버가 '조용함'으로 끊으면(70초) 다시 보일 때까지 기다렸다 붙는다
+   — 숨은 탭이 1분마다 나갔다 들어오며 방 자리를 차지하지 않게. */
+function wsRoom(path, first, getName) {
+  let ws = null, peersCb = null, lostCb = null, myId = null, wait = 1000, last = null, on = false, waiting = false;
+  const peer = (id, s) => ({ peer: id, kind: 'viewer', presence: { x: s[0], z: s[1], f: s[2], p: POSES_OK[s[3]], m: MODES_OK[s[4]], nm: s.length > 5 ? s[5] : -1, c: s.length > 6 ? s[6] : 0 } });
+  const api = {
+    ws: true, roomName: null, myName: -1,
+    presence(me) { last = me; if (ws && ws.readyState === 1) ws.send(JSON.stringify(Object.assign({ t: 'p' }, me))); return Promise.resolve(); },
+    onPeers(fn, lost) { peersCb = fn; lostCb = lost; },
+    start() { if (on) return; on = true; wait = 1000; open(api.roomName || first, null, true); }, // true: 오늘 들어온 사람으로 셈
+    stop() {
+      on = false; last = null; const w = ws; ws = null;
+      if (w) { w.onclose = null; try { w.close(1000, 'leave'); } catch (_) {} }
+    },
+  };
+  function whenVisible() {
+    if (waiting) return; waiting = true;
+    addEventListener('visibilitychange', function v() {
+      if (document.hidden) return;
+      removeEventListener('visibilitychange', v); waiting = false;
+      if (on && !ws) open(api.roomName);
+    });
+  }
+  function open(room, full, isNew) {
+    if (!on) return;
+    const u = new URL(path, location.href); u.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    if (room) u.searchParams.set('room', room);
+    if (full) u.searchParams.set('full', full);
+    if (isNew) u.searchParams.set('new', '1');
+    const nm = api.myName >= 0 ? api.myName : getName ? getName() : -1;   // 다시 붙을 때도 같은 이름을 먼저 청함
+    if (nm >= 0) u.searchParams.set('nm', String(nm));
+    let me; try { me = ws = new WebSocket(u); } catch (e) { return; }
+    me.onmessage = e => {
+      let d; try { d = JSON.parse(e.data); } catch (_) { return; }
+      if (d.t === 'full') { me.onclose = null; me.close(); open(null, d.room); return; }
+      if (d.t === 'hi') {
+        myId = d.id; api.roomName = d.room; wait = 1000; api.myName = Number.isInteger(d.nm) ? d.nm : -1;
+        if (peersCb) peersCb({ peers: Object.entries(d.u || {}).map(([k, s]) => peer(k, s)), left: [], snap: true });
+        if (last) api.presence(last);
+        return;
+      }
+      if (d.t === 's' && peersCb) peersCb({ peers: Object.entries(d.u || {}).filter(([k]) => k !== myId).map(([k, s]) => peer(k, s)), left: (d.l || []).map(k => ({ peer: k })) });
+    };
+    me.onclose = () => {
+      if (ws !== me) return;
+      ws = null;
+      if (lostCb) lostCb();
+      if (!on) return;
+      if (document.hidden) { whenVisible(); return; }  // 숨은 동안은 다시 붙지 않음
+      setTimeout(() => { if (!on || ws) return; if (document.hidden) whenVisible(); else open(api.roomName); }, wait);
+      wait = Math.min(wait * 2, 30000);
+    };
+  }
+  return api;
+}
+
+const WS_PATH = (document.querySelector('meta[name="maumon:ws"]') || {}).content;
+if (WS_PATH) {
+  const invited = new URLSearchParams(location.search).get('room');
+  Room.init(wsRoom(WS_PATH, /^r[1-9][0-9]{0,4}$/.test(invited || '') ? invited : null, () => Room.myPref));
+} else if (window.claude && typeof window.claude.use === 'function') {
+  window.claude.use('room').then(room => { if (room) Room.init(room); }).catch(() => {});
+}
+
+applyTod();
+requestAnimationFrame(frame);
+
+// 테스트·디버그용
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, PONDCAM, TREES, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+})();
+</script>

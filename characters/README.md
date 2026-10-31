@@ -12,4 +12,4 @@ GLB 노드 이름(hips·torso·neck·wingL/R·legL/R·eyeL/R)이 전부 같아 `
 | turtle | 거북이 도반 | 초록 몸, 연두 입가와 옅은 미소, 걸망 대신 등딱지(능선 3줄), 뭉툭한 발 | 회녹색 승복 |
 | sparrow | 참새 도반 | 갈색 몸, 크림 턱, 주황 부리, 머리 옆 깃 무늬, 가는 다리와 발가락 셋 | 연회색 승복 |
 
-파일: `maumon-<species>.glb`(원본, 2.3MB 안팎) / `maumon-<species>-lite.glb`(다른 방문자용, 정점 약 2만). 렌더는 `renders/`.
+파일: `mindon-<species>.glb`(원본, 2.3MB 안팎) / `mindon-<species>-lite.glb`(다른 방문자용, 정점 약 2만). 렌더는 `renders/`.

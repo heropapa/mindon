@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>운영 현황 · 마음온</title>
+<link rel="icon" type="image/svg+xml" href="img/mark-paper.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Gowun+Dodum&display=swap">
+<style>
+  /* 마음온 운영 현황 — 관리자용. 숫자는 /stats 에서 15초마다. 먹 바탕 · 한지 글자 · 금은 막대 하나에만 (디자인 시스템) */
+  :root {
+    color-scheme: dark;
+    --page: #121419;            /* 먹 */
+    --card: #1b1e26;            /* 카드 = 그래프 바탕 */
+    --line: rgba(241,234,220,.12);
+    --grid: rgba(241,234,220,.10);
+    --text: #f1eadc;            /* 한지 */
+    --text-2: rgba(241,234,220,.70);
+    --text-3: rgba(241,234,220,.56);       /* 카드 위 5.2:1 (WCAG AA) */
+    --mark: #b48e3e;            /* 금(막대용으로 한 단계 낮춤 — 검사 통과: 밝기 0.48–0.67, 대비 3:1 이상) */
+    --mark-dim: #6b6962;        /* 지난 날(옅게) */
+    --gold: #d7b25b;            /* UI 강조 금 */
+    --f-display: "Gowun Batang", serif;
+    --f-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--text); font: 15px/1.6 var(--f-body); word-break: keep-all; overflow-wrap: break-word; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 14px; }
+  p { margin: 0; }
+  h1 { font: 700 22px/1.3 var(--f-display); margin: 0; }
+  h2 { font: 700 16px/1.4 var(--f-body); margin: 0; }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .head img { width: 48px; height: 48px; flex: none; }
+  .head .titles { flex: 1; min-width: 0; }
+  .sub { color: var(--text-3); font-size: 13px; }
+  .go { flex: none; color: var(--page); background: var(--gold); text-decoration: none; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 700; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .num, .val { transition: opacity .3s; }
+  .loading .num, .loading .val { opacity: .6; }       /* 새로 불러오는 동안: 지난 숫자만 흐리게 (깜빡임 없이) */
+  .label { color: var(--text-2); font-size: 14px; }
+  .help { color: var(--text-3); font-size: 13px; line-height: 1.55; margin-top: 4px; }
+  .unit { font-size: .45em; color: var(--text-2); margin-left: 4px; font-weight: 400; }
+
+  .hero .num { font: 700 64px/1.05 var(--f-body); letter-spacing: -1px; margin-top: 4px; }
+  .live { display: inline-flex; align-items: center; gap: 6px; }
+  .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 0 rgba(215,178,91,.6); animation: pulse 2.4s ease-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(215,178,91,.55); } 70%, 100% { box-shadow: 0 0 0 8px rgba(215,178,91,0); } }
+  @media (prefers-reduced-motion: reduce) { .live i { animation: none; } }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .tile .val { font: 700 34px/1.15 var(--f-body); margin-top: 4px; }
+  .status { display: flex; align-items: center; gap: 8px; }
+  .status svg { width: 26px; height: 26px; flex: none; }
+
+  .chart-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .tbl-btn { font: 13px var(--f-body); color: var(--text); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 32px; }
+  .tbl-btn[aria-expanded="true"] { border-color: var(--gold); }
+  .plot { position: relative; margin-top: 10px; }
+  .plot svg { display: block; width: 100%; overflow: visible; }
+  .plot .empty { position: absolute; inset: 0 0 28px 30px; display: grid; place-items: center; color: var(--text-3); font-size: 14px; text-align: center; pointer-events: none; }
+  .axis { fill: var(--text-3); font: 11px var(--f-body); }
+  .axis-now { fill: var(--text); font: 700 11px var(--f-body); }
+  .cap { fill: var(--text); font: 700 12px var(--f-body); }
+  .hit { fill: transparent; cursor: pointer; outline: none; }
+  .bar, .cap { pointer-events: none; }      /* 막대·숫자를 눌러도 뒤의 누름 영역이 받게 */
+  .hit:hover + .bar, .hit:focus + .bar { filter: brightness(1.25); }
+  .hit:focus-visible { stroke: var(--gold); stroke-width: 1; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 7px 4px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-2); font-weight: 400; }
+  td.n, th.n { text-align: right; }
+
+  .faq ul { margin: 10px 0 0; padding-left: 18px; display: grid; gap: 8px; }
+  .faq li { color: var(--text-2); font-size: 14px; }
+  .faq b { color: var(--text); font-weight: 400; }
+  .faq a { color: var(--gold); }
+  .note { color: var(--text-3); font-size: 12px; text-align: center; }
+  .err { color: var(--text); background: rgba(184,67,47,.18); border: 1px solid rgba(184,67,47,.5); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+
+  .tip { position: fixed; z-index: 10; pointer-events: none; background: #0c0e12; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+  .tip b { display: block; font: 700 16px var(--f-body); }
+  .tip span { color: var(--text-2); font-size: 12px; }
+  @media (max-width: 420px) { .hero .num { font-size: 56px; } .go { padding: 7px 12px; font-size: 13px; } }
+</style>
+</head>
+<body>
+<main class="wrap" id="wrap">
+  <header class="head">
+    <img src="img/mark-paper.svg" alt="">
+    <div class="titles">
+      <h1>마음온 운영 현황</h1>
+      <p class="sub" id="updated">숫자를 불러오는 중…</p>
+    </div>
+    <a class="go" href="./" target="_blank" rel="noopener">마음온 열기</a>
+  </header>
+
+  <p class="err" id="err" hidden>숫자를 불러오지 못했어요. 인터넷 연결을 확인하거나 잠시 뒤 다시 열어 주세요. (보이는 숫자는 마지막으로 받은 것이에요)</p>
+
+  <section class="card hero" aria-live="polite">
+    <p class="label live"><i aria-hidden="true"></i>지금 함께 있는 사람</p>
+    <p class="num"><span id="online">–</span><span class="unit">명</span></p>
+    <p class="help" id="roomsLine"></p>
+  </section>
+
+  <section class="tiles">
+    <div class="card tile">
+      <p class="label">오늘 들어온 횟수</p>
+      <p class="val"><span id="enters">–</span><span class="unit">번</span></p>
+      <p class="help">‘마음 켜기’를 눌러 들어온 횟수예요. 같은 분이 나갔다가 다시 들어오면 한 번 더 세요.</p>
+    </div>
+    <div class="card tile">
+      <p class="label">오늘 108배를 마친 횟수</p>
+      <p class="val"><span id="bows">–</span><span class="unit">번</span></p>
+      <p class="help">108번째 절까지 끝낸 횟수예요. 중간에 멈추면 세지 않아요.</p>
+    </div>
+    <div class="card tile">
+      <p class="label">오늘 가장 붐빈 때</p>
+      <p class="val"><span id="peak">–</span><span class="unit">명</span></p>
+      <p class="help" id="peakAt">같은 시간에 가장 많이 함께 있던 사람 수예요.</p>
+    </div>
+    <div class="card tile">
+      <p class="label">함께 있기</p>
+      <p class="val status" id="rt">–</p>
+      <p class="help" id="rtHelp"></p>
+    </div>
+  </section>
+
+  <section class="card chart">
+    <div class="chart-head">
+      <h2>오늘 시간대별 들어온 횟수</h2>
+      <button class="tbl-btn" type="button" data-table="hourTable" aria-controls="hourTable" aria-expanded="false">표로 보기</button>
+    </div>
+    <p class="help">막대 하나가 한 시간이에요. 막대를 누르거나 손가락을 대면 숫자가 보여요.</p>
+    <div class="plot" id="hourPlot"></div>
+    <p class="help" id="hourGap" hidden></p>
+    <table id="hourTable" hidden><thead><tr><th>시간</th><th class="n">들어온 횟수</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="card chart">
+    <div class="chart-head">
+      <h2>날짜별 들어온 횟수 (최근 14일)</h2>
+      <button class="tbl-btn" type="button" data-table="dayTable" aria-controls="dayTable" aria-expanded="false">표로 보기</button>
+    </div>
+    <p class="help" id="dayHelp">오늘은 금색, 지난 날은 회색이에요.</p>
+    <div class="plot" id="dayPlot"></div>
+    <table id="dayTable" hidden><thead><tr><th>날짜</th><th class="n">들어온 횟수</th><th class="n">108배</th><th class="n">가장 붐빈 때</th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="card faq">
+    <h2>알아 두면 좋은 점</h2>
+    <ul>
+      <li><b>‘마음 켜기’를 누른 경우만 셉니다.</b> 첫 화면만 보고 나간 분까지 보려면 Cloudflare 대시보드 → mindon.link → 분석(Analytics)에서 방문자 수를 보세요.</li>
+      <li><b>이름·연락처 같은 개인 정보는 모으지 않아요.</b> 숫자만 셉니다.</li>
+      <li><b>108배를 마친 횟수</b>는 2026년 10월 31일 낮부터 셉니다. 한 분이 한 번 방문에서 여러 번 마치면 그만큼 세요.</li>
+      <li><b>날짜는 한국 시간 밤 12시에 바뀌어요.</b> <span id="sinceLine">집계는 2026년 10월 31일 오전 9시 45분부터예요.</span></li>
+      <li><b>방은 108명이 차면 저절로 새로 열려요.</b> 사람이 모두 나간 방은 저절로 닫혀요.</li>
+      <li><b>사이트를 고쳐 새로 올리면</b> 그 순간 접속해 있던 분들은 자동으로 다시 연결돼요. 이때는 다시 세지 않아요.</li>
+      <li><b>함께 있기 ‘켜 둠/꺼 둠’은 스위치 상태예요.</b> ‘꺼 둠’이면 비상 스위치로 끈 상태라 방문자는 혼자 걷는 화면으로 이용하고, 그동안 ‘지금 함께 있는 사람’은 셀 수 없어요(들어온 횟수는 계속 셉니다). 실제로 서로 보이는지는 폰 두 대로 마음온을 열어 확인해 보세요.</li>
+      <li><b>배포 직후 자동 점검</b>은 따로 마련한 시험용 방에서 해서 숫자에 섞이지 않아요.</li>
+      <li>숫자 원본(기계용): <a href="stats" target="_blank" rel="noopener">mindon.link/stats</a></li>
+    </ul>
+  </section>
+  <p class="note">15초마다 저절로 새로 고쳐져요 · 이 페이지는 검색에 나오지 않아요</p>
+</main>
+<div class="tip" id="tip" role="tooltip" hidden><b></b><span></span></div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+  const S = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const fmt = n => Number(n || 0).toLocaleString('ko-KR');
+  const ampm = h => (h < 12 ? '오전 ' : '오후 ') + ((h % 12) || 12) + '시';
+  const hm = s => { if (!s) return ''; const [h, m] = s.split(':').map(Number); return ampm(h) + (m ? ' ' + m + '분' : ''); };
+  const WD = ['일', '월', '화', '수', '목', '금', '토'];
+  const md = d => { const t = new Date(d + 'T12:00:00Z'); return (t.getUTCMonth() + 1) + '월 ' + t.getUTCDate() + '일(' + WD[t.getUTCDay()] + ')'; };   // 'YYYY-MM-DD'(한국 날짜) 그대로 — UTC 정오로 읽어 어느 시간대에서도 같은 날
+  const mdShort = d => { const [, m, day] = d.split('-').map(Number); return m + '/' + day; };
+
+  // 눈금: 0 부터 깔끔한 숫자 3~4개
+  function ticks(max) {
+    if (max <= 4) return { top: Math.max(1, max), step: 1 };
+    const raw = max / 3, p = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 5, 10].map(k => k * p).find(s => s >= raw);
+    return { top: Math.ceil(max / step) * step, step };
+  }
+
+  // 세로 막대 (한 계열): 막대 24px 이하 · 위만 4px 둥글게 · 사이 2px · 가는 실선 눈금 · 막대마다 누르면 숫자
+  function columns(box, items, opt) {
+    box.textContent = '';
+    const W = Math.max(280, box.clientWidth), H = 170, L = 30, B = 26, T = 18;
+    const n = items.length, slot = (W - L) / n, bw = Math.min(24, slot - 2);
+    const max = Math.max(0, ...items.map(d => d.v)), tk = ticks(max), y = v => T + (H - T) * (1 - v / tk.top);
+    const svg = S('svg', { viewBox: `0 0 ${W} ${H + B}`, height: H + B, role: 'img', 'aria-label': opt.label });
+    for (let v = 0; v <= tk.top + 1e-9; v += tk.step) {
+      svg.append(S('line', { x1: L, x2: W, y1: y(v), y2: y(v), style: 'stroke: var(--grid)', 'stroke-width': 1, 'shape-rendering': 'crispEdges' }));
+      const t = S('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end', class: 'axis' }); t.textContent = fmt(v); svg.append(t);
+    }
+    const maxI = items.reduce((a, d, i) => (d.v > items[a].v ? i : a), 0);
+    const capI = items.findIndex(d => d.capLabel), showMax = capI < 0 || Math.abs(capI - maxI) * slot >= 52;   // 최고 숫자와 오늘 숫자가 겹치면 오늘만
+    items.forEach((d, i) => {
+      const cx = L + slot * i + slot / 2, x = cx - bw / 2;
+      const hit = S('rect', { x: L + slot * i, y: T - 8, width: slot, height: H - T + 8, class: 'hit', tabindex: 0, 'aria-label': d.aria });
+      svg.append(hit);
+      const h = d.v > 0 ? Math.max(2, H - y(d.v)) : 0, r = Math.min(4, bw / 2, h);
+      const bar = S('path', { class: 'bar', style: d.dim ? 'fill: var(--mark-dim)' : 'fill: var(--mark)',
+        d: h ? `M${x},${H} V${H - h + r} A${r},${r} 0 0 1 ${x + r},${H - h} H${x + bw - r} A${r},${r} 0 0 1 ${x + bw},${H - h + r} V${H} Z` : '' });
+      svg.append(bar);
+      const show = e => tip(e, hit, d.tipV, d.tipL), hide = () => { $('tip').hidden = true; };
+      hit.addEventListener('pointerenter', show); hit.addEventListener('pointerdown', show); hit.addEventListener('focus', show);
+      hit.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); }); hit.addEventListener('blur', hide);   // 손가락은 떼도 숫자 유지
+      if (d.axis) { const t = S('text', { x: cx, y: H + 17, 'text-anchor': 'middle', class: d.now ? 'axis-now' : 'axis' }); t.textContent = d.axis; svg.append(t); }
+      if (max > 0 && ((i === maxI && showMax) || d.capLabel) && d.v > 0) { const t = S('text', { x: cx, y: H - h - 5, 'text-anchor': 'middle', class: 'cap' }); t.textContent = fmt(d.v); svg.append(t); }
+    });
+    svg.append(S('line', { x1: L, x2: W, y1: H + .5, y2: H + .5, stroke: 'rgba(241,234,220,.25)', 'stroke-width': 1 }));
+    box.append(svg);
+    if (max === 0) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = opt.empty; box.append(e); }
+  }
+  function tip(e, el, v, l) {
+    const t = $('tip'); t.querySelector('b').textContent = v; t.querySelector('span').textContent = l; t.hidden = false;
+    const r = el.getBoundingClientRect(), tw = t.offsetWidth;
+    t.style.left = Math.max(8, Math.min(innerWidth - tw - 8, r.left + r.width / 2 - tw / 2)) + 'px';
+    t.style.top = Math.max(8, r.top - t.offsetHeight + 6) + 'px';
+  }
+  document.addEventListener('pointerdown', e => { if (!(e.target instanceof SVGRectElement)) $('tip').hidden = true; });
+
+  document.querySelectorAll('.tbl-btn').forEach(b => b.addEventListener('click', () => {
+    const t = $(b.dataset.table), open = t.hidden; t.hidden = !open;
+    b.setAttribute('aria-expanded', String(open)); b.textContent = open ? '표 닫기' : '표로 보기';
+  }));
+
+  let data = null;
+  function render() {
+    const d = data; if (!d) return;
+    // 15초마다 다시 그려도 키보드로 고른 막대·열린 숫자 풍선이 그대로 있게
+    const fi = [...document.querySelectorAll('.hit')].indexOf(document.activeElement), tipOpen = !$('tip').hidden;
+    const off = d.realtime === false;
+    $('online').textContent = off ? '–' : fmt(d.online_now); $('online').nextElementSibling.hidden = off;   // 꺼 둔 동안은 '명' 없이
+    $('roomsLine').textContent = off ? '함께 있기를 꺼 둔 동안은 지금 함께 있는 사람을 셀 수 없어요.'
+      : d.online_now > 0 ? `방 ${fmt(d.rooms_now)}개가 열려 있어요 · 방 하나에 ${fmt(d.room_capacity || 108)}명까지 함께 있어요`
+      : '지금은 아무도 없어요. 누군가 들어오면 이 숫자가 올라가요.';
+    $('enters').textContent = fmt(d.enters_today);
+    $('bows').textContent = fmt(d.bows_today);
+    $('peak').textContent = fmt(d.peak_online_today);
+    $('peakAt').textContent = d.peak_at_today ? `${hm(d.peak_at_today)}에 가장 많았어요. 같은 시간에 함께 있던 사람 수예요.` : '같은 시간에 가장 많이 함께 있던 사람 수예요.';
+    const on = d.realtime !== false;
+    $('rt').innerHTML = on
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg><span>켜 둠</span>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7M14 8.5v7"/></svg><span>꺼 둠</span>';
+    $('rtHelp').textContent = on ? '서로의 오리가 보이도록 켜 둔 상태예요.' : '비상 스위치로 꺼 둔 상태예요. 방문자는 혼자 걷는 화면으로 계속 이용해요.';
+    if (d.since) { const [day, t] = d.since.split(' '); const [y, m, dd] = day.split('-').map(Number); $('sinceLine').textContent = `집계는 ${y}년 ${m}월 ${dd}일 ${hm(t)}부터예요.`; }
+
+    // 오늘 시간대별
+    const nowH = +(d.now_kst || '').slice(11, 13), hrs = d.hours_today || Array(24).fill(0);
+    columns($('hourPlot'), hrs.map((v, h) => ({
+      v, axis: h === nowH ? '지금' : (h % 3 === 0 && Math.abs(h - nowH) > 2 ? h + '시' : ''), now: h === nowH,   // '지금' 옆 눈금은 비켜 줌(겹침)
+      tipV: fmt(v) + '번', tipL: `${ampm(h)} ~ ${ampm((h + 1) % 24)}`, aria: `${ampm(h)}부터 한 시간, ${v}번`,
+    })), { label: '오늘 시간대별 들어온 횟수 막대그래프', empty: d.enters_today > 0 ? '시간대를 나눠 세기 시작한 뒤로는 아직 없어요' : '오늘은 아직 들어온 분이 없어요' });
+    const gap = (d.enters_today || 0) - hrs.reduce((a, b) => a + b, 0);
+    $('hourGap').hidden = gap <= 0;
+    $('hourGap').textContent = gap > 0 ? `※ 오늘 ${fmt(gap)}번은 시간대를 나눠 세기 전이라 그래프에 없어요.` : '';
+    const hb = $('hourTable').tBodies[0]; hb.textContent = '';
+    hrs.forEach((v, h) => { const tr = hb.insertRow(); tr.insertCell().textContent = `${ampm(h)} ~ ${ampm((h + 1) % 24)}`; const c = tr.insertCell(); c.className = 'n'; c.textContent = fmt(v) + '번'; });
+
+    // 날짜별 (옛날 → 오늘)
+    const days = (d.last14 || []).slice().reverse();
+    if (days.length < 2) {
+      $('dayPlot').textContent = ''; const e = document.createElement('p'); e.className = 'help'; e.style.padding = '18px 0';
+      e.textContent = '내일부터 날짜별로 비교해서 보여 드려요. (집계를 시작한 지 하루가 안 됐어요)'; $('dayPlot').append(e);
+      $('dayHelp').hidden = true;
+    } else {
+      $('dayHelp').hidden = false;
+      columns($('dayPlot'), days.map((x, i) => ({
+        v: x.enters, dim: i < days.length - 1, now: i === days.length - 1, capLabel: i === days.length - 1,
+        axis: i === days.length - 1 ? '오늘' : (days.length <= 7 || (days.length - 1 - i) % 2 === 0 ? mdShort(x.date) : ''),
+        tipV: fmt(x.enters) + '번', tipL: md(x.date) + ` · 가장 붐빈 때 ${fmt(x.peak)}명`, aria: `${md(x.date)} ${x.enters}번, 가장 붐빈 때 ${x.peak}명`,
+      })), { label: '최근 날짜별 들어온 횟수 막대그래프', empty: '아직 들어온 분이 없어요' });
+    }
+    const db = $('dayTable').tBodies[0]; db.textContent = '';
+    (d.last14 || []).forEach(x => { const tr = db.insertRow(); tr.insertCell().textContent = md(x.date);
+      const a = tr.insertCell(); a.className = 'n'; a.textContent = fmt(x.enters) + '번';
+      const w = tr.insertCell(); w.className = 'n'; w.textContent = fmt(x.bows || 0) + '번';
+      const b = tr.insertCell(); b.className = 'n'; b.textContent = fmt(x.peak) + '명' + (x.peakAt ? ` (${hm(x.peakAt)})` : ''); });
+    if (fi >= 0) { const h = document.querySelectorAll('.hit')[fi]; if (h) { h.focus({ preventScroll: true }); if (!tipOpen) $('tip').hidden = true; } }
+  }
+
+  async function load() {
+    $('wrap').classList.add('loading');
+    try {
+      const r = await fetch('stats', { cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status);
+      data = await r.json(); render(); $('err').hidden = true;
+      $('updated').textContent = '마지막 확인 ' + new Date().toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    } catch (e) { $('err').hidden = false; }
+    $('wrap').classList.remove('loading');
+  }
+  load(); setInterval(() => { if (!document.hidden) load(); }, 15000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+  let rz, lastW = innerWidth;
+  addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rz); rz = setTimeout(render, 150); });   // 폰 주소창이 들고날 때(높이만 바뀜)는 그대로
+})();
+</script>
+</body>
+</html>

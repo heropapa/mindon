@@ -13,7 +13,7 @@
 | turtle | 거북이 도반 | 초록 몸, 연두 입가, 걸망 대신 등딱지, 뭉툭한 발, 회녹색 승복 |
 | sparrow | 참새 도반 | 갈색 몸, 크림 턱, 주황 부리, 가는 다리·발가락 셋, 연회색 승복 |
 
-- 파일: `characters/maumon-<species>.glb` (원본 2.2~2.4MB) + `maumon-<species>-lite.glb` (정점 약 2.1만, 700KB, 다른 방문자용). `avatar/maumon-duck.glb`·`-lite.glb`는 simdeok와 같은 파일.
+- 파일: `characters/mindon-<species>.glb` (원본 2.2~2.4MB) + `mindon-<species>-lite.glb` (정점 약 2.1만, 700KB, 다른 방문자용). `avatar/mindon-duck.glb`·`-lite.glb`는 simdeok와 같은 파일.
 - 노드 이름(hips·torso·neck·wingL/R·legL/R·eyeL/R)·피벗·크기가 전부 같아 `blender/duck-glb.js`(MaumDuckGLB) 하나로 6종 모두 걷기·가부좌·연잎 숨쉬기·합장(반배)·큰절이 된다. .gltf.json(base64 BIN) 변환도 지금 방식 그대로.
 - 이번 변경: 깃·동정·가방끈·멜빵을 턱 아래 어깨선으로 내려 옷이 턱에서 튀어나오지 않게 함(6종 공통). 심덕이는 눈을 키우고 꽁지깃을 넣음. 이름은 '심덕이'로 확정.
 - 소스: `characters/character.py <species> <out> [--no-render]` (Blender 5.2 bpy). 라이트 판: `blender/make_lite.py`. 렌더: `characters/renders/`.
@@ -23,5 +23,5 @@
 사용자분이 받은 trimesh 기반 6종 zip(토끼·곰·판다 포함)은 뼈대 노드 아래에 메시가 매달려 있지 않아 큰절·가부좌가 안 되고, 발이 전부 오리 발이며, 보드의 동물 구성과 달라 채택하지 않았다. 큰 눈·꽁지깃만 심덕이에 반영.
 
 ## 요청
-- 시제품의 심덕이 GLB를 새 `maumon-simdeok.glb`(+lite)로 교체.
+- 시제품의 심덕이 GLB를 새 `mindon-simdeok.glb`(+lite)로 교체.
 - 나머지 캐릭터는 사용자분이 원할 때 NPC 또는 아바타 선택지로 투입.

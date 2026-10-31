@@ -1,0 +1,36 @@
+# 마음온 — 화면 파일(dist/) + '함께 있기' 실시간 방을 Worker 하나로 배포
+#   bash 마음온/tools/deploy.sh   (빌드 + 배포 한 번에, 토큰은 CLOUDFLARE_API_TOKEN)
+name = "maumon"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# 정식 주소: mindon.link (Cloudflare Registrar, 2026-10-30 구매). deploy 할 때 Worker 커스텀 도메인으로 붙고 DNS·인증서는 자동.
+# 토큰 계정 = 도메인을 산 계정이어야 함 (네임서버 jihoon/tessa.ns.cloudflare.com). workers.dev 주소도 그대로 열림(비상용).
+workers_dev = true
+routes = [
+  { pattern = "mindon.link", custom_domain = true },
+  { pattern = "www.mindon.link", custom_domain = true },
+]
+
+[assets]
+directory = "../dist"
+binding = "ASSETS"
+run_worker_first = ["/ws", "/stats"]
+
+[vars]
+# 다른 사이트가 우리 방에 붙지 못하게 (같은 주소 — workers.dev 포함 — 는 코드에서 늘 허용)
+ALLOWED_ORIGINS = "https://mindon.link,https://www.mindon.link"
+# 비상 스위치: "off" 로 바꿔 deploy 하면 함께 있기만 꺼짐 (화면·걷기·108배는 그대로, 방문자는 혼자 보는 화면)
+REALTIME = "on"
+
+[[durable_objects.bindings]]
+name = "ROOM"
+class_name = "Room"
+
+[[durable_objects.bindings]]
+name = "LOBBY"
+class_name = "Lobby"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room", "Lobby"]

@@ -16,7 +16,7 @@ const camera=new THREE.PerspectiveCamera(32,1,0.1,50);
 scene.add(new THREE.HemisphereLight(0xfff4e0,0x8a7a66,0.6));const sun=new THREE.DirectionalLight(0xffe9c4,0.9);sun.position.set(2,4,3.5);sun.castShadow=true;scene.add(sun);
 const fill=new THREE.DirectionalLight(0xffffff,0.25);fill.position.set(-3,1.5,2);scene.add(fill);
 const ground=new THREE.Mesh(new THREE.CircleGeometry(2.4,48),new THREE.MeshStandardMaterial({color:0xe6dcc8,roughness:1}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
-const duck=window.duck=new MaumDuckGLB('maumon-duck.glb',d=>{scene.add(d.root);window.loaded=true;});
+const duck=window.duck=new MaumDuckGLB('mindon-duck.glb',d=>{scene.add(d.root);window.loaded=true;});
 let az=0;function place(){camera.position.set(3.9*Math.sin(az)*Math.cos(0.18),0.8+3.9*Math.sin(0.18),3.9*Math.cos(az)*Math.cos(0.18));camera.lookAt(0,0.8,0);}
 document.getElementById('bar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pose)duck.setPose(b.dataset.pose);if(b.dataset.view)az=b.dataset.view*Math.PI/180;});
 let last=performance.now();(function frame(now){const dt=Math.min(0.05,(now-last)/1000);last=now;duck.update(dt);place();renderer.render(scene,camera);requestAnimationFrame(frame);})(last);

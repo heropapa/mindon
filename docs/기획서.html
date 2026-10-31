@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>마음온 기획서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+  /* 레이아웃: 한지 바탕의 한 단 문서. 머리에 현판, 표는 각자 가로 스크롤. */
+  :root {
+    --bg: #f5f1e8; --card: #fffdf8; --fg: #26231f; --muted: #6d665b; --line: #e2dacb;
+    --red: #a63b2a; --green: #2f6b5e; --gold: #a9822f; --ink: #1c1a17; --code: #efe8da;
+    --f-display: "Gowun Batang", "Noto Serif KR", serif;
+    --f-body: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #15171c; --card: #1d2026; --fg: #ece5d6; --muted: #a49c8e; --line: #2f333b;
+      --red: #d0614c; --green: #5aa892; --gold: #d7b25b; --ink: #0e0f12; --code: #262a31; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --bg: #15171c; --card: #1d2026; --fg: #ece5d6; --muted: #a49c8e; --line: #2f333b;
+    --red: #d0614c; --green: #5aa892; --gold: #d7b25b; --ink: #0e0f12; --code: #262a31; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.75; }
+  .wrap { max-width: 780px; margin: 0 auto; padding-block: 40px 96px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  header { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-bottom: 36px; }
+  .hyeonpan { background: #1c1a17; color: #d7b25b; border: 3px solid #d7b25b; box-shadow: 0 0 0 6px #2f6b5e, 0 0 0 9px #a63b2a;
+    font-family: var(--f-display); font-weight: 700; font-size: 30px; line-height: 1; padding: 12px; display: flex; flex-direction: column; gap: 6px; margin: 9px; }
+  header .t { min-width: 0; flex: 1; }
+  h1 { font-family: var(--f-display); font-size: 34px; margin: 0; text-wrap: balance; }
+  .tag { font-family: var(--f-display); color: var(--gold); margin: 4px 0 8px; }
+  .meta { color: var(--muted); font-size: 14px; margin: 0; }
+  h2 { font-family: var(--f-display); font-size: 24px; margin: 48px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); text-wrap: balance; }
+  h2 .n { color: var(--red); margin-right: 8px; font-variant-numeric: tabular-nums; }
+  h3 { font-family: var(--f-display); font-size: 19px; margin: 28px 0 8px; }
+  p, ul, ol { margin: 0 0 12px; }
+  li { margin: 4px 0; }
+  strong { color: var(--fg); }
+  .lead { font-family: var(--f-display); font-size: 20px; }
+  .tbl { overflow-x: auto; margin: 12px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 700; color: var(--muted); font-size: 13px; letter-spacing: 0.03em; white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  pre { background: var(--code); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.55; }
+  code { background: var(--code); border-radius: 4px; padding: 1px 5px; font-size: 0.92em; }
+  pre code { background: none; padding: 0; }
+  .stage { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .s1 { color: var(--green); border-color: var(--green); }
+  .s2 { color: var(--gold); border-color: var(--gold); }
+  .s3 { color: var(--red); border-color: var(--red); }
+  .warn { border-left: 3px solid var(--red); padding: 4px 0 4px 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="hyeonpan" aria-hidden="true"><span>불</span><span>이</span><span>문</span></div>
+  <div class="t">
+    <h1>마음온 기획서</h1>
+    <p class="tag">마음이 쉬어가는 절 · MindOn, a quiet temple online</p>
+    <p class="meta">작성 2026-10-30 · 이름 <strong>마음온</strong>(진행 이름, 상표·도메인 확인 후 확정) · 상태 <strong>0단계(기획)</strong> · 프로토타입 <code>불이/prototype/index.html</code></p>
+  </div>
+</header>
+
+<p class="lead">인터넷 속에 지어 둔 조용한 절. 누구나 들어와 걷고, 듣고, 절하고, 쉬었다 가는 곳.</p>
+
+<h2><span class="n">1</span>한 줄 정의</h2>
+<p><strong>종교색을 옅게 한 3D 명상 사찰.</strong> 로그인 없이 링크 하나로 들어와 경내를 걸으며 염불·목탁 소리를 듣고, 합장하고, 108배를 하고, 연잎에 앉아 숨을 고르고, 소원 연등을 띄우고, 마음이 무거우면 찻방의 "길잡이"에게 털어놓는다.</p>
+<h3>이름 풀이 — 마음온</h3>
+<p>"마음 + 온"은 여러 겹으로 읽힌다.</p>
+<ul>
+  <li><strong>온(온기)</strong>: 따뜻한 마음. 차가워진 마음을 데우고 가는 곳</li>
+  <li><strong>온(ON)</strong>: 마음을 켜다. 꺼져 있던 마음에 불(연등)이 들어오는 곳</li>
+  <li><strong>온(오다)</strong>: 마음이 와서 머무는 곳</li>
+  <li><strong>온(온전한)</strong>: 온 마음, 흩어진 마음이 하나로 모이는 곳</li>
+  <li>종교색이 없어 처음 오는 사람에게 가볍다. 부제 <strong>"마음이 쉬어가는 절"</strong>이 명상 사찰이라는 정체성을 붙잡는다.</li>
+  <li>영문은 <strong>MindOn</strong> (2026-10-30 본부장 확정. 한 단어, M·O 대문자 — 대문자만 쓰는 자리에서도 MINDON 대신 MindOn). '마음' = mind, '온' = ON(마음을 켜다, 입장 버튼 "마음 켜기"와 맞물림). 처음 쓰던 MindOn 은 외국인이 "마유몬"처럼 읽기 쉽고 해외 'Maum Meditation'과 겹쳐 바꿈. 정식 주소 mindon.link(2026-10-30 구매, 보조 mindontemple.com → 301), 상표 확인은 상표 세션에서 진행 중.</li>
+</ul>
+<h3>입장 문 — 불이문 (Gate of Not-Two)</h3>
+<p>이름이 가볍더라도 공간의 깊이는 첫 문에서 준다.</p>
+<ul>
+  <li>실제 한국 사찰에도 <strong>불이문</strong>이 있다. 일주문·천왕문을 지나 법당 앞에 서는 마지막 문으로, "이 문을 지나면 분별이 사라진다"는 뜻. 마음온의 첫 화면에 <code>불이문</code> 현판을 단다 (영문 병기 <em>Gate of Not-Two</em>).</li>
+  <li>불이는 <em>둘이 아니다</em>. 합장 문구 "여기 온 당신과 이곳은 둘이 아닙니다"와, 다른 방문자의 연등이 함께 떠다니는 2단계 기능으로 이어진다.</li>
+  <li>법당 이름은 <strong>고요당(Hall of Stillness)</strong>으로 둔다 (가칭). 처음엔 '청심당'이었으나 참고 서비스 산사의 '청연당'과 헷갈려 바꿨다 (11장).</li>
+  <li>이름 후보였던 불이·소요·고요·숨절·한숨은 검토 후 마음온으로 정리했다 (2026-10-30).</li>
+</ul>
+
+<h2><span class="n">2</span>확정된 방향 (2026-10-30)</h2>
+<div class="tbl"><table>
+  <tr><th>항목</th><th>결정</th></tr>
+  <tr><td>공간 성격</td><td>종교색 옅은 명상 공간. 불교 요소(합장·연꽃·종소리)는 <strong>분위기</strong>로만, 누구나 오는 힐링 공간</td></tr>
+  <tr><td>부처님</td><td>법당 안에 <strong>크고 멋진 3D 부처님</strong>을 모신다. 보는 것만으로 안정감 (2026-10-30 확인). 의례·종단 색은 여전히 옅게</td></tr>
+  <tr><td>화면</td><td><strong>3D로 걸어다니는 경내</strong> (로우폴리 스타일라이즈, 실사 아님)</td></tr>
+  <tr><td>체험</td><td>염불·목탁 듣기 / 기도·소원 남기기 / 합장·108배 / 마음 상담(AI) / 연꽃 연등 만들기, <strong>전부</strong></td></tr>
+  <tr><td>출시</td><td><strong>단계별</strong>: 1단계 고요한 절 → 2단계 연등 마당 → 3단계 찻방</td></tr>
+  <tr><td>목적</td><td><strong>우선 무료로 사람 모으기.</strong> 수익은 <strong>유료 상품(연등 달기·기와쓰기·신년운세·띠별 운세)</strong> + <strong>유료 회원(AI 상담)</strong> + 공양하기 (15~17, 2026-10-30). 걷기·염불·합장·108배·연잎 명상은 계속 무료</td></tr>
+  <tr><td>언어</td><td><strong>처음부터 한/영 동시</strong></td></tr>
+  <tr><td>로그인</td><td>무료 이용은 <strong>없음</strong>(바로 입장, 기록은 기기에 저장). <strong>유료 회원만 로그인</strong>(카카오·구글, 15)</td></tr>
+  <tr><td>규모</td><td><strong>하루 100만 명</strong>을 감당하는 구조로 정식 배포 (14, 2026-10-30)</td></tr>
+</table></div>
+
+<h2><span class="n">3</span>누가, 언제 오는가</h2>
+<div class="tbl"><table>
+  <tr><th>사람</th><th>상황</th><th>이곳에서 하는 일</th></tr>
+  <tr><td>지친 직장인 (25~45)</td><td>퇴근길 지하철, 잠들기 전</td><td>연잎 명상 5분, 염불 틀어놓고 잠들기</td></tr>
+  <tr><td>불안·상실을 겪는 사람</td><td>시험·이별·사별</td><td>소원 연등, 길잡이에게 털어놓기</td></tr>
+  <tr><td>절이 그리운 중장년</td><td>절에 갈 시간·체력이 없을 때</td><td>108배, 독송 듣기</td></tr>
+  <tr><td>해외 K-문화·명상 관심층</td><td>한국 절을 경험해 보고 싶을 때</td><td>경내 산책, 합장, 종소리 (영어)</td></tr>
+</table></div>
+<p>공통점은 <strong>짧게(3~15분), 혼자, 폰으로</strong> 온다는 것. 그래서 모바일 우선·소리 우선으로 설계한다.</p>
+
+<h2><span class="n">4</span>경내 지도</h2>
+<pre><code>                    [찻방] 마음 상담 · 3단계
+                       │
+[일주문] ── 연못길 ── [법당] 염불 · 합장 · 108배 · 1단계
+ 입장·언어·소리         │
+                    [연못] 연잎 명상 · 1단계
+                       │
+                  [연등 마당] 소원 연등 · 연등 만들기 · 2단계</code></pre>
+<div class="tbl"><table>
+  <tr><th>장소</th><th>역할</th><th>분위기</th></tr>
+  <tr><td>일주문</td><td>첫 화면. 언어 선택, "소리를 켜고 들어오세요", 한 문장 인사</td><td>안개, 멀리 풍경 소리</td></tr>
+  <tr><td>연못길</td><td>걷는 길 자체가 쉼. 자동 걷기 시 가장 오래 머무는 곳</td><td>돌길, 석등, 대나무</td></tr>
+  <tr><td>법당</td><td>좌복에 앉아 듣기·합장·108배</td><td>단청, 따뜻한 촛불빛</td></tr>
+  <tr><td>연못</td><td>연잎에 앉아 호흡 명상. 시점이 물 높이로 낮아짐</td><td>물결, 반딧불(밤)</td></tr>
+  <tr><td>연등 마당</td><td>다른 사람들의 연등이 떠 있는 곳 <span class="stage s2">2단계</span></td><td>수백 개의 연등 불빛</td></tr>
+  <tr><td>찻방</td><td>길잡이와 차 한잔 <span class="stage s3">3단계</span></td><td>낮은 탁자, 찻김</td></tr>
+</table></div>
+<p><strong>시간대 반영</strong>: 방문자 현지 시각에 따라 새벽(푸른 안개)·낮·노을·밤(연등·별)으로 하늘과 조명이 바뀐다. "밤에 오면 다르다"가 재방문 이유가 된다.</p>
+<p><strong>이동 방식</strong></p>
+<ul>
+  <li>모바일: 바닥을 탭하면 그곳으로 천천히 걸어감 / 장소 버튼으로 이동 / 화면 드래그로 둘러보기</li>
+  <li>PC: 클릭 이동 + WASD</li>
+  <li><strong>안내 따라 걷기</strong>: 버튼 하나로 일주문 → 연못길 → 법당 → 연못을 자동 산책 (멀미 방지를 위해 느리고 부드럽게)</li>
+</ul>
+
+<h2><span class="n">5</span>체험 상세</h2>
+<h3>5.1 염불·목탁 듣기 <span class="stage s1">1단계</span></h3>
+<ul>
+  <li>법당 앞 좌복에 앉으면 재생 패널이 열린다</li>
+  <li>트랙: <strong>목탁 리듬</strong> / <strong>염불</strong>(1차: 한국저작권위원회 공유마당의 무료 이용 음원, 예: 김용배 「염불소리1」 CC BY 4.0, 출처 표기) / <strong>범종·풍경 앰비언트</strong> / (추후) 아라 프로젝트 국악 명상곡</li>
+  <li><strong>함께 듣기</strong>: 같은 시간에 들어온 사람들과 같은 염불을 같은 박자로 듣는다 (2단계, 실시간 서버)</li>
+  <li>반복, 수면 타이머(15/30/60분), 화면을 꺼도 계속 재생</li>
+  <li>남의 염불 녹음은 쓰지 않는다 (8-2)</li>
+</ul>
+<h3>5.2 합장 <span class="stage s1">1단계</span></h3>
+<ul>
+  <li>버튼을 길게 누르면 화면 아래에서 두 손이 모이고 종이 한 번 울린다</li>
+  <li>합장 후 짧은 문구 한 줄: "잠시 멈추었습니다." / "You paused, and that is enough."</li>
+</ul>
+<h3>5.3 108배 <span class="stage s1">1단계</span></h3>
+<ul>
+  <li><strong>빈 방석 가까이 가면</strong> [108배] 버튼이 뜬다. 자리를 정해두지 않고, 다른 사람이 앉은 방석은 제외. 방석 둘레에 금빛 고리</li>
+  <li>[시작]을 누르면 죽비 한 번 → <strong>혼자서 천천히</strong> 큰절 (한 번 6초, 108배 약 11분), 절마다 실제 목탁 녹음 한 번. 잠시 멈춤·이어서 가능</li>
+  <li>화면의 <strong>염주 108알</strong>이 한 알씩 채워지고 숫자 카운터가 오름</li>
+  <li>27·54·81에서 종소리, 108번째가 끝나면 <strong>죽비 세 번</strong> + 마무리 문구</li>
+  <li>누적 기록(오늘/전체 배 수)은 기기에 저장</li>
+</ul>
+<h3>5.4 연잎 명상 <span class="stage s1">1단계</span></h3>
+<ul>
+  <li>연못의 큰 연잎을 누르면 그 위에 앉는다. 시점이 물 높이로 낮아지고 바람 소리가 작아짐</li>
+  <li>호흡 가이드 원: <strong>들숨 4초 · 멈춤 4초 · 날숨 6초</strong></li>
+  <li>3 / 5 / 10분 선택, 끝나면 종 세 번</li>
+</ul>
+<h3>5.5 소원 연등 <span class="stage s2">2단계</span> <strong>유료 '연등 달기'로 바뀜 (17)</strong></h3>
+<ul>
+  <li>소원을 적으면 연등이 하늘(또는 연못 위)로 천천히 떠오른다</li>
+  <li>다른 방문자의 연등도 <strong>익명으로</strong> 떠다님. 누르면 소원 문장만 보임</li>
+  <li>공개/나만 보기 선택, 금칙어 필터·신고·운영자 숨김 (8-3)</li>
+</ul>
+<h3>5.6 연꽃 연등 만들기 <span class="stage s2">2단계</span></h3>
+<ul>
+  <li>꽃잎 색(분홍·흰·노랑·연두…)과 모양을 골라 한 장씩 붙여 연꽃 연등 완성</li>
+  <li>완성한 연등으로 소원을 단다. "내가 만든 연등"이 마당에 남는다</li>
+  <li>실패 없음, 경쟁 없음</li>
+</ul>
+<h3>5.7 마음 상담: 찻방의 "길잡이" <span class="stage s3">3단계</span></h3>
+<ul>
+  <li>고민을 적으면 길잡이가 <strong>짧고 차분하게</strong> 답한다: 들어주기 → 한 줄 지혜 → 지금 할 수 있는 작은 것(호흡·108배·연등) 권유</li>
+  <li><strong>"AI 스님"이라고 부르지 않는다.</strong> 실제 승려 사칭이나 종교 권위 오해를 막기 위해 "길잡이(Guide)"로 부르고, AI임을 항상 밝힌다</li>
+  <li>위기 신호가 보이면 답변 대신 즉시 상담 전화 안내 (8-1)</li>
+  <li>대화 내용은 기본 저장하지 않음</li>
+  <li><strong>유료 회원 전용</strong> (2026-10-30 결정). 이름·비용·안전 장치는 15</li>
+</ul>
+
+<h3>5.8 함께 있음 · 나누기 <span class="stage s1">1~2단계</span></h3>
+<ul>
+  <li><strong>다른 방문자는 불빛으로</strong>: 지금 경내에 있는 사람들을 아바타 대신 연못 위 반딧불·연등 불빛으로 은은하게 보여준다. 말없이 같이 있다는 느낌은 주되 얼굴·대화는 없다 (실시간 서버 필요 → 2단계, 가능하면 1단계 후반에 인원 수부터)</li>
+  <li><strong>초대 링크</strong>: 지금 내가 있는 장소(예: 연못)로 바로 들어오는 링크 (1단계)</li>
+  <li><strong>장면 담기</strong>: 지금 화면을 이미지로 저장·공유 (1단계)</li>
+</ul>
+
+<h2><span class="n">6</span>화면 흐름 (첫 방문)</h2>
+<ol>
+  <li><strong>불이문</strong>: 안개 속 불이문 현판, 이름 <strong>마음온</strong>, 부제 "마음이 쉬어가는 절", <code>한국어 / English</code>. <strong>붓으로 그린 전원(⏻) 로고 버튼</strong>(브랜드 마크, <code>마음온/brand/</code>)을 누르면 마음이 켜지며 소리와 함께 입장 (마음 ON). 작은 글씨로 "소리 없이 들어가기"도 둔다</li>
+  <li>들어가면 연못길 시작점. 하단에 장소 버튼(일주문·연못길·법당·연못)과 [안내 따라 걷기]</li>
+  <li>법당(고요당) 도착 → 열린 가운데 세 칸 문으로 걸어 들어감. 법당은 폭·깊이 42m, 안 높이 16m (산사 법당처럼). 안은 어두운 나무 마루·회색 방석 11×10줄·연등·드러난 서까래·아래가 트인 큰 옆 창(밖 숲이 보임), 정면 불단에 10m 넘는 부처님(국립중앙박물관 「목조불좌상」 사진)과 뒷벽 가득한 가로형 불화(「아미타극락회도」 덕수448), 모두 공공누리 1유형. [소리 듣기] [108배] [합장]</li>
+  <li>연못 도착 → [연잎에 앉기] → 명상 시간 선택 → 호흡 가이드</li>
+  <li>상단에 "오늘 n배 · 명상 n분" (기록은 이 기기에)</li>
+</ol>
+
+<h2><span class="n">7</span>기술 구성</h2>
+<div class="tbl"><table>
+  <tr><th>영역</th><th>1단계</th><th>2단계</th><th>3단계</th></tr>
+  <tr><td>3D</td><td>Three.js (본 개발: Vite + React Three Fiber/drei)</td><td>동일</td><td>동일</td></tr>
+  <tr><td>다국어</td><td><code>ko.json</code> / <code>en.json</code> 분리, 브라우저 언어 자동 선택 + 전환</td><td>동일</td><td>동일</td></tr>
+  <tr><td>저장</td><td>기기 저장(localStorage): 108배 누적, 명상 시간</td><td>+ 서버(Supabase 무료 티어 또는 Cloudflare Workers+D1): 공개 연등</td><td>+ 상담 API 서버 함수</td></tr>
+  <tr><td>서버</td><td>없음 (정적 사이트)</td><td>익명 기기 ID, 속도 제한, 신고</td><td>API 키를 숨긴 서버 함수(Cloudflare Worker) → Claude API</td></tr>
+  <tr><td>호스팅</td><td>GitHub Pages(별도 공개 repo) 또는 Cloudflare Pages</td><td>동일</td><td>동일</td></tr>
+</table></div>
+<ul>
+  <li><strong>성능 목표</strong>: 중급 안드로이드폰 30fps, 첫 로딩 5MB 이하 (로우폴리, GLB 압축, 텍스처 최소화, 그림자는 구워 넣기)</li>
+  <li><strong>3D 에셋</strong>: 한국 사찰 무료 모델은 드물다. 1단계는 단순 도형 조합(그레이박스)으로 시작, 이후 Blender 로우폴리 자체 제작 또는 외주</li>
+  <li><strong>소리</strong>: 프로토타입은 Web Audio로 목탁·범종·풍경을 <strong>합성</strong>(저작권 문제 없음). 범종은 한국 종 특유의 <strong>맥놀이</strong>(가까운 두 음이 만드는 울렁임)를 흉내 냄. 이후 실녹음으로 교체</li>
+</ul>
+
+<h2><span class="n">8</span>반드시 지킬 원칙</h2>
+<ol>
+  <li class="warn"><strong>위기 대응</strong>: 상담·소원에 자살·자해 신호가 보이면 AI 답변 대신 즉시 안내. 한국 자살예방상담 <strong>109</strong> · 정신건강위기상담 <strong>1577-0199</strong> / 해외는 지역 핫라인 안내. 첫 화면·찻방에 "의료·심리치료를 대신하지 않습니다" 고지.</li>
+  <li><strong>소리 저작권</strong>: 이용 허락 없는 염불·독송 녹음 사용 금지. <strong>공유마당 등 CC 라이선스 음원(출처 표기)</strong> / 직접 녹음 / <strong>아라 프로젝트 국악 연주자 협업 녹음</strong> 중에서.</li>
+  <li><strong>공개 소원 검수</strong>: 금칙어 필터 + 신고 + 운영자 숨김. 이름·전화번호 등 개인정보 자동 가림.</li>
+  <li><strong>존중</strong>: 불상·의식을 희화화하지 않는다. 특정 종단 로고·상징은 쓰지 않는다.</li>
+  <li><strong>개인정보 최소화</strong>: 무료 이용은 로그인 없음. 유료 회원은 결제·로그인에 필요한 최소 정보만, 상담 내용 기본 비저장(저장 시 명시적 동의).</li>
+  <li><strong>표기는 한글 + 영어</strong>: 한자는 쓰지 않는다. 현판·안내문 모두 한글을 크게, 영어를 작게 병기한다 (외국인 방문자 고려, 2026-10-30).</li>
+  <li><strong>돈과 신앙을 섞지 않는다</strong>: 공양·결제를 해야 "복을 받는다"·"소원이 이뤄진다"는 식의 문구를 쓰지 않는다. 결제하지 않아도 모든 기본 체험(걷기·염불·합장·108배·연잎 명상)은 그대로.</li>
+</ol>
+
+<h2><span class="n">9</span>로드맵</h2>
+<div class="tbl"><table>
+  <tr><th>단계</th><th>내용</th><th>완료 기준</th></tr>
+  <tr><td><strong>0. 기획</strong> (지금)</td><td>기획서 + 그레이박스 프로토타입</td><td>폰에서 걸어보고 느낌 피드백</td></tr>
+  <tr><td><strong>1. 고요한 절</strong></td><td>3D 경내(일주문·연못길·법당·연못) + 염불·합장·108배·연잎 명상, 한/영, 시간대 하늘</td><td>공개 URL 출시</td></tr>
+  <tr><td><strong>2. 연등 마당</strong></td><td>소원 연등 + 연등 만들기 게임 + 검수 도구</td><td>소원 공유 운영 시작</td></tr>
+  <tr><td><strong>정식 배포</strong></td><td>자체 실시간 서버(방 하나 108명) + 파일 압축 + 공양하기 (14·16)</td><td>부하 시험 통과, 하루 100만 명 기준</td></tr>
+  <tr><td><strong>유료 상품</strong></td><td>연등 달기 · 기와쓰기(이미지 내려받기) · 신년운세 · 띠별 운세 (17)</td><td>결제·검수·법률 검토 완료</td></tr>
+  <tr><td><strong>3. 찻방</strong></td><td>유료 회원 AI 상담(길잡이) + 위기 대응 + 로그인·정기결제 (15)</td><td>안전성 테스트 통과 후 공개</td></tr>
+  <tr><td>이후</td><td>실제 사찰 제휴, 아라 음원 연계</td><td>—</td></tr>
+</table></div>
+<p><strong>1단계 측정 지표</strong>: 일 방문자 · 평균 체류 시간 · 108배 완주율 · 명상 완료율 · 7일 재방문율</p>
+
+<h2><span class="n">10</span>열린 질문 (다음 회의 안건)</h2>
+<ol>
+  <li><strong>상표·도메인</strong>: 마음온 KIPRIS 상표 검색(9류 앱·41류 교육/명상·44류 상담), 도메인 <code>maumon.kr</code> / <code>maum-on.com</code> / <code>maumon.app</code> 확보 여부. 웹 검색상 동일 이름 서비스는 없으나 유사 이름이 있음: 마온(마음의 온도, 멘탈케어 앱), 마음:온오프(창원정신건강복지센터 앱), 마음에 온 버스(오산시 이동 상담)</li>
+  <li><strong>3D 품질 수준</strong>: 그레이박스를 보고 자체 로우폴리로 갈지, 3D 외주(예산)로 갈지</li>
+  <li><strong>염불 음원</strong>: 1차 적용 완료 (2026-10-30): 공유마당 4곡. 김용배 「염불소리1」(CC BY), 실상사 염불·목탁 / 선운사 염불·샘물 / 선운사 저녁예불(JICA·전주정보문화산업진흥원, 공공누리 1유형). 출처는 화면과 <code>prototype/audio/CREDITS.md</code>에 표기. 남은 질문: 더 긴 독송(30분 이상)·아라 협업·스님 녹음으로 늘릴지</li>
+  <li><strong>배경 음악</strong>: 아라 5곡(꽃잎점·아라홍연·밤의 노래·휘영청·사랑타령) 중 명상 공간에 맞는 편곡 버전을 넣을지</li>
+  <li><strong>공개 연등 운영</strong>: 신고 처리 담당자, 하루 검수 시간</li>
+  <li><strong>브랜드 톤</strong>: 단청(선명한 색) 쪽인가, 수묵(먹·여백) 쪽인가. 프로토타입은 둘의 중간(먹빛 바탕 + 단청 포인트)</li>
+  <li><strong>AI 상담 이름</strong>: "AI 부처님"으로 할지 (15.2 검토 의견: 부처님을 AI가 연기하면 신자에게 불경으로 받아들여질 위험, 대안 이름 제시)</li>
+  <li><strong>공양하기 받는 방식</strong>: 운영사 상품 결제 / 사찰 명의 보시 / 후원 플랫폼 중 무엇으로 할지, <strong>법률 검토</strong> (16)</li>
+  <li><strong>유료 회원 가격</strong>: 월 9,900원 안과 하루 상담 횟수</li>
+  <li><strong>유료 상품 가격·회원 혜택</strong>: 연등·기와·운세 값(17.5 안), 유료 회원에게 매달 연등 1개·운세 포함 같은 혜택을 줄지</li>
+  <li><strong>운세의 결</strong>: '재미로 보는 운세'로 할지, '새해 마음 길잡이'처럼 마음온 결에 맞게 풀지 (17.3)</li>
+</ol>
+
+<h2><span class="n">11</span>참고 서비스: 산사 (sansatemple.com)</h2>
+<p>"말없이 같이 앉아 있는 온라인 절." 마음온과 가장 가까운 서비스 (2026-10-30 확인).</p>
+<ul>
+  <li>3D 법당 실내(나무 기둥·창살, 정면에 탱화와 금빛 불상), 동자승 아바타로 여러 사람이 함께 앉음. 법당 하나에 서버 40여 개 × 100명 정원 (확인 당시 들어간 방은 정원 초과)</li>
+  <li>합장 · 절하기 · 염주 · 염불 듣기 · 함께 듣기 · 백그라운드 재생 · 장면 담기 · 초대 링크</li>
+  <li>염불: 김용배 「염불소리1」(공유마당, CC BY 4.0) / 불상 이미지: 국립중앙박물관 소장품</li>
+  <li>화면은 한국어만 확인됨</li>
+</ul>
+<div class="tbl"><table>
+  <tr><th></th><th>산사</th><th>마음온</th></tr>
+  <tr><td>공간</td><td>법당 안에 앉아 있기</td><td>불이문 → 연못길 → 고요당 → 연못을 <strong>걷는 경내</strong></td></tr>
+  <tr><td>함께하기</td><td>실시간 아바타</td><td>방문자 불빛 · 소원 연등 (조용한 함께)</td></tr>
+  <tr><td>쉼</td><td>염불 듣기</td><td><strong>연꽃 위 숨쉬기</strong>, <strong>시간대 하늘</strong></td></tr>
+  <tr><td>마음</td><td>—</td><td>길잡이 상담 (3단계)</td></tr>
+  <tr><td>언어</td><td>한국어</td><td><strong>처음부터 한/영</strong></td></tr>
+</table></div>
+<p><strong>가져올 것 (확정)</strong>: ① 공유마당 CC 염불 음원 ② 다른 방문자를 불빛으로 ③ 초대 링크·장면 담기 ④ 크고 멋진 부처님 (안정감)</p>
+<p><strong>마음온의 강점, 반드시 지킨다 (2026-10-30 사용자 확인)</strong></p>
+<ol>
+  <li><strong>연꽃 위에 앉아 숨쉬기</strong>: 가장 좋은 콘텐츠. 반드시 살린다</li>
+  <li><strong>시간대를 바꿀 수 있는 하늘</strong></li>
+  <li><strong>산책할 수 있는 경내</strong></li>
+  <li><strong>영어 사용자도 쓸 수 있음</strong></li>
+</ol>
+
+<h2><span class="n">14</span>정식 배포: 하루 100만 명 기준 (2026-10-30)</h2>
+<p>시제품(claude.ai 아티팩트)은 로그인한 조직 구성원끼리만 서로 보인다. 누구나 링크로 들어와 함께 걷게 하려면 자체 서버로 배포한다.</p>
+<h3>14.1 구성</h3>
+<div class="tbl"><table>
+  <tr><th>부분</th><th>서비스</th><th>하는 일</th></tr>
+  <tr><td>페이지·작은 파일</td><td>Cloudflare Pages</td><td>화면 코드·텍스처 (무료, 파일 하나 25MiB까지)</td></tr>
+  <tr><td>큰 파일</td><td>Cloudflare R2</td><td>부처님·오리 모델, 소리. <strong>내보내는 전송량 요금 없음</strong></td></tr>
+  <tr><td>실시간 방</td><td>Cloudflare Workers + <strong>Durable Objects</strong></td><td>방마다 작은 서버 하나. 위치를 모아 1초 5번 한 묶음으로 보냄</td></tr>
+  <tr><td>회원·결제·공양 기록</td><td>Cloudflare D1 또는 Supabase</td><td>유료 회원·결제 내역 (무료 이용자는 저장 안 함)</td></tr>
+  <tr><td>AI 상담</td><td>Claude API (서버를 거쳐 호출)</td><td>유료 회원만, 하루 횟수 제한</td></tr>
+</table></div>
+<h3>14.2 방: 하나에 108명</h3>
+<ul>
+  <li><strong>방 하나 정원 108명</strong>. 꽉 차면 새로 오는 사람은 같은 절의 다음 방으로 자동 배정. 친구는 초대 링크(방 이름이 붙은 주소)로 같은 방에.</li>
+  <li>화면: <strong>가까운 30명 정도는 오리</strong>, 나머지는 <strong>등불(빛 점)</strong>. 폰이 버티는 선. 108개의 등불이 경내에 떠 있는 모습 자체가 볼거리.</li>
+  <li>위치는 걸을 때만 1초 4번 보냄(가만히 있으면 0). 사람이 많을 땐 2번으로 낮춤.</li>
+  <li>한 사람이 받는 양 약 10KB/초(약 100kbps). 폰 데이터로 충분.</li>
+  <li>입구(방 배정) 서버는 여러 개로 나눠 한꺼번에 몰려도 막히지 않게. 출시 전 <strong>부하 시험</strong> 필수.</li>
+</ul>
+<h3>14.3 비용 (하루 100만 명 × 평균 15분, 2026-10-30 공식 요금표로 추정)</h3>
+<div class="tbl"><table>
+  <tr><th>항목</th><th>월 비용(추정)</th><th>근거</th></tr>
+  <tr><td>실시간 방 (Durable Objects)</td><td>약 $1,200 (약 170만 원)</td><td>월 $5 요금제 + 받는 메시지 20개=1건 요청, 100만 건당 $0.15 / 실행 100만 GB-s당 $12.50 / <strong>보내는 메시지 무료</strong></td></tr>
+  <tr><td>파일 전송 (R2·Pages)</td><td>약 $50~100</td><td>R2 전송량 무료, 읽기 요청 요금만</td></tr>
+  <tr><td>회원·결제 DB</td><td>약 $25~100</td><td>유료 회원 수에 따라</td></tr>
+  <tr><td>AI 상담</td><td>유료 회원 수에 비례, 회비에서 충당 (15.3)</td><td></td></tr>
+  <tr><td>도메인</td><td>연 1~3만 원</td><td></td></tr>
+  <tr><td><strong>합계 (AI 제외)</strong></td><td><strong>약 월 180~200만 원</strong></td><td>환율 1달러≈1,400원</td></tr>
+</table></div>
+<ul>
+  <li>같은 순간에 100만 명이 몰리는 행사(예: 부처님오신날)는 <strong>시간당 약 $100</strong> 수준. 비용보다 입구 분산·부하 시험이 관건.</li>
+  <li>비교: Supabase Realtime(무료 동시 200명, 유료 500명·메시지 100만당 $2.50)·Ably(무료 동시 200명, 100만당 $2.50)는 <strong>받는 사람마다 메시지를 세서</strong> 108명 방에선 비용이 급증. 쓰지 않는다.</li>
+</ul>
+<h3>14.4 비용을 줄이는 장치</h3>
+<ol>
+  <li><strong>3D 파일 압축(Draco)</strong>: 부처님 5.6MB·오리 3MB → 각 1MB 안팎. 한 사람이 받는 양 12MB → 약 4MB.</li>
+  <li>큰 파일은 R2에서, 브라우저·CDN 캐시를 길게(재방문자는 다시 받지 않음).</li>
+  <li>위치는 걸을 때만, 붐비면 횟수 절반.</li>
+  <li>방에 사람이 없으면 서버가 잠듦(Hibernation). 빈 방은 요금 0.</li>
+</ol>
+
+<h2><span class="n">15</span>유료 회원: AI 상담 (2026-10-30 결정)</h2>
+<h3>15.1 무엇을</h3>
+<ul>
+  <li><strong>유료 회원만</strong> 찻방에서 AI와 마음 이야기를 나눈다. 무료 방문자는 지금처럼 로그인 없이 모든 기본 체험.</li>
+  <li>답은 짧고 차분하게: 들어주기 → 부처님 가르침에서 한 줄 → 지금 할 수 있는 작은 것(호흡·108배·연등) 권유 (5.7).</li>
+  <li>경전 구절을 인용할 땐 출처(경전 이름)를 밝힌다.</li>
+</ul>
+<h3>15.2 이름: "AI 부처님" 검토 의견</h3>
+<ul>
+  <li class="warn">사용자 요청은 <strong>"AI 부처님"</strong>. 다만 5.7에서 "AI 스님"도 쓰지 않기로 했던 이유(종교 권위 사칭 오해)가 부처님에게는 더 크게 걸린다. 신자에게는 AI가 부처님을 <strong>연기</strong>하는 것으로 보여 불경으로 받아들여질 수 있고, "부처님이 이렇게 말씀하셨다"는 식의 답은 <strong>잘못된 가르침을 부처님 이름으로</strong> 퍼뜨릴 위험이 있다.</li>
+  <li>대안 이름(안): <strong>"부처님 말씀 길잡이"</strong>, <strong>"마음 길잡이"</strong>, "법문 길잡이". 부처님은 법당에 계시고, AI는 그 가르침을 <strong>전해 주는 안내자</strong>로.</li>
+  <li>어떤 이름이든: AI임을 항상 밝힘 · 의료·심리치료를 대신하지 않는다고 고지 · 위기 신호엔 109 / 1577-0199 (8-1).</li>
+  <li>최종 이름은 10-7에서 결정.</li>
+</ul>
+<h3>15.3 비용: 회원 한 명당 (Claude API 2026-10 요금)</h3>
+<p>가정: 상담 1회 = 10번 주고받기, 지침 2천 토큰(캐시 사용), 답 한 번 250자 남짓.</p>
+<div class="tbl"><table>
+  <tr><th>모델</th><th>요금 (100만 토큰당 입력/출력)</th><th>상담 1회</th><th>회원 1명 월 30회</th></tr>
+  <tr><td>Claude Opus 5.5 (가장 섬세)</td><td>$4 / $20</td><td>약 $0.13 (약 180원)</td><td>약 $4 (약 5,500원)</td></tr>
+  <tr><td>Claude Sonnet 5.5</td><td>$2 / $10</td><td>약 $0.07 (약 95원)</td><td>약 $2 (약 2,800원)</td></tr>
+  <tr><td>Claude Haiku 5.5 (가장 저렴)</td><td>$0.10 / $0.50</td><td>약 $0.006 (약 8원)</td><td>약 $0.2 (약 250원)</td></tr>
+</table></div>
+<ul>
+  <li>마음을 다루는 대화라 <strong>섬세함이 중요</strong>. Opus 5.5 또는 Sonnet 5.5 권장. 비용은 실제 대화로 시험해 확정.</li>
+  <li>회비 안: <strong>월 9,900원</strong> + 하루 상담 횟수 제한(예: 하루 5회). Opus로도 회원 1명당 남는 구조.</li>
+  <li>안전 장치: 위기 신호 감지 시 AI 답 대신 상담 전화 안내, 하루 횟수 제한, 남용 차단.</li>
+</ul>
+<h3>15.4 로그인·결제</h3>
+<ul>
+  <li>로그인: 카카오·구글 (유료 회원만).</li>
+  <li>결제: 웹 정기결제(토스페이먼츠·포트원 등 PG, 수수료 약 3% 안팎). 앱스토어로 팔면 수수료 15~30%라 <strong>처음엔 웹 결제</strong>.</li>
+  <li>해지는 한 번에, 남은 기간까지 이용.</li>
+</ul>
+
+<h2><span class="n">16</span>공양하기: 후원 (2026-10-30 결정)</h2>
+<h3>16.1 화면</h3>
+<ul>
+  <li>컨셉 보드처럼 <strong>금빛 [공양하기] 버튼</strong> (금 바탕 먹 글자). 법당 앞·향로 앞에서, 그리고 로고 메뉴에.</li>
+  <li>누르면: 금액(1,000 · 5,000 · 10,000원 · 직접 입력) → 결제(카카오페이·토스·카드).</li>
+  <li>공양하면 <strong>눈에 보이는 고마움</strong>: 향로에 향이 피어오르거나, 내 이름(또는 '익명')의 연등이 경내에 하루 동안 켜짐. 다른 방문자도 볼 수 있음(이름은 검수, 8-3).</li>
+  <li>8-7: "공양하면 복을 받는다" 같은 말 쓰지 않음. 공양 안 해도 체험은 똑같이.</li>
+</ul>
+<h3>16.2 받는 방식: <strong>출시 전 법률 검토 필수</strong></h3>
+<div class="tbl"><table>
+  <tr><th>방식</th><th>내용</th><th>주의</th></tr>
+  <tr><td>① 운영사 상품 결제</td><td>'연등 켜기'·'향 올리기'를 디지털 상품으로 판매</td><td>사업자등록·통신판매업 신고, 부가세. 가장 단순</td></tr>
+  <tr><td>② 사찰 명의 보시</td><td>제휴 사찰이 직접 받고, 마음온은 창구 역할</td><td>사찰 제휴 필요. 종교단체 고유 활동은 규정이 다를 수 있음</td></tr>
+  <tr><td>③ 후원 플랫폼</td><td>후원 서비스(정기·일시 후원) 연결</td><td>플랫폼 수수료</td></tr>
+</table></div>
+<ul>
+  <li class="warn">불특정 다수에게 <strong>'기부금'으로 모으면 「기부금품의 모집 및 사용에 관한 법률」</strong> 적용 대상일 수 있다 (일정 금액 이상 모집 시 등록 등). <strong>기부금 영수증</strong>(세금 공제)은 지정된 단체만 발급 가능.</li>
+  <li><strong>17의 연등 달기·기와쓰기가 바로 ①(디지털 공양 상품)</strong>이다. 그래서 처음엔 ①로 시작하고, 사찰 제휴가 되면 ②를 더하는 안을 권장. <strong>최종은 변호사·세무사 확인 후</strong> 결정 (10-8).</li>
+  <li>결제 대행(PG)마다 '기부·종교' 업종 심사가 있으니 신청 전에 업종 분류 확인.</li>
+</ul>
+
+<h2><span class="n">17</span>유료 상품: 연등 달기 · 기와쓰기 · 신년운세 · 띠별 운세 (2026-10-30 결정)</h2>
+<p>절에서 실제로 하는 일(연등 공양·기와 불사)을 온라인으로 옮긴 <strong>디지털 공양 상품</strong>. 전부 유료, 결제는 15.4와 같은 웹 결제. 기본 체험은 계속 무료(8-7).</p>
+<h3>17.1 연등 달기</h3>
+<ul>
+  <li>연등 색·모양 고르기(연꽃 연등 만들기 5.6 게임과 연결) → 소원·이름(또는 익명) 적기 → 결제 → <strong>경내에 내 연등이 켜짐</strong>.</li>
+  <li>걸어 둘 기간: 하루 / 한 달 / 부처님오신날까지 등. 밤 경내 연등 길에 모여 빛난다.</li>
+  <li>다른 방문자에게는 연등 빛과 (공개를 고른 경우) 소원 문장만. 금칙어·신고·검수 (8-3).</li>
+  <li><strong>이미지로 내려받기</strong>: 내 연등 + 소원 + 이름 + 날짜 + 마음온 낙관을 한 장의 그림(PNG)으로. 휴대폰 배경·SNS 공유용 크기(예: 1080×1350).</li>
+</ul>
+<h3>17.2 기와쓰기</h3>
+<ul>
+  <li>절 기와 불사처럼, <strong>기와 한 장에 소원을 붓글씨로</strong> 쓴다. 손가락으로 직접 쓰기 또는 글자를 입력하면 붓글씨 글꼴로.</li>
+  <li>결제 → 기와가 <strong>고요당 옆 '기와 마당'에 쌓이고</strong>, 나중엔 실제로 지붕에 올라가는 연출(달마다 한 줄씩 지붕이 채워짐).</li>
+  <li><strong>이미지로 내려받기</strong>: 먹빛 기와 위 내 글씨 + 날짜 + 마음온 낙관 (예: 1350×1080 가로).</li>
+  <li>실제 사찰과 제휴하면 '진짜 기와에 대신 써서 올려 드림'을 더 비싼 상품으로 (16.2 ②).</li>
+</ul>
+<h3>17.3 신년운세 · 띠별 운세</h3>
+<ul>
+  <li><strong>띠별 운세</strong>: 열두 띠별 올해·이달 운세. 띠만 고르면 됨.</li>
+  <li><strong>신년운세</strong>: 생년월일(선택: 태어난 시)을 넣으면 나만의 한 해 풀이.</li>
+  <li>글은 AI(Claude)가 정해진 틀로 쓰고 운영자가 띠별 원본을 미리 검수. 개인 풀이는 저렴한 모델(Haiku 5.5)로도 1건 1원 안팎 (15.3 요금 기준).</li>
+  <li>결: 겁주는 말·불길한 예언 없이, <strong>조심할 것 + 마음가짐 + 오늘 해 볼 작은 일(호흡·108배·연등)</strong>로 끝맺는다. 화면에 "재미로 보는 운세입니다" 고지.</li>
+  <li>생년월일은 풀이에만 쓰고 저장하지 않음(회원이 원하면 저장). 8-5.</li>
+  <li>참고: 운세는 불교 가르침이라기보다 민속이라, 이름을 '새해 마음 길잡이'처럼 풀지 정할 것 (10-11).</li>
+  <li><strong>이미지로 내려받기</strong>: 운세 카드 한 장 (공유용).</li>
+</ul>
+<h3>17.4 이미지 내려받기: 만드는 방법</h3>
+<ul>
+  <li>그림은 <strong>방문자 폰(브라우저)에서 바로 그림</strong>(canvas). 서버 비용 0, 기다림 없음.</li>
+  <li>붓글씨 글꼴·연등/기와 바탕 그림·낙관은 미리 만들어 둠 (디자인 세션, 브랜드 토큰).</li>
+  <li>결제 확인 뒤에만 내려받기 버튼이 열림. 산 기록은 회원이면 '내 공양함'에 남아 다시 받을 수 있음(비회원은 받은 그때만).</li>
+</ul>
+<h3>17.5 가격 안</h3>
+<div class="tbl"><table>
+  <tr><th>상품</th><th>안</th><th>참고</th></tr>
+  <tr><td>연등 달기 (한 달)</td><td>3,000원</td><td>부처님오신날까지 5,000원 등 기간별</td></tr>
+  <tr><td>기와쓰기</td><td>5,000원</td><td>실제 기와 대행(사찰 제휴)은 별도</td></tr>
+  <tr><td>띠별 운세</td><td>1,000원</td><td>유료 회원은 무료 안</td></tr>
+  <tr><td>신년운세</td><td>3,000원</td><td>유료 회원은 무료 안</td></tr>
+</table></div>
+<ul>
+  <li>결제 대행 수수료 약 3% 안팎. 이미지는 폰에서 만들어 추가 비용 거의 없음.</li>
+  <li>가격·회원 혜택은 10-10에서 결정.</li>
+</ul>
+
+</div>
+</body>
+</html>

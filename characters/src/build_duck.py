@@ -299,5 +299,5 @@ if RENDER:
 bpy.ops.object.select_all(action='DESELECT')
 for o in coll.objects:
     if o.name not in ('ground', 'key', 'fill', 'rim', 'cam', 'camTarget'): o.select_set(True)
-bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, 'maumon-duck.glb'), export_format='GLB', use_selection=True, export_apply=True, export_yup=True)
+bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, 'mindon-duck.glb'), export_format='GLB', use_selection=True, export_apply=True, export_yup=True)
 print('done', OUT)

@@ -32,19 +32,19 @@
 </head>
 <body>
 <main>
-  <div class="en">Maum On · for collaborators</div>
+  <div class="en">MindOn · for collaborators</div>
   <h1>마음온 작업자 안내</h1>
-  <p class="lead">마음온(Maum On)은 로그인 없이 들어와 경내를 걷고, 염불을 듣고, 합장하고, 108배를 하고, 연잎 위에서 숨을 고르는 온라인 명상 사찰입니다. 이 페이지는 캐릭터·브랜드 작업에 참여하는 분이 처음 읽는 안내문입니다. 모든 생김새의 기준은 <b>컨셉 보드 「심덕」</b>이고, 파일의 기준은 아래 저장소입니다.</p>
+  <p class="lead">마음온(MindOn)은 로그인 없이 들어와 경내를 걷고, 염불을 듣고, 합장하고, 108배를 하고, 연잎 위에서 숨을 고르는 온라인 명상 사찰입니다. 이 페이지는 캐릭터·브랜드 작업에 참여하는 분이 처음 읽는 안내문입니다. 모든 생김새의 기준은 <b>컨셉 보드 「심덕」</b>이고, 파일의 기준은 아래 저장소입니다.</p>
 
   <h2>1. 파일은 여기서 받습니다</h2>
   <div class="cards">
-    <div class="card"><b>에셋 저장소</b><p>GLB·로더·문서·렌더가 전부 있는 본진. 한 번 받아 두고 <code>git pull</code>로 갱신합니다.</p><a href="https://github.com/heropapa/maumon-assets">github.com/heropapa/maumon-assets</a></div>
-    <div class="card"><b>모델링 규격서</b><p>노드 이름·피벗·크기·생김새·용량·검수 체크리스트. 모델링 전에 반드시 읽습니다.</p><a href="spec.html">spec.html</a> · <a href="https://github.com/heropapa/maumon-assets/blob/main/docs/모델링_규격서.md">md 판</a></div>
+    <div class="card"><b>에셋 저장소</b><p>GLB·로더·문서·렌더가 전부 있는 본진. 한 번 받아 두고 <code>git pull</code>로 갱신합니다.</p><a href="https://github.com/heropapa/mindon">github.com/heropapa/mindon</a></div>
+    <div class="card"><b>모델링 규격서</b><p>노드 이름·피벗·크기·생김새·용량·검수 체크리스트. 모델링 전에 반드시 읽습니다.</p><a href="spec.html">spec.html</a> · <a href="https://github.com/heropapa/mindon/blob/main/docs/모델링_규격서.md">md 판</a></div>
     <div class="card"><b>캐릭터 시트·뷰어</b><p>심덕이 GLB를 브라우저에서 여섯 동작으로 돌려 보고, 도반 친구들 렌더를 봅니다.</p><a href="characters.html">characters.html</a></div>
-    <div class="card"><b>디자인 시스템</b><p>색 토큰, 로고 규칙, 경내 아트 디렉션, 화면 위 패널 규칙.</p><a href="https://github.com/heropapa/maumon-assets/blob/main/docs/디자인시스템.md">디자인시스템.md</a> · <a href="https://github.com/heropapa/maumon-assets/blob/main/docs/경내_아트디렉션.md">경내 아트 디렉션</a></div>
+    <div class="card"><b>디자인 시스템</b><p>색 토큰, 로고 규칙, 경내 아트 디렉션, 화면 위 패널 규칙.</p><a href="https://github.com/heropapa/mindon/blob/main/docs/디자인시스템.md">디자인시스템.md</a> · <a href="https://github.com/heropapa/mindon/blob/main/docs/경내_아트디렉션.md">경내 아트 디렉션</a></div>
   </div>
-  <pre><code>git clone https://github.com/heropapa/maumon-assets
-cd maumon-assets
+  <pre><code>git clone https://github.com/heropapa/mindon
+cd mindon
 python -m http.server 8000      # 그 다음 브라우저에서 http://localhost:8000/loader/viewer.html</code></pre>
   <p class="lead">저장소가 비공개인 동안은 GitHub 아이디를 운영자에게 알려 협업자로 초대받아야 받을 수 있습니다.</p>
 
@@ -59,7 +59,7 @@ python -m http.server 8000      # 그 다음 브라우저에서 http://localhost
     <tr><td><code>turtle</code></td><td>거북이 도반</td><td>초록 몸, 연두 입가, 걸망 대신 등딱지</td></tr>
     <tr><td><code>sparrow</code></td><td>참새 도반</td><td>갈색 몸, 크림 턱, 주황 부리, 가는 다리</td></tr>
   </table></div>
-  <p>파일은 <code>characters/maumon-&lt;species&gt;.glb</code>(원본)과 <code>-lite.glb</code>(다른 방문자용, 정점 약 2만)입니다. 모두 같은 뼈대라 로더 하나로 움직입니다.</p>
+  <p>파일은 <code>characters/mindon-&lt;species&gt;.glb</code>(원본)과 <code>-lite.glb</code>(다른 방문자용, 정점 약 2만)입니다. 모두 같은 뼈대라 로더 하나로 움직입니다.</p>
 
   <h2>3. 작업할 때 꼭 지킬 것</h2>
   <ul>
@@ -74,7 +74,7 @@ python -m http.server 8000      # 그 다음 브라우저에서 http://localhost
 
   <h2>4. 납품 방법</h2>
   <ol>
-    <li>파일 이름을 규칙대로 맞춥니다: <code>characters/maumon-&lt;species&gt;.glb</code>, <code>-lite.glb</code>, <code>characters/renders/&lt;species&gt;_front|side|back|hapjang.png</code>(640×640, 한지색 바탕), 소스는 <code>characters/src/</code>.</li>
+    <li>파일 이름을 규칙대로 맞춥니다: <code>characters/mindon-&lt;species&gt;.glb</code>, <code>-lite.glb</code>, <code>characters/renders/&lt;species&gt;_front|side|back|hapjang.png</code>(640×640, 한지색 바탕), 소스는 <code>characters/src/</code>.</li>
     <li><code>loader/viewer.html</code>로 여섯 동작을 모두 눌러 확인합니다. 큰절에서 몸이 안 숙여지면 메시가 torso 아래에 없는 것, 합장에서 손이 안 모이면 wing 피벗이 다른 것입니다.</li>
     <li>브랜치를 만들어 커밋하고 PR을 엽니다. PR 설명에 바꾼 점과 렌더 4장을 넣습니다.</li>
     <li>검수는 규격서 10장의 체크리스트로 합니다. 통과하면 main에 합쳐집니다.</li>
@@ -95,7 +95,7 @@ python -m http.server 8000      # 그 다음 브라우저에서 http://localhost
 &lt;script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"&gt;&lt;/script&gt;
 &lt;script src="loader/duck-glb.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  const duck = new MaumDuckGLB('characters/maumon-simdeok.glb', d =&gt; scene.add(d.root));
+  const duck = new MaumDuckGLB('characters/mindon-simdeok.glb', d =&gt; scene.add(d.root));
   duck.setPose('hapjang', false, () =&gt; duck.setPose('stand'));   // stand walk sit breathe hapjang bow
   // 매 프레임: duck.update(dt)
 &lt;/script&gt;</code></pre>

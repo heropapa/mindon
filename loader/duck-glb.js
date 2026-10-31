@@ -1,5 +1,5 @@
 /* 마음온 도반 오리 — Blender GLB 버전 로더 (three.js r128 + GLTFLoader)
- * 사용: const duck = new MaumDuckGLB('maumon-duck.glb' | ArrayBuffer | base64문자열, d => scene.add(d.root)); duck.setPose('hapjang'); duck.update(dt)
+ * 사용: const duck = new MaumDuckGLB('mindon-duck.glb' | ArrayBuffer | base64문자열, d => scene.add(d.root)); duck.setPose('hapjang'); duck.update(dt)
  * API는 duck.js(MaumDuck)와 같다: setPose(name, instant, onDone) / update(dt) / root / done
  * GLB 노드 이름: hips, torso, neck, wingL, wingR, legL, legR, eyeL, eyeR (Blender 계층 그대로)
  * 좌표: Blender(Z위, 얼굴 +Y) → glTF(Y위, 얼굴 -Z). root를 Y축 180° 돌려 duck.js처럼 +z를 보게 한다.
@@ -86,5 +86,5 @@
     this.cur = p; this.apply(p, this.t);
   };
 
-  global.MaumDuckGLB = MaumDuckGLB;
+  global.MaumDuckGLB = MaumDuckGLB; global.MindOnDuck = MaumDuckGLB; // MindOn 이름 별칭
 })(window);

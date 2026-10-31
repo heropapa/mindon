@@ -39,10 +39,10 @@
 
 <header>
   <div>
-    <div class="en">Maum On · Companion</div>
+    <div class="en">MindOn · Companion</div>
     <h1>심덕이와 도반 친구들</h1>
     <p>경내를 걷는 "나"의 아바타 <b>심덕이</b>. 컨셉 보드 「심덕」의 기본 법복 오리를 Blender로 모델링해 GLB로 뽑았다. 볼이 도톰한 크림색 머리와 큰 눈, 꽁지깃 세 가닥, 회색 승복에 V자 깃과 흰 동정, 넓은 한복 소매, 어깨에서 사선으로 내려오는 가방끈, 옆구리 납작 매듭, 등에 걸망. 뷰어는 그 GLB를 three.js로 움직인다.</p>
-    <p class="note" id="src">Blender 5.2에서 만든 maumon-duck.glb · 동작은 duck-glb.js (duck.js와 같은 API)</p>
+    <p class="note" id="src">Blender 5.2에서 만든 mindon-duck.glb · 동작은 duck-glb.js (duck.js와 같은 API)</p>
   </div>
   <div class="note">키 1.56 · 머리 지름 0.88 · 정면 +z</div>
 </header>
@@ -163,7 +163,7 @@
     <section>
       <h2>쓰는 법</h2>
       <div class="tbl"><table>
-        <tr><td><code>const duck = new MaumDuckGLB('maumon-duck.glb', d =&gt; scene.add(d.root)); // Blender GLB</code> · 도형 버전: <code>new MaumDuck()</code></td></tr>
+        <tr><td><code>const duck = new MaumDuckGLB('mindon-duck.glb', d =&gt; scene.add(d.root)); // Blender GLB</code> · 도형 버전: <code>new MaumDuck()</code></td></tr>
         <tr><td><code>duck.setPose('stand' | 'walk' | 'sit' | 'breathe' | 'hapjang' | 'bow', instant?, onDone?);</code> hapjang은 한 번 재생 후 멈추고 <code>onDone</code>을 부른다. bow는 반복.</td></tr>
         <tr><td><code>duck.update(dt); // 매 프레임, 초 단위</code></td></tr>
         <tr><td><code>duck.root.position / rotation.y</code> 로 경내에서 이동·회전. 3인칭 카메라는 뒤 2.6, 위 1.9에서 (0, 1.0, 0)을 본다.</td></tr>
@@ -400,7 +400,7 @@
 </script>
 <script>
 /* 마음온 도반 오리 — Blender GLB 버전 로더 (three.js r128 + GLTFLoader)
- * 사용: const duck = new MaumDuckGLB('maumon-duck.glb' | ArrayBuffer | base64문자열, d => scene.add(d.root)); duck.setPose('hapjang'); duck.update(dt)
+ * 사용: const duck = new MaumDuckGLB('mindon-duck.glb' | ArrayBuffer | base64문자열, d => scene.add(d.root)); duck.setPose('hapjang'); duck.update(dt)
  * API는 duck.js(MaumDuck)와 같다: setPose(name, instant, onDone) / update(dt) / root / done
  * GLB 노드 이름: hips, torso, neck, wingL, wingR, legL, legR, eyeL, eyeR (Blender 계층 그대로)
  * 좌표: Blender(Z위, 얼굴 +Y) → glTF(Y위, 얼굴 -Z). root를 Y축 180° 돌려 duck.js처럼 +z를 보게 한다.
@@ -518,7 +518,7 @@
   const fill = new THREE.DirectionalLight(0xffffff, 0.22); fill.position.set(-3, 1.5, 2); scene.add(fill); scene.add(rim);
 
   // Blender로 만든 GLB가 기본. 못 불러오면 도형 조합 버전으로 대체
-  let duck = window.duck = new MaumDuckGLB(window.DUCK_GLB_B64 || 'maumon-duck.glb', d => { scene.add(d.root); });
+  let duck = window.duck = new MaumDuckGLB(window.DUCK_GLB_B64 || 'mindon-duck.glb', d => { scene.add(d.root); });
   setTimeout(() => { if (!duck.ready) { duck = window.duck = new MaumDuck(); scene.add(duck.root); document.getElementById('src').textContent = 'GLB를 못 불러와 도형 조합 버전을 보여줍니다'; } }, 8000);
 
   // 카메라: 수동 궤도
