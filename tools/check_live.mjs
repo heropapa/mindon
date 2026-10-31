@@ -1,5 +1,5 @@
 // 배포된 마음온이 제대로 도는지 확인: 화면 파일들 + 함께 있기(/ws) 두 명 접속
-//   node 마음온/tools/check_live.mjs https://maumon.<계정>.workers.dev
+//   node tools/check_live.mjs https://maumon.<계정>.workers.dev
 const base = (process.argv[2] || '').replace(/\/$/, '');
 if (!/^https?:\/\//.test(base)) { console.error('주소를 주세요: node check_live.mjs https://...'); process.exit(2); }
 let bad = 0;

@@ -1,5 +1,5 @@
 # 마음온 — 화면 파일(dist/) + '함께 있기' 실시간 방을 Worker 하나로 배포
-#   bash 마음온/tools/deploy.sh   (빌드 + 배포 한 번에, 토큰은 CLOUDFLARE_API_TOKEN)
+#   bash tools/deploy.sh   (빌드 + 배포 한 번에, 토큰은 CLOUDFLARE_API_TOKEN)
 name = "maumon"
 main = "src/index.js"
 compatibility_date = "2026-10-01"
