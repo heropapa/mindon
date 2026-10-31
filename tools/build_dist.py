@@ -1,7 +1,7 @@
 """마음온 배포 폴더 만들기 — prototype/ → dist/ (Cloudflare Pages에 그대로 올림).
 
 prototype/index.html 은 아티팩트 형식(doctype·head 없음)이라 여기서 감싼다.
-  python3 마음온/tools/build_dist.py --site https://mindon.link
+  python3 tools/build_dist.py --site https://mindon.link
 --site 는 공유 미리보기(og:image)에 쓸 실제 주소. 모르면 비워 두고 나중에 다시 만든다.
 """
 import argparse
@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "prototype"
 DIST = ROOT / "dist"
 
-COPY_DIRS = ["audio", "avatar", "buddha", "img"]
+COPY_DIRS = ["audio", "avatar", "buddha", "img", "props"]
 # three.js 와 로더는 CDN 대신 우리 서버에서 (CDN 이 느리거나 막혀도 뜨게 — 아티팩트는 그대로 CDN)
 VENDOR = ROOT / "vendor"
 CDN_TO_LOCAL = {

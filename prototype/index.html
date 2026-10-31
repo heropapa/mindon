@@ -146,6 +146,7 @@
   }
   .act svg { width: 24px; height: 24px; position: relative; }
   .act span { position: relative; text-align: center; }
+  .act span small { display: block; font-size: 10px; font-weight: 400; opacity: 0.75; white-space: nowrap; }   /* 절하기 고르기: 걸리는 시간 */
   .act.main svg, .act.on svg, .act.on span { color: var(--gold); }
   .act .fill { position: absolute; inset: 0; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); opacity: 0.3; }
   .count { align-self: flex-end; width: 168px; display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; }
@@ -201,6 +202,9 @@
     transition: opacity 1.2s ease;
   }
   #gate.leaving { opacity: 0; pointer-events: none; }
+  /* 입장 음악 켜고 끄기 버튼 */
+  .gate-snd { position: absolute; top: calc(14px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
+
   .gate-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; max-width: 420px; margin: auto; }
   .hyeonpan {
     /* 현판: 검은 판 위 금빛 글씨, 단청 테두리 */
@@ -393,9 +397,10 @@
 <!-- 하단: 장소 고르기(펼침) · 진행 카운트 · 조이스틱 · 행동 바 -->
 <div class="bottom" id="bottom" hidden>
   <nav class="places-pop pnl" id="placesPop" hidden aria-label="장소"></nav>
-  <section class="count pnl" id="bowCount" hidden aria-label="108배">
-    <div class="n"><span id="bowN">0</span> / 108</div>
+  <section class="count pnl" id="bowCount" hidden aria-label="절하기 · Bows">
+    <div class="n"><span id="bowN">0</span> / <span id="bowG">108</span></div>
     <div class="track"><i id="bowBar"></i></div>
+    <small id="bowLeft"></small>
     <small id="bowTotal"></small>
   </section>
   <div class="joy" id="joy" hidden aria-hidden="true"><i id="joyKnob"></i><button class="joy-grip" id="joyGrip" type="button" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button></div>
@@ -404,6 +409,7 @@
 
 <!-- 입장 -->
 <div id="gate">
+  <button class="round pnl gate-snd" id="gateSnd" type="button" aria-pressed="false" aria-label="입장 음악 켜고 끄기 · Intro music on/off"></button>
   <div class="gate-inner">
     <h1 class="gate-name">마음온</h1>
     <p class="gate-tag" data-i="tagline"></p>
@@ -730,18 +736,20 @@ const STR = {
     proto: '프로토타입 · 0단계 그레이박스',
     place: { gate: '불이문', path: '연못길', hall: '고요당', pond: '연못', lantern: '연등 마당', tea: '찻방' },
     soon: '준비 중', guide: '안내 따라 걷기', guideStop: '안내 멈추기',
-    places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '108배', sit: '명상', min: '분',
+    places: '장소', hap: '합장', hapHold: '길게 누르면 합장합니다', bow: '절하기', sit: '명상', min: '분',
     leafMoved: '다른 분과 같은 연잎이라 옆자리로 옮겨 앉았어요', leavesFull: '연잎이 모두 차서 물가에 앉았어요',
     pondLook: '화면을 끌면 둘러보고, 두 손가락으로 가까이·멀리 볼 수 있어요',
     stand: '일어나기', view: '보기', leave: '나가기', menu: '메뉴', quiet: '조용한 시간', recAll: n => `모두 ${n}배`,
-    chants: { yeongin: '관음정근', yeombul: '염불', silsang: '실상사', seonun: '선운사', yebul: '저녁예불' }, chantSrc: '염불: ',
-    bowTitle: '108배', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
-    bowHint: '시작을 누르면 천천히 108번 절합니다. 끝나면 죽비를 세 번 칩니다. 화면을 끌면 둘러볼 수 있어요.',
+    chants: { yeongin: '관음정근' }, chantSrc: '염불: ',
+    bowTitle: '절하기', bowStart: '시작', bowPause: '잠시 멈춤', bowResume: '이어서',
+    bowHint: '108배·3000배·1만배 중에 고르면 천천히 절합니다. 절마다 죽비가 한 번, 다 마치면 세 번 울려요. 화면을 꺼도 이어집니다.',
+    bowGoal: n => (n >= 10000 ? `${n / 10000}만배` : `${n}배`),
+    bowDur: sec => { const m = Math.round(sec / 60); if (m < 60) return `약 ${Math.max(1, m)}분`; const h = Math.floor(m / 60), r = Math.round((m % 60) / 10) * 10; return r ? `약 ${h}시간 ${r}분` : `약 ${h}시간`; },
+    bowLeft: d => `남은 시간 ${d}`,
     findSeatShort: '빈 방석 가까이 가 보세요',
-    bowCredit: '목탁 소리: ',
-    findSeat: '빈 방석 가까이 가면 108배를 할 수 있어요',
+    findSeat: '빈 방석 가까이 가면 절할 수 있어요',
     bowToday: (t, a) => `오늘 ${t}배 · 모두 ${a}배`,
-    bowDone: '108배를 마쳤습니다. 수고하셨습니다.',
+    bowDone: g => `${g}를 마쳤습니다. 수고하셨습니다.`,
     medStop: '그만하기', medTitle: '연잎 명상', medDesc: '들숨 4초, 멈춤 4초, 날숨 6초. 시간을 고르면 시작합니다.',
     inhale: '들이쉬고', holdB: '멈추고', exhale: '내쉬고',
     medLeft: s => `남은 시간 ${s}`, medDone: m => `${m}분 동안 숨을 골랐습니다.`,
@@ -769,18 +777,20 @@ const STR = {
     proto: 'Prototype · stage 0 graybox',
     place: { gate: 'Gate of Not-Two', path: 'Pond Path', hall: 'Hall of Stillness', pond: 'Lotus Pond', lantern: 'Lantern Court', tea: 'Tea Room' },
     soon: 'soon', guide: 'Guided walk', guideStop: 'Stop guide',
-    places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: '108 bows', sit: 'Meditate', min: 'min',
+    places: 'Places', hap: 'Palms', hapHold: 'Press and hold to join palms', bow: 'Bow', sit: 'Meditate', min: 'min',
     leafMoved: 'Someone took this leaf at the same moment — you moved to the next one', leavesFull: 'All lotus leaves are taken — you are sitting by the water',
     pondLook: 'Drag to look around · pinch or scroll to move closer or farther',
     stand: 'Stand up', view: 'View', leave: 'Leave', menu: 'Menu', quiet: 'Quiet time', recAll: n => `${n} bows in all`,
-    chants: { yeongin: 'Gwaneum', yeombul: 'Chant', silsang: 'Silsangsa', seonun: 'Seonunsa', yebul: 'Evening' }, chantSrc: 'Chant: ',
-    bowTitle: '108 bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
-    bowHint: 'Press Begin to make 108 slow bows. Three claps of the jukbi mark the end. Drag to look around.',
+    chants: { yeongin: 'Gwaneum' }, chantSrc: 'Chant: ',
+    bowTitle: 'Bows', bowStart: 'Begin', bowPause: 'Pause', bowResume: 'Resume',
+    bowHint: 'Pick 108, 3,000 or 10,000 bows. The jukbi claps once for each bow and three times at the end. It keeps going with the screen off.',
+    bowGoal: n => `${n.toLocaleString('en-US')} bows`,
+    bowDur: sec => { const m = Math.round(sec / 60); if (m < 60) return `about ${Math.max(1, m)} min`; const h = Math.floor(m / 60), r = Math.round((m % 60) / 10) * 10; return r ? `about ${h} h ${r} min` : `about ${h} h`; },
+    bowLeft: d => `${d} left`,
     findSeatShort: 'Walk up to an empty cushion',
-    bowCredit: 'Moktak: ',
-    findSeat: 'Walk up to an empty cushion to begin 108 bows',
+    findSeat: 'Walk up to an empty cushion to bow',
     bowToday: (t, a) => `${t} today · ${a} in all`,
-    bowDone: 'You finished 108 bows. Rest a moment.',
+    bowDone: g => `You finished ${g}. Rest a moment.`,
     medStop: 'End', medTitle: 'Lotus leaf breathing', medDesc: 'In for 4, hold for 4, out for 6. Pick a length to begin.',
     inhale: 'Breathe in', holdB: 'Hold', exhale: 'Breathe out',
     medLeft: s => `${s} left`, medDone: m => `You breathed quietly for ${m} min.`,
@@ -838,14 +848,9 @@ function day() { return rec.days[today()] || (rec.days[today()] = { bows: 0, med
 function saveRec() { try { localStorage.setItem(KEY, JSON.stringify(rec)); } catch (e) { /* 저장 불가 환경 */ } }
 
 /* ───────────── 녹음 음원 (출처 표기 필수 — CREDITS.md) ───────────── */
-const REC = {
-  moktak: { file: 'audio/moktak-rhythm.mp3', credit: '「전통사물_목탁_ver.2_치다_연속_중간」 · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
+const REC = {   // 염불은 관음정근 하나만 (2026-10-31 본부장 '관음정근만 냅두고 다 빼자')
   // 기본 염불 — 음반 녹음이라 공유 저작물이 아님: 영인스님 측 허락을 받아 씀 (2026-10-31 본부장 확인)
   yeongin: { file: 'audio/yeongin-gwaneum.mp3', credit: '영인스님 「관세음보살정근」 · 음반 「영인스님 염불 따라하기 3」(2010) · 허락을 받아 사용' },
-  yeombul: { file: 'audio/yeombul-kimyongbae.mp3', credit: '김용배 「염불소리1」 · 한국저작권위원회 공유마당 · CC BY' },
-  silsang: { file: 'audio/silsangsa-yeombul-moktak.mp3', credit: '「산_내변산 실상사_염불과 목탁, 새와 매미」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
-  seonun: { file: 'audio/seonunsa-yeombul-spring.mp3', credit: '「산_선운산 선운사_새, 샘물, 염불, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
-  yebul: { file: 'audio/seonunsa-evening-bell.mp3', credit: '「산_선운산 선운사_저녁예불, 새소리, 범종, 목어, 운판, 목탁」 · JICA · (재)전주정보문화산업진흥원 · 공공누리 제1유형' },
 };
 
 /* ───────────── 소리 크기 (기기에 기억) ───────────── */
@@ -969,13 +974,13 @@ const Snd = {
   shots: {},
   loadShots() {
     if (!this.ctx || this.shotsLoading) return; this.shotsLoading = true;
-    [['moktak', 'audio/moktak-strike.mp3'], ['jukbi1', 'audio/jukbi-1.mp3'], ['jukbi3', 'audio/jukbi-3.mp3']].forEach(([k, f]) =>
+    [['jukbi1', 'audio/jukbi-1.mp3?v=1031b'], ['jukbi3', 'audio/jukbi-3.mp3?v=1031b']].forEach(([k, f]) =>
       fetch(f).then(r => r.arrayBuffer()).then(b => this.ctx.decodeAudioData(b)).then(buf => { this.shots[k] = buf; }).catch(() => {}));
   },
   shot(k, gain) {
     if (!this.ok()) return;
     const buf = this.shots[k];
-    if (!buf) { if (k === 'moktak') this.moktak(true); else this.bell(false); return; } // 아직 못 받았으면 합성음으로
+    if (!buf) { this.bell(false); return; } // 아직 못 받았으면 종으로 대신
     const src = this.ctx.createBufferSource(), g = this.ctx.createGain(); g.gain.value = gain || 0.9;
     src.buffer = buf; src.connect(g); g.connect(this.fx); src.start();
   },
@@ -986,13 +991,14 @@ const Snd = {
 const AMB_FILES = {
   birds: 'audio/nature-birds.mp3', cicada: 'audio/nature-cicada.mp3', sumNight: 'audio/nature-summer-night.mp3',
   autNight: 'audio/nature-autumn-night.mp3', wind: 'audio/nature-winter-wind.mp3', stream: 'audio/nature-stream.mp3',
+  gate: 'audio/gate-chime.mp3',                     // 불이문 풍경 (본부장 제공 녹음, 45초 고리)
   chant: REC[VOL.chantTrack].file,
 };
 // [새, 매미, 여름밤, 가을밤, 겨울바람]
 const AMB_MIX = {
   spring: { dawn: [0.9, 0, 0, 0, 0], day: [1, 0, 0, 0, 0], dusk: [0.5, 0, 0.35, 0, 0], night: [0, 0, 0.7, 0, 0] },
   summer: { dawn: [0.6, 0.3, 0, 0, 0], day: [0.3, 0.85, 0, 0, 0], dusk: [0.2, 0.4, 0.5, 0, 0], night: [0, 0, 1, 0, 0] },
-  autumn: { dawn: [0.7, 0, 0, 0, 0.15], day: [0.7, 0, 0, 0, 0.2], dusk: [0.3, 0, 0, 0.6, 0.15], night: [0, 0, 0, 1, 0.1] },
+  autumn: { dawn: [0.7, 0, 0, 0, 0.04], day: [0.7, 0, 0, 0, 0.05], dusk: [0.3, 0, 0, 0.6, 0.04], night: [0, 0, 0, 1, 0.03] },   // 가을 바람은 1/4로 (2026-10-31 본부장 '바람 소리가 너무 심해')
   winter: { dawn: [0.15, 0, 0, 0, 0.7], day: [0.2, 0, 0, 0, 0.8], dusk: [0, 0, 0, 0, 0.75], night: [0, 0, 0, 0, 0.6] },
 };
 const Amb = {
@@ -1057,6 +1063,9 @@ const Amb = {
     const dp = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z);
     // 연못은 고인 물이라 잔잔하게: 물가 가까이(10m 안)에서만 살짝 (2026-10-30 사용자 '물소리가 크지 않아')
     this.set('stream', Math.max(0, Math.min(1, 1 - (dp - POND_R) / 10)) * (season === 'winter' ? 0.08 : 0.22) * indoor);
+    // 불이문 풍경: 문(z 30)에서 30m 안, 가까울수록 크게 (예전 합성 풍경 대신 — 2026-10-31 본부장 녹음)
+    const dg = Math.hypot(S.pos.x, S.pos.z - 30);
+    this.set('gate', Math.pow(Math.max(0, 1 - dg / 30), 1.3) * (inHallBox(S.pos) ? 0 : 1));
     // 염불: 법당 안에선 가득, 밖에선 문에서 멀어질수록 작아짐
     const dh = Math.hypot(S.pos.x, S.pos.z - HALL.front);
     let ch = inHallBox(S.pos) ? 1 : Math.pow(Math.max(0, 1 - dh / 34), 1.6);
@@ -1112,6 +1121,46 @@ const BG = {
   },
 };
 document.addEventListener('visibilitychange', () => { if (document.hidden) BG.hide(); else BG.show(); });
+
+/* ───────────── 입장 화면 음악 (2026-10-31 본부장 제공 '인트로배경음(계속반복)') ─────────────
+   입장 화면에서 반복. 브라우저는 화면을 한 번 누르기 전엔 소리를 막아서, 바로 못 틀면 처음 누를 때 틂(introKick).
+   '마음 켜기'를 누르면 4초 동안 줄어들며 경내 소리로 넘어가고, '나가기'로 돌아오면 다시 틂. */
+const Intro = {
+  el: null, g: null, stopT: 0,
+  want: true,                                        // 열 때마다 켜짐이 기본 (끈 것을 기억하지 않음 — 2026-10-31 본부장 '기본으로 꺼져 있어?')
+  playing() { return !!(this.el && !this.el.paused); },
+  play() {
+    if (entered || !this.want) return null;
+    if (!this.el) {
+      this.el = new Audio('audio/intro-loop.mp3'); this.el.loop = true; this.el.volume = 0.8;
+      ['playing', 'pause'].forEach(t => this.el.addEventListener(t, () => this.ui()));
+    }
+    clearTimeout(this.stopT);
+    if (this.g && Snd.ctx) { const t = Snd.ctx.currentTime; this.g.gain.cancelScheduledValues(t); this.g.gain.setValueAtTime(1, t); }
+    else this.el.volume = 0.8;
+    const p = this.el.play(); this.ui();
+    if (p && p.then) p.then(() => this.ui(), () => this.ui());
+    return p;
+  },
+  toggle() {                                         // 입장 화면 오른쪽 위 소리 버튼
+    if (this.want) { this.want = false; if (this.el) this.el.pause(); }
+    else { this.want = true; const p = this.play(); if (p && p.catch) p.catch(() => {}); }
+    this.ui();
+  },
+  ui() {
+    const b = document.getElementById('gateSnd'); if (!b) return;
+    // 켜 둠(나오는 중이거나, 브라우저가 막아 첫 터치를 기다리는 중) = 켜짐 그림, 끔 = 꺼짐 그림. 안내 글자는 없음 (본부장 '그런 거 없이도')
+    const on = this.want; b.innerHTML = svg(on ? 'spk' : 'spkOff'); b.setAttribute('aria-pressed', String(on));
+  },
+  fadeOut() {
+    if (!this.el || this.el.paused) return;
+    // 아이폰은 요소 볼륨을 못 바꿔서 Web Audio 로 묶어 줄임 (입장 버튼을 누르는 순간 소리 장치가 생김)
+    if (Snd.ctx && !this.g) { try { const src = Snd.ctx.createMediaElementSource(this.el); this.g = Snd.ctx.createGain(); src.connect(this.g); this.g.connect(Snd.ctx.destination); } catch (e) { /* 이미 묶임 */ } }
+    if (this.g) { const t = Snd.ctx.currentTime; this.g.gain.cancelScheduledValues(t); this.g.gain.setValueAtTime(1, t); this.g.gain.linearRampToValueAtTime(0, t + 4); }
+    else { const el = this.el, v0 = el.volume, t0 = performance.now(); const step = () => { const k = Math.min(1, (performance.now() - t0) / 4000); el.volume = v0 * (1 - k); if (k < 1 && !el.paused) requestAnimationFrame(step); }; step(); }
+    clearTimeout(this.stopT); this.stopT = setTimeout(() => { if (entered && this.el) this.el.pause(); }, 4300);
+  },
+};
 
 /* ───────────── 3D 경내 ───────────── */
 const canvas = document.getElementById('scene');
@@ -1293,6 +1342,17 @@ const eaveLamp = (x, y, z, parent) => {
 };
 [-0.8, -0.4, 0.4, 0.8].forEach(k => eaveLamp(k * H.half, FL + H.height + 0.1, H.front + 2.2, hall));
 [-3, 3].forEach(x => eaveLamp(x, 3.9, 0.9, gate)); // 불이문 처마 등불
+// 불이문 처마 풍경 (2026-10-31 디자인 세션 props/mindon-pungyeong.glb — 본부장 '풍경 소리가 나니 움직이는 풍경이 있어야')
+// 처마 네 귀 밑에 걸고(맨 위 고리가 피벗) 바람에 은은히 흔들림 — 종은 느리게 조금, 물고기 바람판은 빠르게 더 크게. 소리는 gate-chime.mp3
+const PUNG = [];
+if (THREE.GLTFLoader) maumGLTF.newLoader().load('props/mindon-pungyeong.gltf.json', g => {
+  g.scene.traverse(o => { if (o.isMesh) { o.castShadow = true; if (o.material && o.material.metalness > 0.5) o.material.metalness = 0.45; } }); // 환경 반사가 없어 금속이 검게 보이지 않게
+  // 양쪽 앞 귀에 둘만 (본부장 '양쪽 두 개, 둘이 안 겹치게') — 박자(ph)와 빠르기(sp)를 달리해 같이 흔들리는 일이 없게
+  [[-3.7, 1.15, 0, 1], [3.7, 1.15, 2.9, 1.17]].forEach(([x, z, ph, sp], i) => {
+    const r = i === 0 ? g.scene : g.scene.clone(true); r.position.set(x, 4.9, z); r.scale.setScalar(1.35); gate.add(r);   // 멀리서도 보이게 조금 크게
+    PUNG.push({ bell: r.getObjectByName('pung_bell'), fish: r.getObjectByName('pung_fish'), ph, sp });
+  });
+}, undefined, () => {});
 const hp = plaque('고요당', 'HALL OF STILLNESS', 7.2, 2.4); hp.position.set(0, FL + H.height - 1.3, H.front + 0.2); hall.add(hp); plaques.push(hp);
 // 좌복: 11줄 × 10열 (2026-10-30 더 많이)
 const CUSH = M(0x6b7a94), CUSH_EDGE = M(0x515d74); // 아트 디렉션 cushion
@@ -1582,13 +1642,13 @@ function applyTod() {
 const S = {
   pos: new THREE.Vector3(0, 0, 40), yaw: 0, pitch: 0.02, eye: 1.6, zoom: 1,
   target: null, queue: [], speed: 2.4, mode: 'walk', guided: false, pause: 0,
-  bow: 0, bowT: -1, done108: 0, zone: 'gate', userLook: 0, autoBow: false, bowWait: 0, nearCushion: -1, seat: -1,
+  bow: 0, bowT: -1, done108: 0, zone: 'gate', userLook: 0, bowGoal: 0, bowRun: null, nearCushion: -1, seat: -1,
 };
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 // 3인칭: 나 = 도반 오리. face 는 오리가 바라보는 방향(카메라 yaw 와 같은 규칙: 앞 = (-sin, -cos))
 // 오리 = Blender GLB(디자인 세션). 받기 전·못 받으면 도형 오리(duck.js)로 대신함. root 는 바깥 묶음이라 돌려도 안쪽 180°가 유지됨
 // 모델을 바꾸면 AV 를 올림 — 파일은 하루 동안 기기에 남아 있어서, 주소가 같으면 다시 온 사람이 예전 오리를 봄
-const AV = '?v=1031', DUCK_GLB = 'avatar/maumon-duck.gltf.json' + AV, DUCK_LITE = 'avatar/maumon-duck-lite.gltf.json' + AV, DUCK_SCALE = 1; // 도형 오리와 같은 키(머리 꼭대기 ≈1.56)
+const AV = '?v=1031', DUCK_GLB = 'avatar/mindon-duck.gltf.json' + AV, DUCK_LITE = 'avatar/mindon-duck-lite.gltf.json' + AV, DUCK_SCALE = 1; // 도형 오리와 같은 키(머리 꼭대기 ≈1.56)
 function makeDuck(url = DUCK_GLB) { // 다른 방문자는 가벼운 판(정점 2만)
   const a = { root: new THREE.Group(), impl: null, get pose() { return this.impl.pose; },
     setPose(n, i, cb) { this.impl.setPose(n, i, cb); },
@@ -1635,10 +1695,14 @@ function legal(p, from) {
   if (d < POND_R + 0.7) { const k = (POND_R + 0.7) / (d || 1); q.x = POND.x + (q.x - POND.x) * k; q.z = POND.z + (q.z - POND.z) * k; }
   const was = from || q;
   if (inHall(was) || (inHallBox(was) && Math.abs(was.x) < HALL.door)) {
-    // 안에서: 벽 안쪽에 머물고, 앞쪽은 문으로만 나감
-    const out = q.z >= HALL.front - 0.3 && Math.abs(q.x) < HALL.door - 0.4;
-    // 벽에서 2cm 안쪽에 세움: 경계선에 딱 붙이면 inHall(<)이 거짓이 되어 다음부터 '밖에서 벽 뚫기'로 판정돼 꼼짝 못 함
-    if (!out) { const e = 0.02; q.x = Math.max(-(HALL.half - 0.6 - e), Math.min(HALL.half - 0.6 - e, q.x)); q.z = Math.max(HALL.back + 0.6 + e, Math.min(HALL.front - 0.3 - e, q.z)); }
+    // 안에서: 벽 안쪽에 머물고, 앞쪽은 문으로만 나감.
+    // 벽에서 2cm 안쪽에 세움: 경계선에 딱 붙이면 inHall(<)이 거짓이 되어 다음부터 '밖에서 벽 뚫기'로 판정돼 꼼짝 못 함.
+    // 단 문이 열린 곳(가운데 세 칸)은 앞벽 제한을 두지 않음 — 예전엔 거기서도 2cm 안으로 당겨서, 한 화면에 2cm 못 가는
+    // 빠른 PC(144Hz 등)·살살 민 조이스틱은 문 앞에서 영영 못 나갔음 (2026-10-31 본부장 PC '계단 앞에서 안 나가짐')
+    const e = 0.02, inDoor = Math.abs(q.x) < HALL.door - 0.4;
+    q.z = Math.max(HALL.back + 0.6 + e, q.z);
+    if (!inDoor) q.z = Math.min(HALL.front - 0.3 - e, q.z);
+    if (q.z < HALL.front - 0.3) q.x = Math.max(-(HALL.half - 0.6 - e), Math.min(HALL.half - 0.6 - e, q.x));
     if (Math.abs(q.x) < ALTAR_W / 2 + 0.5 && q.z < ALTAR_Z + ALTAR_D / 2 + 0.6) q.z = ALTAR_Z + ALTAR_D / 2 + 0.6; // 불단 앞까지
   } else if (inHallBox(q)) {
     // 밖에서: 문(가운데 세 칸)으로만 들어감
@@ -1658,7 +1722,17 @@ function goTo(list, look) {
   list.forEach(p => { const t = legal(p, inHall(p) ? V(0, -18) : V(0, 0)); route(from, t).forEach(w => q.push({ p: w })); from = t; });
   if (look && q.length) q[q.length - 1].look = look;   // 도착하면 이쪽을 바라봄
   S.queue = q; S.target = null; D.turn = null;
+  if (q.length) showTapMark(q[q.length - 1].p);      // 어디로 가는지 바닥에 금빛 표시
 }
+// 바닥을 눌러 갈 곳 표시 (2026-10-31 본부장 '어디 바닥을 찍었는지 알 수 있게'): 톡 커졌다 줄며 나타나 걷는 동안 숨 쉬고, 도착하거나 멈추면 사라짐
+const tapMark = (() => {
+  const g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0xd7b25b, transparent: true, opacity: 0, depthWrite: false });
+  const halo = new THREE.MeshBasicMaterial({ color: 0x121419, transparent: true, opacity: 0, depthWrite: false });   // 밝은 땅에서도 보이게 먹빛 테
+  const parts = [[new THREE.RingGeometry(0.34, 0.6, 48), halo], [new THREE.RingGeometry(0.4, 0.52, 48), mat], [new THREE.CircleGeometry(0.1, 24), mat]];
+  parts.forEach(([geo, m], i) => { const o = new THREE.Mesh(geo, m); o.rotation.x = -Math.PI / 2; o.position.y = i * 0.002; o.renderOrder = 5 + i; g.add(o); });
+  g.visible = false; g.userData = { t: 0, fade: 0, mat, halo }; scene.add(g); return g;
+})();
+function showTapMark(p) { tapMark.position.set(p.x, groundY(p.x, p.z) + 0.035, p.z); tapMark.userData.t = 0; tapMark.userData.fade = 0; tapMark.visible = true; }
 // 도착한 곳에서 바라볼 방향 (연못은 물 쪽)
 const LOOK = { pond: POND };
 const faceTo = (from, at) => Math.atan2(-(at.x - from.x), -(at.z - from.z));
@@ -1666,7 +1740,7 @@ function standUp() {
   if (S.mode === 'walk') return;
   endMed(false); Snd.stop();
   const from = S.mode;
-  S.mode = 'walk'; S.pitch = 0.02; S.bowT = -1; S.autoBow = false; D.override = null; S.yaw = D.face; CAM.snap = true;
+  S.mode = 'walk'; S.pitch = 0.02; S.bowT = -1; stopBows(true); D.override = null; S.yaw = D.face; CAM.snap = true;
   if (from === 'pond') {                                   // 앉았던 자리 바로 바깥 물가에 일어섬 (모두 한 점에 모이지 않게)
     const d = Math.hypot(S.pos.x - POND.x, S.pos.z - POND.z) || 1, r = Math.max(BANK_R, d + 1.0);
     S.pos.set(POND.x + (S.pos.x - POND.x) / d * r, 0, POND.z + (S.pos.z - POND.z) / d * r); S.pondSeat = null;
@@ -1678,7 +1752,7 @@ function sitHall(panel) {
   stopGuide(); S.queue = []; S.target = null;
   const c = CUSHIONS[S.nearCushion >= 0 ? S.nearCushion : FRONT_SEAT];
   S.mode = 'hall'; S.seat = CUSHIONS.indexOf(c); S.pos.set(c.x, 0, c.z); D.face = 0; S.yaw = 0;
-  seatRing.visible = false; S.autoBow = false; toast(T().bowHint, 4200);
+  seatRing.visible = false; stopBows(true); toast(T().bowHint, 5200);
   Object.assign(BOWCAM, BOWCAM.def); if (c.x > 9) BOWCAM.yaw = -BOWCAM.def.yaw; // 벽 쪽 방석이면 반대편에서
   openPanel(panel);
 }
@@ -1867,9 +1941,15 @@ joyRestore();
 joyEl.addEventListener('pointerdown', e => { e.preventDefault(); JOY.id = e.pointerId; joyEl.setPointerCapture(e.pointerId); joyEl.classList.add('on'); joyMove(e); });
 joyEl.addEventListener('pointermove', e => { if (e.pointerId === JOY.id) joyMove(e); });
 ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => joyEl.addEventListener(ev, joyEnd));
-const keys = {};
-addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+// 키는 글자(e.key)가 아니라 자판 위치(e.code)로 — 한/영이 한글이면 W 가 'ㅈ'으로 들어와 멈추던 문제 (2026-10-31 본부장 PC)
+const keys = {}, KEYMAP = { KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd', ArrowUp: 'arrowup', ArrowDown: 'arrowdown', ArrowLeft: 'arrowleft', ArrowRight: 'arrowright' };
+const keyName = e => KEYMAP[e.code] || (e.key || '').toLowerCase();
+addEventListener('keydown', e => { keys[keyName(e)] = true; });
+addEventListener('keyup', e => { keys[keyName(e)] = false; });
+// 키를 누른 채 다른 창·탭으로 가면 손 뗀 것을 못 받아 키가 눌린 채로 남음 → 창을 벗어나면 모두 놓음
+const releaseKeys = () => { for (const k in keys) keys[k] = false; };
+addEventListener('blur', releaseKeys);
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseKeys(); });
 
 function zoneOf(p) {
   if (S.mode === 'hall') return 'hall';
@@ -1881,39 +1961,78 @@ function zoneOf(p) {
 }
 
 /* ───────────── 108배 ───────────── */
-function paintMala() { // 진행 카운트 "53 / 108" + 금 막대
-  document.getElementById('bowN').textContent = S.bow;
-  document.getElementById('bowBar').style.width = (S.bow / 108 * 100).toFixed(1) + '%';
-  document.getElementById('bowCount').classList.toggle('done', S.bow >= 108);
-  document.getElementById('bowTotal').textContent = T().bowToday(day().bows, rec.total);
+function paintMala() { // 진행 카운트 "53 / 108" + 금 막대 + 남은 시간
+  const t = T(), goal = S.bowGoal || 108;
+  document.getElementById('bowN').textContent = S.bow.toLocaleString('en-US');
+  document.getElementById('bowG').textContent = goal.toLocaleString('en-US');
+  document.getElementById('bowBar').style.width = (S.bow / goal * 100).toFixed(2) + '%';
+  document.getElementById('bowCount').classList.toggle('done', !!S.bowGoal && S.bow >= goal);
+  document.getElementById('bowLeft').textContent = S.bowRun ? t.bowLeft(t.bowDur(Math.max(0, bowEndAt() - performance.now()) / 1000)) : '';
+  document.getElementById('bowTotal').textContent = t.bowToday(day().bows, rec.total);
 }
-const BOWCAM = { yaw: 0.67, el: 0.42, dist: 4.2, def: { yaw: 0.67, el: 0.42, dist: 4.2 } }; // 108배 구도 (오리 옆 뒤) — 끌어서 돌려 볼 수 있음
-const BOW_SEC = 6; // 큰절 한 번 6초 — 천천히 (108배 약 11분)
-function doBow() {
-  if (S.bowT >= 0) return; // 한 번 절하는 동안은 무시
-  S.bowT = 0; D.override = 'bow'; duck.setPose('bow');
-  Snd.shot('moktak');
-  S.bow = Math.min(108, S.bow + 1);
-  day().bows++; rec.total++; saveRec();
-  if (S.bow % 27 === 0 && S.bow < 108) Snd.bell(false);
-  paintMala(); renderRec();
+const BOWCAM = { yaw: 0.67, el: 0.42, dist: 4.2, def: { yaw: 0.67, el: 0.42, dist: 4.2 } }; // 절하기 구도 (오리 옆 뒤) — 끌어서 돌려 볼 수 있음
+const BOW_SEC = 6;                 // 큰절 한 번 6초 — 천천히
+const BOW_PER = BOW_SEC + 0.6;     // 다음 절까지 0.6초 숨 고르기 → 한 번에 6.6초 (108배 약 12분 · 3000배 약 5시간 30분 · 1만배 약 18시간 20분)
+const BOW_GOALS = [108, 3000, 10000];   // 2026-10-31 본부장 '절하기 → 108배·3000배·1만배'
+/* 절하기 (2026-10-31): 횟수는 시간으로 셈 — 화면이 꺼져 그림이 멈춰도(잠들기 전 틀어 두기) 돌아오면 맞는 횟수.
+   S.bowRun = { t0, base }: t0 에 base+1 번째 절이 시작, 그 뒤 6.6초마다 한 번. 죽비는 소리 장치에 3분 앞까지 미리 예약(BowAudio). */
+const bowCountNow = () => (S.bowRun ? Math.min(S.bowGoal, S.bowRun.base + Math.floor((performance.now() - S.bowRun.t0) / (BOW_PER * 1000)) + 1) : S.bow);
+const bowEndAt = () => (S.bowRun ? S.bowRun.t0 + ((S.bowGoal - S.bowRun.base - 1) * BOW_PER + BOW_SEC) * 1000 : 0);
+const BowAudio = {
+  srcs: [], next: 0, endSet: false, timer: 0,
+  start() { this.stop(); this.fill(); this.timer = setInterval(() => this.fill(), 20000); },
+  stop() { clearInterval(this.timer); this.timer = 0; this.srcs.forEach(x => { try { x.stop(); } catch (e) { /* 이미 끝남 */ } }); this.srcs = []; this.next = 0; this.endSet = false; },
+  at(buf, when, gain) { const c = Snd.ctx, src = c.createBufferSource(), g = c.createGain(); g.gain.value = gain; src.buffer = buf; src.connect(g); g.connect(Snd.fx); src.start(when); this.srcs.push(src); src.onended = () => { const i = this.srcs.indexOf(src); if (i >= 0) this.srcs.splice(i, 1); }; },
+  fill() {
+    const R = S.bowRun, c = Snd.ctx, b1 = Snd.shots.jukbi1, b3 = Snd.shots.jukbi3;
+    if (!R || !c || c.state !== 'running' || !b1) return;
+    const nowP = performance.now(), nowA = c.currentTime, PER = BOW_PER * 1000, horizon = nowP + 180000;
+    let k = Math.max(this.next, Math.ceil((nowP - R.t0 - 30) / PER));   // 이미 지난 절은 건너뜀
+    for (; R.base + k + 1 <= S.bowGoal; k++) { const at = R.t0 + k * PER; if (at > horizon) break; this.at(b1, nowA + Math.max(0, at - nowP) / 1000, 0.9); }
+    this.next = k;
+    const end = bowEndAt();
+    if (!this.endSet && b3 && end <= horizon) { this.at(b3, nowA + Math.max(0, end - nowP) / 1000, 0.9); this.endSet = true; }
+  },
+};
+// 화면이 다시 보이면 예약을 새로 (아이폰은 숨은 동안 소리 장치가 멈춰서 예약이 밀림)
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.bowRun) setTimeout(() => { BowAudio.stop(); BowAudio.fill(); BowAudio.timer = setInterval(() => BowAudio.fill(), 20000); }, 300); });
+function startBows(goal) {                          // 고르면 바로 시작
+  S.bowGoal = goal; S.bow = 0; S.bowRun = { t0: performance.now() + 400, base: 0 };
+  BowAudio.start(); renderBowBtn();
 }
-function bowDone() { // 108번째 절이 끝나면
-  S.autoBow = false; S.bowWait = 0;
-  S.done108++;                                                       // 같은 방 사람들에게 '108배를 마쳤어요' (presence c)
-  if (Room.on && Room.others.size) News.self(Room.others.size, 'bow');
-  Snd.shot('jukbi3'); toast(T().bowDone, 5000);
-  setTimeout(() => { S.bow = 0; paintMala(); renderBowBtn(); }, 5000);
+function stopBows(reset) {                          // 멈춤(reset=false) · 일어나기·나가기(reset=true)
+  if (S.bowRun) S.bow = Math.max(S.bow, bowCountNow());
+  S.bowRun = null; BowAudio.stop();
+  if (reset) { S.bow = 0; S.bowGoal = 0; }
+}
+function toggleBowRun() {                           // 잠시 멈춤 ↔ 이어서
+  if (S.bowRun) { stopBows(false); renderBowBtn(); return; }
+  if (!S.bowGoal || S.bow >= S.bowGoal) return;
+  S.bowRun = { t0: performance.now() + 400, base: S.bow }; BowAudio.start(); renderBowBtn();
+}
+function bowDone() { // 고른 횟수를 다 마치면
+  const goal = S.bowGoal, endSet = BowAudio.endSet;
+  S.bow = goal; S.bowRun = null; BowAudio.stop();
+  if (!endSet) Snd.shot('jukbi3');                 // 미리 예약 못 했으면(소리 장치가 멈춰 있었으면) 지금
+  if (goal === 108 && Room.on && Room.others.size) News.self(Room.others.size, 'bow');
+  toast(T().bowDone(T().bowGoal(goal)), 5000);
+  setTimeout(() => { if (!S.bowRun) { S.bow = 0; S.bowGoal = 0; paintMala(); renderBowBtn(); } }, 5000);
   renderBowBtn();
 }
-function renderBowBtn() { renderActions(); paintMala(); }
-function toggleAutoBow() {
-  if (S.autoBow) { S.autoBow = false; renderBowBtn(); return; }
-  if (S.bow >= 108) S.bow = 0;
-  S.autoBow = true; S.bowWait = S.bow === 0 ? 1.4 : 0.4;   // 처음엔 죽비 한 번 치고 시작
-  if (S.bow === 0) Snd.shot('jukbi1');
-  renderBowBtn(); paintMala();
+// 매 화면: 시간으로 센 횟수를 따라잡고(새 절이면 오리가 큰절), 108번마다 '108배를 마쳤어요' 소식(c)
+function bowTick() {
+  if (!S.bowRun || S.mode !== 'hall') return;
+  const n = bowCountNow();
+  if (n > S.bow) {
+    const add = n - S.bow, before = S.bow; S.bow = n;
+    day().bows += add; rec.total += add; saveRec();
+    S.done108 += Math.floor(n / 108) - Math.floor(before / 108);
+    S.bowT = Math.min(BOW_SEC * 0.9, ((performance.now() - S.bowRun.t0) % (BOW_PER * 1000)) / 1000); D.override = 'bow'; duck.setPose('bow');
+    paintMala(); renderRec();
+  }
+  if (S.bow >= S.bowGoal && performance.now() >= bowEndAt()) bowDone();
 }
+function renderBowBtn() { renderActions(); paintMala(); }
 
 /* ───────────── 합장 ───────────── */
 const hands = document.getElementById('hands');
@@ -1922,6 +2041,7 @@ function hapjang() {
   if (hapBusy || S.bowT >= 0) return; hapBusy = true;
   S.queue = []; S.target = null; if (S.guided) stopGuide(); // 걷던 중이면 그 자리에 멈춤
   D.override = 'hapjang'; duck.setPose('hapjang', false, () => { if (D.override === 'hapjang') D.override = null; hapBusy = false; }); // 반배 4초
+  clearTimeout(hapjang.t); hapjang.t = setTimeout(() => { if (D.override === 'hapjang') D.override = null; hapBusy = false; }, 4500); // 끝 신호를 놓쳐도 다시 걸을 수 있게
   setTimeout(() => Snd.bell(false), 700);
   const msgs = T().hapMsg; toast(msgs[Math.floor(Math.random() * msgs.length)], 3200);
   if (Room.on && Room.others.size) News.self(Room.others.size);   // 함께 있는 분들에게 전해졌다고 알려 줌
@@ -1944,6 +2064,34 @@ function holdButton(btn, ms, fn) {
 /* ───────────── 연잎 명상 ───────────── */
 const breath = document.getElementById('breath'), orb = document.getElementById('orb');
 const med = { on: false, end: 0, start: 0, mins: 0, lock: null };
+/* 숨 소리 (2026-10-31 본부장 '눈을 감고 할 수 있으니 숨에 맞춰 작은 소리로'): 숨이 바뀔 때마다 아주 작은 방울 소리
+   — 들이쉴 때 맑고 높게, 멈출 때 아주 작게, 내쉴 때 낮고 부드럽게. 소리 장치에 2분 앞까지 미리 예약해서
+   화면이 꺼지거나 그림이 멈춰도 숨과 어긋나지 않음(절하기의 죽비와 같은 방식). 크기는 소리 패널 '종·목탁'을 따름 */
+const BREATH_CUES = [[0, 880, 0.03], [4, 660, 0.014], [8, 523, 0.03]];   // [숨 주기 안 초, 높이 Hz, 크기] — 주기 14초(4·4·6)
+const MedAudio = {
+  nodes: [], next: 0, timer: 0,
+  start() { this.stop(); this.fill(); this.timer = setInterval(() => this.fill(), 20000); },
+  stop() { clearInterval(this.timer); this.timer = 0; this.nodes.forEach(o => { try { o.stop(); } catch (e) { /* 이미 끝남 */ } }); this.nodes = []; this.next = 0; },
+  cue(when, f, a) {
+    const c = Snd.ctx;
+    [[1, a, 2.2], [2.76, a * 0.25, 0.9]].forEach(([r, amp, dcy]) => {
+      const o = c.createOscillator(), g = c.createGain(); o.type = 'sine'; o.frequency.value = f * r;
+      g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(amp, when + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, when + dcy);
+      o.connect(g); g.connect(Snd.fx); o.start(when); o.stop(when + dcy + 0.05); this.nodes.push(o);
+      o.onended = () => { const i = this.nodes.indexOf(o); if (i >= 0) this.nodes.splice(i, 1); };
+    });
+  },
+  fill() {
+    const c = Snd.ctx; if (!med.on || !c || c.state !== 'running' || !Snd.on) return;
+    const nowP = performance.now(), nowA = c.currentTime, horizon = Math.min(med.end - 500, nowP + 120000);
+    for (let i = this.next; ; i++) {                 // i 번째 소리 = 주기 floor(i/3) 의 (i%3) 번째 숨
+      const [off, f, a] = BREATH_CUES[i % 3], at = med.start + (Math.floor(i / 3) * 14 + off) * 1000;
+      if (at > horizon) { this.next = i; break; }
+      if (at >= nowP - 50) this.cue(nowA + Math.max(0, at - nowP) / 1000, f, a);
+    }
+  },
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden && med.on) setTimeout(() => { MedAudio.stop(); const c = Math.floor((performance.now() - med.start) / 1000 / 14); MedAudio.next = c * 3; MedAudio.fill(); MedAudio.timer = setInterval(() => MedAudio.fill(), 20000); }, 300); });
 function startMed(mins) {
   med.on = true; med.mins = mins; med.start = performance.now(); med.end = med.start + mins * 60000;
   clearTimeout(med.timer); med.timer = setTimeout(() => { if (med.on) endMed(true); }, mins * 60000);   // 화면이 꺼져(백그라운드 재생) 그림이 멈춰도 제때 끝냄
@@ -1952,9 +2100,10 @@ function startMed(mins) {
   Snd.bell(false);
   if (Snd.wind && Snd.ctx) Snd.wind.gain.setTargetAtTime(0.025, Snd.ctx.currentTime, 2);
   if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { med.lock = l; }).catch(() => {});
+  MedAudio.start();                                  // 숨에 맞춘 작은 소리
 }
 function endMed(done) {
-  clearTimeout(med.timer);
+  clearTimeout(med.timer); MedAudio.stop();
   if (!med.on) return;
   med.on = false; breath.hidden = true;
   const m = Math.round((performance.now() - med.start) / 60000);
@@ -1980,7 +2129,7 @@ function tickMed(now) {
 /* ───────────── UI ───────────── */
 const $ = id => document.getElementById(id);
 let view = null;                // 앉아서 하는 일: 'bowPanel'(108배) · 'medPanel'(연잎) · null(걷기)
-let entered = false, toastT = 0, signT = 0, placesOpen = false, chimeOn = false;
+let entered = false, toastT = 0, signT = 0, placesOpen = false;
 function toast(msg, ms) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2600); }
 function openPanel(id) {
   view = id; placesOpen = false;
@@ -2018,8 +2167,12 @@ function actionsFor(kind) {
   };
   if (kind === 'med') { add('stop', t.medStop, () => endMed(false)); return; }
   if (view === 'bowPanel') {
-    const going = S.autoBow;
-    add(going ? 'pause' : 'play', going ? t.bowPause : S.bow > 0 && S.bow < 108 ? t.bowResume : t.bowStart, toggleAutoBow, going ? 'on' : 'main').id = 'bowBtn';
+    if (!S.bowGoal) {                                // 몇 배 할지 고르기 (걸리는 시간 함께)
+      BOW_GOALS.forEach((g, i) => { const b = add('bow', t.bowGoal(g), () => startBows(g), i === 0 ? 'main' : ''); b.querySelector('span').append(el('small', null, t.bowDur(g * BOW_PER - 0.6))); });
+      add('stand', t.stand, standUp); return;
+    }
+    const going = !!S.bowRun, done = S.bow >= S.bowGoal;
+    if (!done) add(going ? 'pause' : 'play', going ? t.bowPause : t.bowResume, toggleBowRun, going ? 'on' : 'main').id = 'bowBtn';
     add('stand', t.stand, standUp); return;
   }
   if (view === 'medPanel') { [3, 5, 10].forEach(m => add('timer', `${m}${t.min}`, () => startMed(m))); add('stand', t.stand, standUp); return; }
@@ -2070,6 +2223,7 @@ function chips(id, items, cur, fn) {
   items.forEach(([k, label]) => { const b = el('button', 'chip', label, { type: 'button', onclick: () => fn(k) }); b.setAttribute('aria-pressed', String(k === cur)); box.append(b); });
 }
 function renderUI() {
+  Intro.ui();                                        // 입장 화면 소리 버튼 (글자가 있을 수 있음)
   const t = T();
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i]').forEach(n => { const v = t[n.dataset.i]; if (typeof v === 'string') n.textContent = v; });
@@ -2084,7 +2238,8 @@ function renderUI() {
   $('bgToggle').setAttribute('aria-checked', String(!!VOL.bg));
   setSlider('volNature', VOL.nature); setSlider('volChant', VOL.chant); setSlider('volBell', VOL.bell);
   chips('chantPick', Object.keys(t.chants).map(k => [k, t.chants[k]]), VOL.chantTrack, k => { Amb.setChant(k); renderUI(); });
-  $('sndSrc').textContent = `${t.sndSrc} · ${t.chantSrc}${REC[VOL.chantTrack].credit} · ${t.bowCredit}${REC.moktak.credit}`;
+  $('chantPick').hidden = Object.keys(t.chants).length < 2;   // 곡이 하나면 고르기 칩은 숨김
+  $('sndSrc').textContent = `${t.sndSrc} · ${t.chantSrc}${REC[VOL.chantTrack].credit}`;
   chips('seasonPick', SEASON_ORDER.map(k => [k, t.season[k]]), season, k => { season = k; applyTod(); });
   chips('todPick', TOD_ORDER.map(k => [k, t.tod[k]]), tod, k => { tod = k; applyTod(); });
   chips('langPick', [['ko', '한국어'], ['en', 'English']], lang, k => { lang = k; renderUI(); });
@@ -2162,13 +2317,14 @@ function leave() {
   Room.stop();                                       // 함께 있기에서도 나감 (다시 들어오면 같은 방으로)
   if (med.on) endMed(false);
   if (S.mode !== 'walk') standUp();
-  S.autoBow = false; S.queue = []; S.target = null; stopGuide(); placesOpen = false; closeDrops();
+  stopBows(true); S.queue = []; S.target = null; stopGuide(); placesOpen = false; closeDrops();
   $('toast').classList.remove('show'); $('signboard').classList.remove('show');
   $('top').hidden = true; $('bottom').hidden = true;
   setSound(false);
   S.pos.set(0, 0, 40); S.yaw = 0; D.face = 0; CAM.snap = true;
   const g = $('gate'); g.hidden = false; $('enterSound').classList.remove('on');
   requestAnimationFrame(() => g.classList.remove('leaving'));
+  const ip = Intro.play(); if (ip && ip.catch) ip.catch(() => {});   // 입장 화면으로 돌아오면 입장 음악 다시
 }
 $('sndToggle').addEventListener('click', () => { setSound(!Snd.on); if (Snd.on) Amb.start(); });
 $('bgToggle').addEventListener('click', () => { VOL.bg = !VOL.bg; saveVol(); renderUI(); });
@@ -2194,12 +2350,10 @@ function enter() {
   }
   else goTo([new THREE.Vector3(0, 0, 27)]);
   setTimeout(() => toast(T().tapHint, 3800), 1600);
-  // 길 위 풍경 소리 가끔
-  if (!chimeOn) { chimeOn = true; (function chimeLoop() { if (entered && Snd.on && !document.hidden && Snd.ctx && Snd.ctx.state === 'running' && S.zone !== 'hall') Snd.chime(); setTimeout(chimeLoop, 9000 + Math.random() * 14000); })(); }
 }
 $('enterSound').addEventListener('click', () => {
   const b = $('enterSound'); if (b.classList.contains('on')) return;
-  b.classList.add('on'); setSound(true); Amb.start();
+  b.classList.add('on'); setSound(true); Amb.start(); Intro.fadeOut();   // 입장 음악은 줄어들며 경내 소리로
   setTimeout(() => enter(), reduceMotion ? 0 : 950);
 });
 
@@ -2251,6 +2405,7 @@ function frame(now) {
     let r = (keys.d || keys.arrowright ? 1 : 0) - (keys.a || keys.arrowleft ? 1 : 0);
     if (Math.hypot(JOY.x, JOY.y) > 0.15) { f -= JOY.y; r += JOY.x; }
     const fm = Math.hypot(f, r); if (fm > 1) { f /= fm; r /= fm; }
+    S.manualMove = !!(f || r);                       // 조이스틱·키보드로 직접 움직이는 중
     if (f || r) {
       if (S.target || S.queue.length || S.guided) { S.queue = []; S.target = null; stopGuide(); }
       const fx = -Math.sin(S.yaw), fz = -Math.cos(S.yaw);
@@ -2290,16 +2445,17 @@ function frame(now) {
       if (Math.abs(a) < 0.01) D.turn = null;
     }
   }
-  // 시선은 가는 방향을 천천히 따라감 (손으로 둘러본 직후 1.2초는 그대로 둠)
-  if (D.moving && now - S.userLook > 1200) {
+  // 시선은 가는 방향을 천천히 따라감 (손으로 둘러본 직후 1.2초는 그대로 둠).
+  // 조이스틱·키보드로 직접 움직일 땐 따라가지 않음 — 시선은 다른 손으로 끌어서 (2026-10-31 본부장). 바닥 누르기·둘러보기 안내는 그대로 따라감
+  if (D.moving && !S.manualMove && now - S.userLook > 1200) {
     let dy = D.face - S.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
     S.yaw += dy * Math.min(1, dt * (reduceMotion ? 3 : 0.75));
     S.pitch += (0.02 - S.pitch) * Math.min(1, dt * 1.2);
   }
   const joyShow = entered && S.mode === 'walk' && !med.on;
   if (joyEl.hidden === joyShow) { joyEl.hidden = !joyShow; if (!joyShow) joyEnd({ pointerId: JOY.id }); }
-  if (S.bowT >= 0) { S.bowT += dt; if (S.bowT > BOW_SEC) { S.bowT = -1; D.override = null; if (S.bow >= 108) bowDone(); } }
-  else if (S.autoBow && S.mode === 'hall') { S.bowWait -= dt; if (S.bowWait <= 0) { doBow(); S.bowWait = 0.6; } } // 다음 절까지 잠깐 숨 고르기
+  bowTick();                                         // 절하기: 시간으로 센 횟수 따라잡기
+  if (S.bowT >= 0) { S.bowT += dt; if (S.bowT > BOW_SEC) { S.bowT = -1; D.override = null; } }
   // 법당 안에서 걸을 때: 빈 방석 가까이 가면 108배·듣기 버튼
   const nc = findNearCushion();
   if (nc !== S.nearCushion) { S.nearCushion = nc; if (!med.on) renderActions(); }
@@ -2354,6 +2510,16 @@ function frame(now) {
     if (z === 'hall' && S.mode === 'walk' && S.nearCushion < 0) setTimeout(() => { if (S.zone === 'hall' && S.mode === 'walk' && S.nearCushion < 0) toast(T().findSeatShort, 2600); }, 2400);
   }
 
+  // 불이문 풍경 흔들림 (props/README.md 예시, 둘이 서로 다른 박자·빠르기)
+  PUNG.forEach(q => { const t = tsec * q.sp + q.ph; if (q.bell) { q.bell.rotation.x = 0.05 * Math.sin(t * 1.1); q.bell.rotation.z = 0.03 * Math.sin(t * 0.8 + 1); } if (q.fish) q.fish.rotation.z = 0.25 * Math.sin(t * 2.3) + 0.08 * Math.sin(t * 5.1); });
+  // 갈 곳 표시: 걷는 동안 숨 쉬고, 도착·멈춤·앉기면 0.3초 동안 사라짐
+  if (tapMark.visible) {
+    const u = tapMark.userData; u.t += dt;
+    if (!(S.mode === 'walk' && (S.target || S.queue.length))) u.fade = Math.min(1, u.fade + dt * 3.5);
+    const k = u.t < 0.25 ? 1.6 - 0.6 * (u.t / 0.25) : 1 + Math.sin(u.t * 4) * 0.06;
+    tapMark.scale.setScalar(k); u.mat.opacity = 0.95 * (1 - u.fade); u.halo.opacity = 0.35 * (1 - u.fade);
+    if (u.fade >= 1) tapMark.visible = false;
+  }
   // 물 위 흔들림 · 향 연기 · 반딧불
   leaves.forEach(m => { m.position.y = (m.userData.action ? 0.07 : 0.07) + Math.sin(tsec * 0.8 + m.userData.phase) * 0.015; });
   if (performance.now() - (S.pondT || 0) > 500) {            // 0.5초마다(실제 시간 — 느린 폰도 같게): 고리를 빈 자리로 · 같은 자리에 겹쳐 앉았는지 확인
@@ -2430,10 +2596,11 @@ const News = {
     }
     const el = $('news'); el.querySelector('.news-ic').innerHTML = svg(first.k === 'bow' ? 'bow' : 'hap');
     el.querySelector('span').textContent = msg; el.classList.add('show'); this.busy = true;
+    if (first.self == null) Snd.chime();   // 다른 분 소식엔 맑은 풍경 한 번 (합성음 — 2026-10-31 본부장 '목탁은 무겁고 이게 더 은은함')
     setTimeout(() => { el.classList.remove('show'); setTimeout(() => { this.busy = false; this.pump(); }, 700); }, first.k === 'bow' ? 5000 : 3600);
   },
 };
-const DUCK_FAR = 'avatar/maumon-duck-far.gltf.json' + AV; // 먼 사람용 (삼각형 4천, gltfpack -si 0.1 -se 0.05 -sa) — 뼈대 이름은 같음
+const DUCK_FAR = 'avatar/mindon-duck-far.gltf.json' + AV; // 먼 사람용 (삼각형 4천, gltfpack -si 0.1 -se 0.05 -sa) — 뼈대 이름은 같음
 const ANIM = ['hips', 'torso', 'neck', 'wingL', 'wingR', 'legL', 'legR', 'eyeL', 'eyeR']; // 움직이는 뼈 (부모가 앞에 오는 순서)
 
 // 오리(쉬는 자세)를 '뼈 × 재질' 덩어리로 굽는다: 각 조각을 자기 뼈 기준 좌표로 옮겨 합침.
@@ -2703,10 +2870,25 @@ if (WS_PATH) {
   window.claude.use('room').then(room => { if (room) Room.init(room); }).catch(() => {});
 }
 
+// 입장 음악: 바로 틀어 보고(데스크톱은 될 때가 있음), 막히면 입장 화면을 처음 누르거나 키를 칠 때
+(function introKick() {
+  // 브라우저마다 소리를 열어 주는 동작이 달라서(터치는 손 뗄 때·클릭, 마우스는 누를 때) 여러 개를 듣고, 실제로 나오면 그만 들음
+  const EV = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
+  const off = () => EV.forEach(t => removeEventListener(t, kick, true));
+  const kick = e => {
+    if (entered || !Intro.want || Intro.playing()) { off(); return; }
+    if (e && e.target && e.target.closest && e.target.closest('#gateSnd')) return;   // 소리 버튼은 따로 처리
+    const p = Intro.play(); if (p && p.then) p.then(off, () => {});                 // 막히면 다음 동작에서 다시
+  };
+  EV.forEach(t => addEventListener(t, kick, true));
+  kick();
+  Intro.ui();
+  $('gateSnd').addEventListener('click', () => Intro.toggle());
+})();
 applyTod();
 requestAnimationFrame(frame);
 
 // 테스트·디버그용
-window.__maumon = { renderer, Crowd, Quality, BG, Snd, PONDCAM, TREES, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleAutoBow, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, doBow, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
+window.__maumon = { renderer, Crowd, Quality, BG, Snd, Intro, tapMark, PONDCAM, TREES, legal, groundY, inHall, inHallBox, get entered() { return entered; }, hapjang, bowDone, News, buddha3d, JOY, BOWCAM, toggleBowRun, CUSHIONS, Amb, VOL, Room, duck, D, CAM, setSeason: v => { season = v; applyTod(); }, S, rec, med, startBows, stopBows, bowCountNow, BowAudio, MedAudio, startMed, sitHall, sitLeafNow, POND_SEATS, pickPondSeat, ring, standUp, goTo, startGuide, setLang: l => { lang = l; renderUI(); }, get lang() { return lang; }, get tod() { return tod; } };
 })();
 </script>
